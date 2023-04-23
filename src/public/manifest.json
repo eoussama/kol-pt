@@ -1,8 +1,9 @@
 {
-  "name": "KOL Patreon Tracker",
-  "version": "0.0.0.1",
   "manifest_version": 3,
-  "description": "An extenssion that helps manage and track KOL's patreon reaction content.",
+  "version": "0.0.0.1",
+  "short_name": "KOL PT",
+  "name": "KOL Patreon Tracker",
+  "description": "KOL Patreon Tracker is a Chromium extension and Edge addon that helps you track KingOfLightning (KOL) reactions on Patreon. KOL is an Anime/Manga YouTuber who mostly does One Piece content and other reactions and theories.",
   "icons": {
     "16": "icons/icon16x16.png",
     "32": "icons/icon32x32.png",
@@ -11,7 +12,7 @@
   },
   "action": {
     "default_icon": "icons/icon128x128.png",
-    "default_popup": "popup/popup.html"
+    "default_popup": "index.html"
   },
   "content_scripts": [
     {
