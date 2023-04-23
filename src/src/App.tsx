@@ -1,8 +1,28 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import logo from './logo.svg';
 import './App.css';
 
 function App() {
+  useEffect(() => {
+
+    chrome.tabs && chrome.tabs.query({
+      active: true,
+      currentWindow: true
+    }, (tabs) => {
+      chrome.tabs.sendMessage(
+        // Current tab ID
+        tabs[0].id || 0,
+
+        // Message type
+        { type: 'GET_DOM' } as any,
+
+        // Callback executed when the content script sends a response
+        (response: any) => {
+
+        });
+    });
+  }, []);
+
   return (
     <div className="App">
       <header className="App-header">

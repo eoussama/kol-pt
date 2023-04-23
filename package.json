@@ -6,7 +6,7 @@
     "postinstall": "cd src && npm i",
     "clean": " rm -rf build",
     "start": "cd src && npm start",
-    "build": "npm run clean && cd src && npm run build && mv build ../build && cp -r scripts ../build/scripts"
+    "build": "npm run clean && cd src && npm run build && mv build ../build"
   },
   "repository": {
     "type": "git",
