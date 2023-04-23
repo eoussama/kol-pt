@@ -14,7 +14,7 @@ It also helps you better seek reactions by skipping forward to when they start o
 ## Usage
 Once the KOL Patreon Tracker extension is installed, you can use it to track KOL's reactions on Patreon:
 
-1. Go to KOL's Patreon page on Patreon.com.
+1. Go to [KOL's Patreon page](https://www.patreon.com/KingOfLightning/posts).
 2. Browse through the reactions and you'll see that the tags are added back to the reactions, helping you identify the shows being reacted to.
 3. Click on the "Track" button next to a reaction to add it to your tracking list.
 4. You can view your tracking list by clicking on the extension's icon in your browser's toolbar and selecting "My Tracking List". You can also remove reactions from your tracking list from this view.
