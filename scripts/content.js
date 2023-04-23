@@ -22,14 +22,28 @@
     document
       .querySelectorAll('[data-tag="post-card"]')
       .forEach(post => {
-        const creatorLink = post.querySelector('.sc-ghlzfe').getAttribute('href');
-        const creatorName = creatorLink.split('/').reverse()[0];
-
-        if (creatorName === KOL_NAME) {
+        if (isPostAllowed(post)) {
           posts.push(post);
         }
       });
 
     return posts;
+  }
+
+  function isPostAllowed(post) {
+    const isLocked = post.querySelector('[data-tag="locked-image-post"]') != null;
+
+    if (!isLocked) {
+      if (window.location.href.endsWith(`${KOL_NAME}/posts`)) {
+        return true;
+      }
+      
+      const creatorLink = post.querySelector('.sc-jJoQJp a').getAttribute('href');
+      const creatorName = creatorLink.split('/').reverse()[0];
+
+      return creatorName === KOL_NAME;
+    }
+
+    return false;
   }
 })();
