@@ -1,15 +1,16 @@
-import './App.scss';
+import styles from './App.module.scss';
 
-import Feed from './../feed/Feed';
+import Feed from '../feed/Feed';
+import Header from '../../layout/header/Header';
 
 
 
 function App() {
   return (
-    <>
-      <div>KOL Patreon Tracker</div>
+    <main className={styles['root']}>
+      <Header />
       <Feed />
-    </>
+    </main>
   );
 }
 

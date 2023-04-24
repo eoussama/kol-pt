@@ -9,10 +9,16 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  background-color: rgb(212, 255, 241);
+  #root {
+    width: 100%;
+    height: 100%;
+  }
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+:root {
+  --color-text: #222833;
+  --color-text-rgb: 34, 40, 51;
+
+  --color-primary: #1976d2;
+  --color-primary-rgb: 25, 118, 210;
 }
