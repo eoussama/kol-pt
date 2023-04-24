@@ -1,13 +1,18 @@
+import './index.scss';
+
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import './index.scss';
-import App from './App';
+import App from './components/pages/app/App';
 import reportWebVitals from './reportWebVitals';
+import { FirebaseHelper } from './core/helpers/firebase.helper';
 
 
 
+// Initializing firebase
+FirebaseHelper.init();
+
+// Attaching react
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
-
 root.render(
   <React.StrictMode>
     <App />
