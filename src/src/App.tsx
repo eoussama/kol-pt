@@ -1,6 +1,11 @@
+import './App.scss';
+
 import React, { useEffect } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { config } from './config/env';
+import { initializeApp } from 'firebase/app';
+import { get, getDatabase, ref } from 'firebase/database';
+
+
 
 function App() {
   useEffect(() => {
@@ -23,23 +28,15 @@ function App() {
     });
   }, []);
 
+  useEffect(() => {
+    const app = initializeApp(config);
+    const database = getDatabase(app);
+
+    get(ref(database, 'posts')).then(e => console.log(e.val()));
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <div>KOL Patreon Tracker</div>
   );
 }
 
