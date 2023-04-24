@@ -10,7 +10,7 @@ export interface IPost {
 
   description: string;
 
-  date: number;
+  creationDate: number;
 
   thumbnail: string;
 

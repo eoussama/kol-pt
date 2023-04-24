@@ -1,9 +1,7 @@
 import './App.scss';
 
 import React, { useEffect } from 'react';
-import { config } from './config/env';
-import { initializeApp } from 'firebase/app';
-import { get, getDatabase, ref } from 'firebase/database';
+import Feed from './components/pages/Feed';
 
 
 
@@ -28,15 +26,11 @@ function App() {
     });
   }, []);
 
-  useEffect(() => {
-    const app = initializeApp(config);
-    const database = getDatabase(app);
-
-    get(ref(database, 'posts')).then(e => console.log(e.val()));
-  }, []);
-
   return (
-    <div>KOL Patreon Tracker</div>
+    <>
+      <div>KOL Patreon Tracker</div>
+      <Feed />
+    </>
   );
 }
 
