@@ -1,6 +1,6 @@
 export interface ITag {
 
-  uuid: string;
+  id: string;
 
   entryId: string;
 

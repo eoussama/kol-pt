@@ -4,7 +4,7 @@ import { EntryType } from "../enums/entry-type.enum";
 
 export interface IEntry {
 
-  uuid: string;
+  id: string;
 
   imdbId?: string;
 
