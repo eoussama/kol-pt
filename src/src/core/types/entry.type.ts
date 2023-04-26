@@ -8,6 +8,8 @@ export interface IEntry {
 
   imdbId?: string;
 
+  shortTitle?: string;
+
   title: string;
 
   type: EntryType;

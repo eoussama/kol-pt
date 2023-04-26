@@ -1,0 +1,40 @@
+.card {
+  cursor: pointer;
+
+  transition-duration: 0.2s !important;
+  transition-property: transform !important;
+
+  &__title {
+    font-size: 16px !important;
+    font-weight: 600 !important;
+  }
+
+  &__subtitle,
+  &__description {
+    font-size: 12px !important;
+    font-weight: 300 !important;
+  }
+
+  &__description {
+    color: var(--color-text) !important;
+  }
+
+  &__tags {
+    display: flex;
+    flex-wrap: nowrap;
+    flex-direction: row;
+
+    overflow: auto;
+    max-width: 250px;
+
+    padding-bottom: 8px;
+
+    .tag {
+      margin: 2px;
+    }
+  }
+
+  &:hover {
+    transform: translateX(3px);
+  }
+}
