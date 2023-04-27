@@ -17,9 +17,10 @@ export class EntriesHelper {
   /**
    * @description
    * Returns the list of all entries
+   * @param cache Whether to use cache when needed
    */
-  static async load(): Promise<Array<Entry>> {
-    const data = await FirebaseHelper.get(this.DB_KEY);
+  static async load(cache: boolean = true): Promise<Array<Entry>> {
+    const data = await FirebaseHelper.get(this.DB_KEY, cache);
     return data?.map((entry: IEntry) => new Entry(entry));
   }
 
@@ -28,9 +29,10 @@ export class EntriesHelper {
    * Returns a specific entry
    *
    * @param id The ID of the entry
+   * @param cache Whether to use cache when needed
    */
-  static async get(id: string): Promise<Nullable<Entry>> {
-    const data = await this.load();
+  static async get(id: string, cache: boolean = true): Promise<Nullable<Entry>> {
+    const data = await this.load(cache);
     return data.find(entry => entry.id === id);
   }
 }

@@ -100,6 +100,14 @@ export class CacheHelper {
 
   /**
    * @description
+   * Clears the local cache
+   */
+  static clear(): void {
+    localStorage.removeItem(CacheHelper.CACHE_KEY);
+  }
+
+  /**
+   * @description
    * Fetches the cached data
    */
   private static load(): Nullable<ICache> {

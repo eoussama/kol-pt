@@ -1,13 +1,12 @@
 import styles from './Feed.module.scss';
 
 import { useState } from 'react';
-import { Chip, IconButton, Tooltip } from '@mui/material';
 import PostCard from '../../layout/card/PostCard';
-import { Post } from '../../../core/models/post.model';
 import ViewListIcon from '@mui/icons-material/ViewList';
+import { Chip, IconButton, Tooltip } from '@mui/material';
+import { usePostStore } from '../../../state/posts.state';
 import ViewStreamIcon from '@mui/icons-material/ViewStream';
 import { ViewMode } from '../../../core/enums/view-mode.enum';
-import { PostsHelper } from '../../../core/helpers/posts.helper';
 import { useEffectUnsafe } from '../../../core/effects/safe.effect';
 import RestartAltOutlinedIcon from '@mui/icons-material/RestartAltOutlined';
 
@@ -15,18 +14,13 @@ import RestartAltOutlinedIcon from '@mui/icons-material/RestartAltOutlined';
 
 function Feed() {
   const [viewMode, setViewMode] = useState(ViewMode.Expanded);
-  const [posts, setPosts] = useState<Array<Post>>([]);
-  const [loading, setLoading] = useState(false);
+  const { posts, loading, loadPosts } = usePostStore();
 
   const compactViewColor = viewMode === ViewMode.Compact ? 'primary' : 'default';
   const expandedViewColor = viewMode === ViewMode.Expanded ? 'primary' : 'default';
 
   useEffectUnsafe(() => {
-    setLoading(true);
-
-    PostsHelper.load()
-      .then(setPosts)
-      .finally(() => setLoading(false));
+    loadPosts();
   }, []);
 
   return (
@@ -55,7 +49,7 @@ function Feed() {
 
       <ul className={styles['cards']}>
         {loading && <div className={styles['cards__loader']}>{<RestartAltOutlinedIcon />}</div>}
-        {posts.map(post => <li key={post.id} className={styles['cards-wrapper']}><PostCard post={post} viewMode={viewMode} /></li>)}
+        {!loading && posts.map(post => <li key={post.id} className={styles['cards-wrapper']}><PostCard post={post} viewMode={viewMode} /></li>)}
       </ul >
     </>
   );

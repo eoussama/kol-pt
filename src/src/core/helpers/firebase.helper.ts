@@ -33,10 +33,11 @@ export class FirebaseHelper {
    * Retrieves an element from the database
    *
    * @param key The key of the targeted value
+   * @param cache Whether to use cache when needed
    */
-  static get<T = any>(key: 'posts' | 'entries'): Promise<T> {
+  static get<T = any>(key: 'posts' | 'entries', cache: boolean = true): Promise<T> {
     return new Promise(async resolve => {
-      if (CacheHelper.isValid(key)) {
+      if (cache && CacheHelper.isValid(key)) {
 
         // Fetching data from cache
         const data = CacheHelper.get(key);
