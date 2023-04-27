@@ -28,12 +28,11 @@ import PostDetail from '../components/layout/post-detail/PostDetail';
         const postId = post.dataset['kol_pt_id'];
         const postData = posts.find(e => e.id === postId) as Post;
 
-        post.querySelector('[data-tag="post-content-collapse"]').after(postWrapper);
         ReactDOM.render(<PostDetail post={postData} />, postWrapper);
+        post.querySelector('[data-tag="post-content-collapse"]').after(postWrapper);
 
         post.dataset['kol_pt'] = true;
-        post.style.borderRadius = '10px';
-        post.style.border = '5px solid #1976d252';
+        post.style.outline = '5px solid #1976d252';
       }
     }
 
