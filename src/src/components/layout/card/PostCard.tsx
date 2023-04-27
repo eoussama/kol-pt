@@ -1,24 +1,25 @@
 import styles from './PostCard.module.scss';
 
-import { Box, Card, CardContent, CardMedia, Chip, Tooltip, Typography } from '@mui/material';
 import { Post } from '../../../core/models/post.model';
-import { Tag } from '../../../core/models/tag.model';
+import { ViewMode } from '../../../core/enums/view-mode.enum';
+import { Box, Card, CardContent, CardMedia, Chip, Tooltip, Typography } from '@mui/material';
 
 
 
-function PostCard(props: { post: Post }) {
+function PostCard(props: { post: Post, viewMode: ViewMode }) {
   const { post } = props;
+  const { viewMode } = props;
+
+  const viewModeClasses = viewMode === ViewMode.Compact ? styles['card--compact'] : styles['card--expanded'];
+  const cardClasses = `${styles['card']} ${viewModeClasses}`
+
   const goToPost = (post: Post) => {
     window.open(`https://www.patreon.com/posts/${post.id}`, '_blank');
   }
 
-  const getLabel = (tag: Tag) => {
-    return `${tag.entry?.shortTitle} - ${tag.label}`;
-  }
-
   return (
     <>
-      <Card sx={{ display: 'flex' }} className={styles['card']} onClick={() => goToPost(post)}>
+      <Card sx={{ display: 'flex' }} className={cardClasses} onClick={() => goToPost(post)}>
         <CardMedia
           component="img"
           alt={post.title}
@@ -44,7 +45,7 @@ function PostCard(props: { post: Post }) {
           <div className={styles['card__tags']}>
             {post.tags.map(tag => <Box key={tag.id} ml={1}>
               <Tooltip title={tag.description}>
-                <Chip className={styles['tag']} size='small' label={getLabel(tag)} />
+                <Chip className={styles['tag']} size='small' label={tag.getLabel()} />
               </Tooltip>
             </Box>)}
           </div>

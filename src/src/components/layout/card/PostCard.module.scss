@@ -37,7 +37,6 @@
     flex-direction: row;
 
     max-width: 330px;
-    max-height: 145px;
 
     overflow: hidden;
     padding-bottom: 8px;
@@ -54,16 +53,46 @@
     }
   }
 
-  &:hover {
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3) !important;
+  &--expanded {
+    max-height: 145px;
+  }
 
+  &--compact {
     .card__thumbnail {
-      filter: blur(0);
-      width: 120px !important;
+      display: none;
     }
 
     .card__tags {
-      max-width: 250px;
+      font-size: 12px;
+      max-width: 370px;
+
+      .tag {
+        font-size: 12px;
+      }
+    }
+
+    .card__body {
+      padding-bottom: 0 !important;
+
+      .card__description {
+        display: none;
+      }
+    }
+
+  }
+
+  &:hover {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3) !important;
+
+    &.card--expanded {
+      .card__thumbnail {
+        filter: blur(0);
+        width: 120px !important;
+      }
+
+      .card__tags {
+        max-width: 250px;
+      }
     }
   }
 }

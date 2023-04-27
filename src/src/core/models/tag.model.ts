@@ -25,4 +25,8 @@ export class Tag {
     this.endTime = model.endTime ?? 0;
     this.startTime = model.startTime ?? 0;
   }
+
+  getLabel(): string {
+    return `${this.entry?.shortTitle} - ${this.label}`;
+  }
 }
