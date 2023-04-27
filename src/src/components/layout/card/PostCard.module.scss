@@ -1,8 +1,11 @@
 .card {
   cursor: pointer;
 
+  border-radius: 8px !important;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1) !important;
+
   transition-duration: 0.2s !important;
-  transition-property: transform !important;
+  transition-property: box-shadow !important;
 
   &__title {
     font-size: 16px !important;
@@ -15,8 +18,17 @@
     font-weight: 300 !important;
   }
 
+  &__title,
   &__description {
     color: var(--color-text) !important;
+  }
+
+  &__thumbnail {
+    filter: blur(2px);
+    width: 40px !important;
+
+    transition-duration: 0.2s;
+    transition-property: width filter;
   }
 
   &__tags {
@@ -24,17 +36,34 @@
     flex-wrap: nowrap;
     flex-direction: row;
 
-    overflow: auto;
-    max-width: 250px;
+    max-width: 330px;
+    max-height: 145px;
 
+    overflow: hidden;
     padding-bottom: 8px;
+
+    transition-duration: 0.2s;
+    transition-property: max-width;
 
     .tag {
       margin: 2px;
     }
+
+    &:hover {
+      overflow: overlay;
+    }
   }
 
   &:hover {
-    transform: translateX(3px);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3) !important;
+
+    .card__thumbnail {
+      filter: blur(0);
+      width: 120px !important;
+    }
+
+    .card__tags {
+      max-width: 250px;
+    }
   }
 }

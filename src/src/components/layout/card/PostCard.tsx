@@ -21,9 +21,9 @@ function PostCard(props: { post: Post }) {
       <Card sx={{ display: 'flex' }} className={styles['card']} onClick={() => goToPost(post)}>
         <CardMedia
           component="img"
-          sx={{ width: 120 }}
-          image={post.thumbnail}
           alt={post.title}
+          image={post.thumbnail}
+          className={styles['card__thumbnail']}
         />
 
         <Box sx={{ display: 'flex', flexDirection: 'column' }}>
