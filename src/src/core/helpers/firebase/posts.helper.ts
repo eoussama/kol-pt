@@ -1,5 +1,5 @@
-import { IPost } from "../types/post.type";
-import { Post } from "../models/post.model";
+import { IPost } from "../../types/post.type";
+import { Post } from "../../models/post.model";
 import { EntriesHelper } from "./entries.helper";
 import { FirebaseHelper } from "./firebase.helper";
 

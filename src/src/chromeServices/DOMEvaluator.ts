@@ -1,82 +1,45 @@
-// Function called when a new message is received
-// const messagesFromReactAppListener = async (msg: any, sender: chrome.runtime.MessageSender, sendResponse: (response: any) => void) => {
-// const PATREON_URL = "https://www.patreon.com";
-// const isAllowed = await isPatreon();
+import { PostsHelper } from '../core/helpers/dom/posts.helper';
+import { Post } from '../core/models/post.model';
 
-// if (isAllowed) {
-//   chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
-//     const data = { isAllowed, tabId: tabs[0].id };
-//     chrome.tabs.sendMessage(tabs[0].id ?? -1, data);
-//   });
-// }
 
-// function isPatreon() {
-//   return new Promise(async resolve => {
-//     try {
-//       const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
-//       const currentUrl = tabs[0].url;
-
-//       resolve(currentUrl?.startsWith(PATREON_URL));
-//     } catch {
-//       resolve(false);
-//     }
-//   });
-// }
-// }
-
-// chrome.runtime.onMessage.addListener(messagesFromReactAppListener);
-
-import { config } from '../config/env';
 
 (() => {
-  const KOL_NAME = config.creatorName;
+  chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message.action === 'attach') {
+      // const el = document.createElement("div");
+      // document.body.appendChild(el);
+      // ReactDOM.render(<MyComponent />, el);
+      // console.log('attach', { message, sender, sendResponse });
 
-  init();
+      init(message.posts);
+    }
+  });
 
-  function init() {
-    setTimeout(() => {
-      const posts = getPosts();
-      console.log({ posts });
-    }, 2000);
-  }
+  /**
+   * @description
+   * Initializes the attachments
+   *
+   * @param posts The list of target posts
+   */
+  function init(posts: Array<Post>) {
+    const postIds = posts.map(post => post.id);
+    const postEls = PostsHelper.getPostsElements(postIds);
 
-  function getPosts() {
-    const posts: any = [];
+    for (const post of postEls) {
+      if (!post.dataset['kol_pt']) {
+        const el = document.createElement('span');
 
-    document
-      .querySelectorAll('[data-tag="post-card"]')
-      .forEach(post => {
-        if (isPostAllowed(post)) {
-          posts.push(post);
-        }
-      });
+        el.innerHTML = 'TARGER POST<br>TARGER POST<br>TARGER POST<br>TARGER POST<br>TARGER POST<br>TARGER POST<br>TARGER POST<br>';
+        el.style.color = 'red';
 
-    return posts;
-  }
-
-  function isPostAllowed(post: any) {
-    const isLocked = post.querySelector('[data-tag="locked-image-post"]') != null;
-
-    if (!isLocked) {
-
-      // If on creator feed
-      if (window.location.href.endsWith(`${KOL_NAME}/posts`)) {
-        return true;
+        post.dataset['kol_pt'] = true;
+        post.style.borderRadius = '10px';
+        post.style.border = '5px solid #1976d252';
+        post.querySelector('[data-tag="post-content-collapse"]').after(el);
       }
-
-      // If on post page
-      if (post.querySelector('.sc-jJoQJp span')) {
-        return true;
-      }
-
-      // If on general feed
-      const creatorLink = post.querySelector('.sc-jJoQJp a').getAttribute('href');
-      const creatorName = creatorLink.split('/').reverse()[0];
-
-      return creatorName === KOL_NAME;
     }
 
-    return false;
+    console.log({ postEls, posts });
   }
 })();
 

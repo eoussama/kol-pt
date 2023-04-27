@@ -4,7 +4,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './components/pages/app/App';
 import reportWebVitals from './reportWebVitals';
-import { FirebaseHelper } from './core/helpers/firebase.helper';
+import { FirebaseHelper } from './core/helpers/firebase/firebase.helper';
 
 
 

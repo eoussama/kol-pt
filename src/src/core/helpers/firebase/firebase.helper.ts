@@ -1,4 +1,4 @@
-import { config } from "../../config/env";
+import { config } from "../../../config/env";
 import { CacheHelper } from "./cache.helper";
 import { FirebaseApp, initializeApp } from "firebase/app";
 import { Database, get, getDatabase, ref } from "firebase/database";

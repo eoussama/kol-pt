@@ -1,5 +1,5 @@
-import { ICache } from "../types/cache.type";
-import { Nullable } from "../types/nullable.type";
+import { ICache } from "../../types/cache.type";
+import { Nullable } from "../../types/nullable.type";
 
 
 

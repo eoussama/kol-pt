@@ -1,6 +1,6 @@
-import { IEntry } from "../types/entry.type";
-import { Entry } from "../models/entry.model";
-import { Nullable } from "../types/nullable.type";
+import { IEntry } from "../../types/entry.type";
+import { Entry } from "../../models/entry.model";
+import { Nullable } from "../../types/nullable.type";
 import { FirebaseHelper } from "./firebase.helper";
 
 
