@@ -35,7 +35,7 @@ function Feed() {
         <span>Feed</span>
 
         <div className={styles['title__actions']}>
-          <Tooltip title="Expand">
+          <Tooltip title="Expanded">
             <IconButton color={expandedViewColor} size='small' aria-label="expanded" onClick={() => setViewMode(ViewMode.Expanded)}>
               <ViewStreamIcon />
             </IconButton>

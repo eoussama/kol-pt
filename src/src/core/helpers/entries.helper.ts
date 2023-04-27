@@ -1,8 +1,7 @@
-import { FirebaseHelper } from "./firebase.helper";
-import { Nullable } from "../types/nullable.type";
-import { Entry } from "../models/entry.model";
-import { get, ref } from "firebase/database";
 import { IEntry } from "../types/entry.type";
+import { Entry } from "../models/entry.model";
+import { Nullable } from "../types/nullable.type";
+import { FirebaseHelper } from "./firebase.helper";
 
 
 
@@ -20,8 +19,8 @@ export class EntriesHelper {
    * Returns the list of all entries
    */
   static async load(): Promise<Array<Entry>> {
-    const data = await get(ref(FirebaseHelper.getDb(), this.DB_KEY));
-    return data.val()?.map((entry: IEntry) => new Entry(entry));
+    const data = await FirebaseHelper.get(this.DB_KEY);
+    return data?.map((entry: IEntry) => new Entry(entry));
   }
 
   /**

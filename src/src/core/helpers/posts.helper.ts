@@ -1,6 +1,5 @@
 import { IPost } from "../types/post.type";
 import { Post } from "../models/post.model";
-import { get, ref } from "firebase/database";
 import { EntriesHelper } from "./entries.helper";
 import { FirebaseHelper } from "./firebase.helper";
 
@@ -20,7 +19,7 @@ export class PostsHelper {
    * Returns the list of all posts
    */
   static async load(): Promise<Array<Post>> {
-    const data: Array<IPost> = (await get(ref(FirebaseHelper.getDb(), this.DB_KEY))).val();
+    const data: Array<IPost> = await FirebaseHelper.get(this.DB_KEY);
     const posts: Array<Post> = [];
 
     for (let i = 0; i < data.length; i++) {
