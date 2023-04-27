@@ -30,7 +30,7 @@ function Header() {
           className={styles['header__button']}
           target='_blank'
           variant="outlined"
-          href={config.patreonUrl}
+          href={`${config.patreonUrl}/${config.creatorName}`}
         >Open Patreon</Button>
       </div>
     </header>

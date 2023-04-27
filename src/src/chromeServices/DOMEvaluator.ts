@@ -26,10 +26,10 @@
 
 // chrome.runtime.onMessage.addListener(messagesFromReactAppListener);
 
-import config from '../config.json';
+import { config } from '../config/env';
 
 (() => {
-  const KOL_NAME = config.createName;
+  const KOL_NAME = config.creatorName;
 
   init();
 
@@ -58,10 +58,18 @@ import config from '../config.json';
     const isLocked = post.querySelector('[data-tag="locked-image-post"]') != null;
 
     if (!isLocked) {
+
+      // If on creator feed
       if (window.location.href.endsWith(`${KOL_NAME}/posts`)) {
         return true;
       }
 
+      // If on post page
+      if (post.querySelector('.sc-jJoQJp span')) {
+        return true;
+      }
+
+      // If on general feed
       const creatorLink = post.querySelector('.sc-jJoQJp a').getAttribute('href');
       const creatorName = creatorLink.split('/').reverse()[0];
 
