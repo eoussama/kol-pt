@@ -1,7 +1,7 @@
 import styles from './Feed.module.scss';
 
 import { useState } from 'react';
-import PostCard from '../../layout/card/PostCard';
+import PostCard from '../../layout/post-card/PostCard';
 import ViewListIcon from '@mui/icons-material/ViewList';
 import { Chip, IconButton, Tooltip } from '@mui/material';
 import { usePostStore } from '../../../state/posts.state';
@@ -24,11 +24,13 @@ function Feed() {
   }, []);
 
   useEffectUnsafe(() => {
-    if (posts.length > 0) {
-      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-        const tab = tabs[0];
-        chrome.tabs.sendMessage(tab.id as number, { action: 'attach', posts });
-      });
+    if (chrome?.tabs) {
+      if (posts.length > 0) {
+        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+          const tab = tabs[0];
+          chrome.tabs.sendMessage(tab.id as number, { action: 'attach', posts });
+        });
+      }
     }
   }, [posts]);
 

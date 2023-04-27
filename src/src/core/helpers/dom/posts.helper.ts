@@ -32,7 +32,12 @@ export class PostsHelper {
     const isLocked = post.querySelector('[data-tag="locked-image-post"]') != null;
 
     if (!isLocked) {
-      return postIds.some(e => post.querySelector(`[href$="${e}"]`) || window.location.href.endsWith(e));
+      for (const postId of postIds) {
+        if (post.querySelector(`[href$="${postId}"]`) || window.location.href.endsWith(postId)) {
+          post.dataset['kol_pt_id'] = postId;
+          return true;
+        }
+      }
     }
 
     return false;

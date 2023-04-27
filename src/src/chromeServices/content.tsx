@@ -1,16 +1,13 @@
+import ReactDOM from 'react-dom';
 import { PostsHelper } from '../core/helpers/dom/posts.helper';
 import { Post } from '../core/models/post.model';
+import PostDetail from '../components/layout/post-detail/PostDetail';
 
 
 
 (() => {
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.action === 'attach') {
-      // const el = document.createElement("div");
-      // document.body.appendChild(el);
-      // ReactDOM.render(<MyComponent />, el);
-      // console.log('attach', { message, sender, sendResponse });
-
       init(message.posts);
     }
   });
@@ -27,15 +24,16 @@ import { Post } from '../core/models/post.model';
 
     for (const post of postEls) {
       if (!post.dataset['kol_pt']) {
-        const el = document.createElement('span');
+        const postWrapper = document.createElement("div");
+        const postId = post.dataset['kol_pt_id'];
+        const postData = posts.find(e => e.id === postId) as Post;
 
-        el.innerHTML = 'TARGER POST<br>TARGER POST<br>TARGER POST<br>TARGER POST<br>TARGER POST<br>TARGER POST<br>TARGER POST<br>';
-        el.style.color = 'red';
+        post.querySelector('[data-tag="post-content-collapse"]').after(postWrapper);
+        ReactDOM.render(<PostDetail post={postData} />, postWrapper);
 
         post.dataset['kol_pt'] = true;
         post.style.borderRadius = '10px';
         post.style.border = '5px solid #1976d252';
-        post.querySelector('[data-tag="post-content-collapse"]').after(el);
       }
     }
 
