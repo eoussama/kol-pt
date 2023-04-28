@@ -37,12 +37,16 @@
         "icons/*.png"
       ],
       "matches": [
-        "<all_urls>"
+        "https://www.patreon.com/*"
       ]
     }
   ],
+  "host_permissions": [
+    "https://www.patreon.com/*"
+  ],
   "permissions": [
     "tabs",
-    "activeTab"
+    "activeTab",
+    "webRequest"
   ]
 }

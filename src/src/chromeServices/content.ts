@@ -4,8 +4,11 @@ import { PostsHelper } from '../core/helpers/dom/posts.helper';
 
 
 (() => {
+  let lastInit = 0;
+  const timeout = 500;
+
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (message.action === 'attach') {
+    if (message.action === 'attach' && canInit()) {
       init(message.posts);
     }
   });
@@ -30,6 +33,15 @@ import { PostsHelper } from '../core/helpers/dom/posts.helper';
     }
 
     console.log({ postEls, posts });
+    lastInit = Date.now();
+  }
+
+  /**
+   * @description
+   * Checks if initialization timeout has passed
+   */
+  function canInit(): boolean {
+    return lastInit + timeout < Date.now();
   }
 })();
 
