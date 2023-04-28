@@ -20,18 +20,7 @@ function Feed() {
 
   useEffect(() => {
     loadPosts();
-  }, []);
-
-  useEffect(() => {
-    if (chrome?.tabs) {
-      if (posts.length > 0) {
-        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-          const tab = tabs[0];
-          chrome.tabs.sendMessage(tab.id as number, { action: 'attach', posts });
-        });
-      }
-    }
-  }, [posts]);
+  }, [loadPosts]);
 
   return (
     <>

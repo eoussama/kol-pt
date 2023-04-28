@@ -28,6 +28,9 @@
       ]
     }
   ],
+  "background": {
+    "service_worker": "static/js/background.js"
+  },
   "web_accessible_resources": [
     {
       "resources": [
