@@ -28,8 +28,9 @@ import PostDetail from '../components/layout/post-detail/PostDetail';
         const postId = post.dataset['kol_pt_id'];
         const postData = posts.find(e => e.id === postId) as Post;
 
+        const sibling = post.querySelector('[data-tag="post-content-collapse"]') ?? post.querySelector('[data-tag="post-content"]');
         ReactDOM.render(<PostDetail post={postData} />, postWrapper);
-        post.querySelector('[data-tag="post-content-collapse"]').after(postWrapper);
+        sibling.after(postWrapper);
 
         post.dataset['kol_pt'] = true;
         post.style.outline = '5px solid #1976d252';

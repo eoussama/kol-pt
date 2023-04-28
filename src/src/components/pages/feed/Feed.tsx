@@ -1,13 +1,12 @@
 import styles from './Feed.module.scss';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import PostCard from '../../layout/post-card/PostCard';
 import ViewListIcon from '@mui/icons-material/ViewList';
 import { Chip, IconButton, Tooltip } from '@mui/material';
 import { usePostStore } from '../../../state/posts.state';
 import ViewStreamIcon from '@mui/icons-material/ViewStream';
 import { ViewMode } from '../../../core/enums/view-mode.enum';
-import { useEffectUnsafe } from '../../../core/effects/unsafe.effect';
 import RestartAltOutlinedIcon from '@mui/icons-material/RestartAltOutlined';
 
 
@@ -19,11 +18,11 @@ function Feed() {
   const compactViewColor = viewMode === ViewMode.Compact ? 'primary' : 'default';
   const expandedViewColor = viewMode === ViewMode.Expanded ? 'primary' : 'default';
 
-  useEffectUnsafe(() => {
+  useEffect(() => {
     loadPosts();
   }, []);
 
-  useEffectUnsafe(() => {
+  useEffect(() => {
     if (chrome?.tabs) {
       if (posts.length > 0) {
         chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
