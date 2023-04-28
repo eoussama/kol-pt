@@ -2,9 +2,11 @@ import styles from './PostDetail.module.scss';
 
 import { useState } from 'react';
 import { Post } from '../../../core/models/post.model';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import MuiAccordion, { AccordionProps } from '@mui/material/Accordion';
-import { AccordionDetails, AccordionSummary, styled } from '@mui/material';
+import { AccordionDetails, AccordionSummary, IconButton, Tooltip, styled } from '@mui/material';
 
 
 
@@ -37,16 +39,32 @@ function PostDetail(props: { post: Post }) {
       <AccordionDetails className={styles['post__body']}>
         <ul className={styles['reactions']}>
           {post.tags.map(tag => <li key={tag.id} className={styles['reaction']}>
-            <div className={styles['reaction__title']}>
-              {tag.entry.title}
+            <div className={styles['reaction__left']}>
+              <div className={styles['reaction__title']}>
+                {tag.entry.title}
+              </div>
+
+              <div className={styles['reaction__description']}>
+                {tag.getDetailDescription()}
+
+                <span className={styles['reaction__extra']}>
+                  , {tag.getDetailExtra()}
+                </span>
+              </div>
             </div>
 
-            <div className={styles['reaction__description']}>
-              {tag.getDetailDescription()}
+            <div className={styles['reaction__right']}>
+              <Tooltip title="Skip to reaction">
+                <IconButton className={styles['reaction__skip']} size='small' aria-label="skip to reaction">
+                  <PlayArrowIcon />
+                </IconButton>
+              </Tooltip>
 
-              <span className={styles['reaction__extra']}>
-                , {tag.getDetailExtra()}
-              </span>
+              <Tooltip title="More">
+                <IconButton size='small' aria-label="more">
+                  <MoreVertIcon />
+                </IconButton>
+              </Tooltip>
             </div>
           </li>)}
         </ul>

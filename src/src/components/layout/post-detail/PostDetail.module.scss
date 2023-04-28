@@ -28,6 +28,10 @@
         padding: 10px 15px;
         background-color: #ffffff;
 
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
         &__title {
           font-size: 14px;
           color: #232630;
@@ -40,6 +44,7 @@
           font-weight: 300;
         }
 
+        &__right,
         &__extra {
           opacity: 0;
 
@@ -47,12 +52,20 @@
           transition-property: opacity;
         }
 
+        &__right button {
+          color: #b9b9b9;
+        }
+
         &:not(:last-of-type) {
           border-bottom: 1px solid #e1e1e1;
         }
 
-        &:hover .reaction__extra {
-          opacity: 1;
+        &:hover {
+
+          .reaction__right,
+          .reaction__extra {
+            opacity: 1;
+          }
         }
       }
     }
