@@ -45,7 +45,7 @@ function PostCard(props: { post: Post, viewMode: ViewMode }) {
           <div className={styles['card__tags']}>
             {post.tags.map(tag => <Box key={tag.id} ml={1}>
               <Tooltip title={tag.description}>
-                <Chip className={styles['tag']} size='small' label={tag.getLabel()} />
+                <Chip className={styles['tag']} size='small' label={tag.getMinTitle()} />
               </Tooltip>
             </Box>)}
           </div>

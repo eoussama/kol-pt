@@ -10,5 +10,5 @@ export interface ITag {
 
   startTime: number;
 
-  endTime: string;
+  endTime: number;
 }

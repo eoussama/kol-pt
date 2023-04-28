@@ -20,19 +20,20 @@ import { PostsHelper } from '../core/helpers/dom/posts.helper';
    * @param posts The list of target posts
    */
   function init(posts: Array<Post>) {
+    console.log({ posts });
     const postIds = posts.map(post => post.id);
     const postEls = PostsHelper.getPostsElements(postIds);
 
     for (const postEl of postEls) {
       if (!postEl.dataset['kol_pt']) {
         const postId = postEl.dataset['kol_pt_id'];
-        const post = posts.find(e => e.id === postId) as Post;
+        const post = new Post(posts.find(e => e.id === postId) as any);
 
         PostsHelper.attachToPost(post, postEl);
       }
     }
 
-    console.log({ postEls, posts });
+    console.log({ posts });
     lastInit = Date.now();
   }
 

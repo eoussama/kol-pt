@@ -1,5 +1,6 @@
 import { Entry } from "./entry.model";
 import { ITag } from "../types/tag.type";
+import { TimeHelper } from "../helpers/parse/time.helper";
 
 
 
@@ -15,18 +16,30 @@ export class Tag {
 
   startTime: number;
 
-  endTime: string;
+  endTime: number;
 
-  constructor(model: ITag) {
+  constructor(model: ITag | Tag) {
     this.id = model.id ?? '';
     this.label = model.label ?? '';
     this.description = model.description ?? '';
 
     this.endTime = model.endTime ?? 0;
     this.startTime = model.startTime ?? 0;
+
+    if ('entry' in model) {
+      this.entry = new Entry(model.entry);
+    }
   }
 
-  getLabel(): string {
+  getMinTitle(): string {
     return `${this.entry?.shortTitle} - ${this.label}`;
+  }
+
+  getDetailDescription(): string {
+    return `Episode ${this.label}`;
+  }
+
+  getDetailExtra(): string {
+    return `Starts at ${TimeHelper.parse(this.startTime)}, Reaction time: ${TimeHelper.format(this.endTime - this.startTime)}`;
   }
 }

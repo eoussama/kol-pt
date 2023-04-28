@@ -35,6 +35,7 @@ export class PostsHelper {
         }
       }
 
+      post.tags = post.tags.sort((a, b) => a.startTime - b.startTime);
       posts.push(post);
     }
 

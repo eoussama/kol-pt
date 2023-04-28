@@ -15,11 +15,11 @@ export class Entry {
 
   type: EntryType;
 
-  constructor(model: IEntry) {
-    this.id = model.id ?? '';
-    this.imdbId = model.id ?? '';
-    this.title = model.title ?? '';
-    this.type = model.type ?? EntryType.Anime;
-    this.shortTitle = model.shortTitle ?? this.title;
+  constructor(model?: IEntry) {
+    this.id = model?.id ?? '';
+    this.imdbId = model?.id ?? '';
+    this.title = model?.title ?? '';
+    this.type = model?.type ?? EntryType.Anime;
+    this.shortTitle = model?.shortTitle ?? this.title;
   }
 }
