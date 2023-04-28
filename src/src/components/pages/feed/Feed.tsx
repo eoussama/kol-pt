@@ -7,7 +7,7 @@ import { Chip, IconButton, Tooltip } from '@mui/material';
 import { usePostStore } from '../../../state/posts.state';
 import ViewStreamIcon from '@mui/icons-material/ViewStream';
 import { ViewMode } from '../../../core/enums/view-mode.enum';
-import { useEffectUnsafe } from '../../../core/effects/safe.effect';
+import { useEffectUnsafe } from '../../../core/effects/unsafe.effect';
 import RestartAltOutlinedIcon from '@mui/icons-material/RestartAltOutlined';
 
 
