@@ -1,16 +1,32 @@
 .post {
-  border-radius: 10px;
-  margin: 10px 0 18px 0;
-  background-color: whitesmoke;
+  overflow: hidden;
+  box-shadow: none !important;
+  border-radius: 10px !important;
+  margin: 10px 0 18px 0 !important;
+  background-color: #f8f8f8 !important;
+
+  &__head {
+    min-height: 55px !important;
+  }
+
+  &__title {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 500;
+  }
 
   &__body {
+    padding: 0 !important;
+
     .reactions {
       margin: 0;
       padding: 0;
       list-style-type: none;
+      border-top: 1px solid #e1e1e1;
 
       .reaction {
         padding: 10px 15px;
+        background-color: #ffffff;
 
         &__title {
           font-size: 14px;
