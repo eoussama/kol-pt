@@ -1,14 +1,17 @@
 import styles from './PostDetail.module.scss';
 
 import Vimeo from '@vimeo/player';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Tag } from '../../../core/models/tag.model';
 import { Post } from '../../../core/models/post.model';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { usePlayerStore } from '../../../state/player.state';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import MuiAccordion, { AccordionProps } from '@mui/material/Accordion';
-import { AccordionDetails, AccordionSummary, Chip, IconButton, Tooltip, styled } from '@mui/material';
+import { AccordionDetails, AccordionSummary, Chip, IconButton, Menu, MenuItem, Tooltip, styled } from '@mui/material';
+import { Nullable } from '../../../core/types/nullable.type';
+import { Anime } from '../../../core/models/anime.model';
 
 
 
@@ -26,12 +29,17 @@ const Accordion = styled((props: AccordionProps) => (
 
 function PostDetail(props: { post: Post }) {
   const { post } = props;
+  const { currentPlayer, playPlayer } = usePlayerStore();
+
   const [currentTime, setCurrentTime] = useState(0);
   const [expanded, setExpanded] = useState<boolean>(true);
-  const { currentPlayer, playPlayer } = usePlayerStore();
+  const [selectedTag, setSelectedTag] = useState<Nullable<Tag>>(null);
 
   const video = useMemo<HTMLIFrameElement>(() => document.querySelector(`[data-kol_pt_id="${post.id}"] iframe`)!, [post.id]);
   const player = useMemo(() => new Vimeo(video), [video]);
+
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const anchorOpened = Boolean(anchorEl);
 
   // Updating current video time
   player.on('timeupdate', e => setCurrentTime(e.seconds));
@@ -55,6 +63,15 @@ function PostDetail(props: { post: Post }) {
   useEffect(() => {
     playPlayer(post.id);
   }, [currentTime]);
+
+  const onMore = (event: React.MouseEvent<HTMLElement>, tag: Tag) => {
+    setSelectedTag(tag);
+    setAnchorEl(event.currentTarget);
+  };
+
+  const onClose = () => {
+    setAnchorEl(null);
+  };
 
   return <>
     <Accordion
@@ -97,7 +114,11 @@ function PostDetail(props: { post: Post }) {
               </Tooltip>
 
               <Tooltip title="More">
-                <IconButton size='small' aria-label="more">
+                <IconButton
+                  size='small'
+                  aria-label='more'
+                  onClick={e => onMore(e, tag)}
+                >
                   <MoreVertIcon />
                 </IconButton>
               </Tooltip>
@@ -106,6 +127,48 @@ function PostDetail(props: { post: Post }) {
         </ul>
       </AccordionDetails>
     </Accordion>
+
+    <Menu
+      onClose={onClose}
+      anchorEl={anchorEl}
+      open={anchorOpened}
+      PaperProps={{
+        elevation: 0,
+        sx: {
+          mt: 1.5,
+          overflow: 'visible',
+          filter: 'drop-shadow(0px 0px 8px rgba(0,0,0,0.2))',
+          '& .MuiAvatar-root': {
+            width: 32,
+            height: 32,
+            ml: -0.5,
+            mr: 1,
+          },
+          '& .MuiMenuItem-root': {
+            fontSize: 14
+          },
+          '&:before': {
+            content: '""',
+            display: 'block',
+            position: 'absolute',
+            top: 0,
+            right: 14,
+            width: 10,
+            height: 10,
+            bgcolor: 'background.paper',
+            transform: 'translateY(-50%) rotate(45deg)',
+            zIndex: 0,
+          },
+        },
+      }}
+      transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+      anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+    >
+      <MenuItem onClick={() => { (selectedTag?.entry as Anime).openMAL(); onClose(); }}>View on MyAnimeList</MenuItem>
+      <MenuItem onClick={() => { (selectedTag?.entry as Anime).openAniList(); onClose(); }}>View on AniList</MenuItem>
+      <MenuItem onClick={() => { (selectedTag?.entry as Anime).openKitsu(); onClose(); }}>View on Kitsu</MenuItem>
+      <MenuItem onClick={() => { selectedTag?.entry.openIMDb(); onClose(); }}>View on IMDb</MenuItem>
+    </Menu>
   </>
 }
 

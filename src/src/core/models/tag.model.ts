@@ -1,6 +1,7 @@
 import { Entry } from "./entry.model";
 import { ITag } from "../types/tag.type";
 import { TimeHelper } from "../helpers/parse/time.helper";
+import { EntriesHelper } from "../helpers/firebase/entries.helper";
 
 
 
@@ -27,7 +28,7 @@ export class Tag {
     this.startTime = model.startTime ?? 0;
 
     if ('entry' in model) {
-      this.entry = new Entry(model.entry);
+      this.entry = EntriesHelper.initEntry(model.entry);
     }
   }
 

@@ -32,7 +32,6 @@ import { PostsHelper } from '../core/helpers/dom/posts.helper';
       }
     }
 
-    console.log({ posts });
     lastInit = Date.now();
   }
 
