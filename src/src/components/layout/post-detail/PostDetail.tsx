@@ -1,6 +1,7 @@
 import styles from './PostDetail.module.scss';
 
 import { useState } from 'react';
+import Vimeo from '@vimeo/player';
 import { Post } from '../../../core/models/post.model';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
@@ -25,6 +26,14 @@ const Accordion = styled((props: AccordionProps) => (
 function PostDetail(props: { post: Post }) {
   const { post } = props;
   const [expanded, setExpanded] = useState<boolean>(true);
+
+  const onSkip = async (seconds: number) => {
+    const video = document.querySelector(`[data-kol_pt_id="${post.id}"] iframe`) as HTMLIFrameElement;
+    const player = new Vimeo(video);
+
+    player.play();
+    player.setCurrentTime(seconds);
+  }
 
   return <>
     <Accordion
@@ -55,7 +64,12 @@ function PostDetail(props: { post: Post }) {
 
             <div className={styles['reaction__right']}>
               <Tooltip title="Skip to reaction">
-                <IconButton className={styles['reaction__skip']} size='small' aria-label="skip to reaction">
+                <IconButton
+                  size='small'
+                  aria-label="skip to reaction"
+                  className={styles['reaction__skip']}
+                  onClick={() => onSkip(tag.startTime)}
+                >
                   <PlayArrowIcon />
                 </IconButton>
               </Tooltip>

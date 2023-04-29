@@ -15,6 +15,7 @@
     "@types/node": "^16.18.24",
     "@types/react": "^18.0.38",
     "@types/react-dom": "^18.0.11",
+    "@vimeo/player": "^2.19.0",
     "firebase": "^9.20.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -50,6 +51,7 @@
   },
   "devDependencies": {
     "@types/chrome": "^0.0.233",
+    "@types/vimeo__player": "^2.18.0",
     "mini-css-extract-plugin": "^2.7.5"
   }
 }

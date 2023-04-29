@@ -1,7 +1,6 @@
-import ReactDOM from "react-dom";
 import { Post } from "../../models/post.model";
-import PostDetail from "../../../components/layout/post-detail/PostDetail";
 import { InjectHelper } from "./inject.helper";
+import { PlayerHelper } from "./player.helper";
 
 
 
@@ -19,7 +18,7 @@ export class PostsHelper {
     document
       .querySelectorAll('[data-tag="post-card"]')
       .forEach(post => {
-        if (PostsHelper.isPostAllowed(post, postIds)) {
+        if (PostsHelper.isPostAllowed(post as HTMLDivElement, postIds)) {
           posts.push(post);
         }
       });
@@ -34,14 +33,19 @@ export class PostsHelper {
    * @param post The post information to attach
    * @param postEl The target element on the DOM to attach to
    */
-  static attachToPost(post: Post, postEl: any): void {
+  static attachToPost(post: Post, postEl: HTMLDivElement): void {
+
+    // Attaching metadata
+    postEl.dataset['kol_pt'] = JSON.stringify(true);
 
     // Injecting post detail
-    const sibling = postEl.querySelector('[data-tag="post-content-collapse"]') ?? postEl.querySelector('[data-tag="post-content"]');
+    const sibling = (postEl.querySelector('[data-tag="post-content-collapse"]') ?? postEl.querySelector('[data-tag="post-content"]')) as HTMLDivElement;
     InjectHelper.postDetail(post, sibling);
 
+    // Attaching raw player
+    PlayerHelper.attach(postEl);
+
     // Styling post
-    postEl.dataset['kol_pt'] = true;
     postEl.style.borderRadius = '10px';
     postEl.style.boxShadow = '0 0 20px 0px rgba(25, 118, 210, 0.5)';
   }
@@ -54,7 +58,7 @@ export class PostsHelper {
    * @param post The post element
    * @param postIds A list of allowed post IDs
    */
-  private static isPostAllowed(post: any, postIds: Array<string>) {
+  private static isPostAllowed(post: HTMLDivElement, postIds: Array<string>) {
     const isLocked = post.querySelector('[data-tag="locked-image-post"]') != null;
 
     if (!isLocked) {

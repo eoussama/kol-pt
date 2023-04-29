@@ -20,7 +20,6 @@ import { PostsHelper } from '../core/helpers/dom/posts.helper';
    * @param posts The list of target posts
    */
   function init(posts: Array<Post>) {
-    console.log({ posts });
     const postIds = posts.map(post => post.id);
     const postEls = PostsHelper.getPostsElements(postIds);
 
