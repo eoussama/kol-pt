@@ -32,13 +32,16 @@ function PostDetail(props: { post: Post }) {
   const video = useMemo<HTMLIFrameElement>(() => document.querySelector(`[data-kol_pt_id="${post.id}"] iframe`)!, [post.id]);
   const player = useMemo(() => new Vimeo(video), [video]);
 
+  // Skipping to time stop
   const onSkip = useCallback(async (seconds: number) => {
     player.play();
     player.setCurrentTime(seconds);
+    video.scrollIntoView({ behavior: 'smooth' });
 
     playPlayer(post.id);
   }, [player]);
 
+  // Pausing the player if another player is playing
   useEffect(() => {
     if (currentPlayer !== post.id) {
       player.pause();

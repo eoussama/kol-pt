@@ -13,21 +13,23 @@ export class PlayerHelper {
    * @param post The target post
    */
   static attach(post: HTMLDivElement): Promise<void> {
-    return new Promise(resolve => {
+    return new Promise(async resolve => {
 
       // Getting the media container, this is the element that contains the video's thumbnail
-      const mediaEl = (post.querySelector('[data-tag="media-container"]') as HTMLDataElement).parentElement;
+      const mediaEl = (post.querySelector('[data-tag="media-container"]')?.parentElement ?? post.querySelector('.sc-jefHZX')) as HTMLDataElement;
 
       if (mediaEl) {
-
-        // Swaping the iframe's source
-        this.updateSrc(post).finally(() => resolve());
+        await new Promise(rslv => setTimeout(() => rslv(0), 100));
 
         // Getting the thumbnail's play button element
         const playButton = mediaEl.querySelector('button[title="Start playback"]') as HTMLDivElement;
 
-        // Simulating a button click on the play button, this is done to trigger the iframe into loading
         if (playButton) {
+
+          // Swaping the iframe's source
+          this.updateSrc(post).finally(() => resolve());
+
+          // Simulating a button click on the play button, this is done to trigger the iframe into loading
           playButton.click();
         }
       }
