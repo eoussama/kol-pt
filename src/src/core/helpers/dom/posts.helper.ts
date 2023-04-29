@@ -42,7 +42,8 @@ export class PostsHelper {
 
     // Styling post
     postEl.dataset['kol_pt'] = true;
-    postEl.style.outline = '5px solid #1976d252';
+    postEl.style.borderRadius = '10px';
+    postEl.style.boxShadow = '0 0 20px 0px rgba(25, 118, 210, 0.5)';
   }
 
   /**

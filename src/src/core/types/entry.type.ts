@@ -10,6 +10,8 @@ export interface IEntry {
 
   shortTitle?: string;
 
+  altTitle?: string;
+
   title: string;
 
   type: EntryType;

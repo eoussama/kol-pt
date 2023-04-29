@@ -13,6 +13,8 @@ export class Entry {
 
   shortTitle: string;
 
+  altTitle: string;
+
   type: EntryType;
 
   constructor(model?: IEntry) {
@@ -20,6 +22,7 @@ export class Entry {
     this.imdbId = model?.id ?? '';
     this.title = model?.title ?? '';
     this.type = model?.type ?? EntryType.Anime;
-    this.shortTitle = model?.shortTitle ?? this.title;
+    this.shortTitle = model?.shortTitle ?? this.title ?? '';
+    this.altTitle = model?.altTitle ?? this.shortTitle ?? '';
   }
 }
