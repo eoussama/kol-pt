@@ -32,6 +32,20 @@
         align-items: center;
         justify-content: space-between;
 
+        &__playing {
+          margin-left: 5px;
+          font-size: 11px;
+
+          height: 20px;
+          padding: 4px;
+          margin-top: -4px;
+
+          animation-duration: 0.2s;
+          animation-fill-mode: both;
+          animation-name: chipFadeIn;
+          animation-timing-function: ease-in-out;
+        }
+
         &__title {
           font-size: 14px;
           color: #232630;
@@ -69,5 +83,17 @@
         }
       }
     }
+  }
+}
+
+@keyframes chipFadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-2px);
+  }
+  
+  to {
+    opacity: 1;
+    transform: translateX(0);
   }
 }

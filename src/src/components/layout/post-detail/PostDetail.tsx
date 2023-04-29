@@ -8,7 +8,7 @@ import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { usePlayerStore } from '../../../state/player.state';
 import MuiAccordion, { AccordionProps } from '@mui/material/Accordion';
-import { AccordionDetails, AccordionSummary, IconButton, Tooltip, styled } from '@mui/material';
+import { AccordionDetails, AccordionSummary, Chip, IconButton, Tooltip, styled } from '@mui/material';
 
 
 
@@ -26,19 +26,22 @@ const Accordion = styled((props: AccordionProps) => (
 
 function PostDetail(props: { post: Post }) {
   const { post } = props;
+  const [currentTime, setCurrentTime] = useState(0);
   const [expanded, setExpanded] = useState<boolean>(true);
   const { currentPlayer, playPlayer } = usePlayerStore();
 
   const video = useMemo<HTMLIFrameElement>(() => document.querySelector(`[data-kol_pt_id="${post.id}"] iframe`)!, [post.id]);
   const player = useMemo(() => new Vimeo(video), [video]);
 
+  // Updating current video time
+  player.on('timeupdate', e => setCurrentTime(e.seconds));
+
   // Skipping to time stop
   const onSkip = useCallback(async (seconds: number) => {
     player.play();
     player.setCurrentTime(seconds);
-    video.scrollIntoView({ behavior: 'smooth' });
 
-    playPlayer(post.id);
+    video.scrollIntoView({ behavior: 'smooth' });
   }, [player]);
 
   // Pausing the player if another player is playing
@@ -46,7 +49,12 @@ function PostDetail(props: { post: Post }) {
     if (currentPlayer !== post.id) {
       player.pause();
     }
-  }, [currentPlayer])
+  }, [currentPlayer]);
+
+  // Marking the player as active
+  useEffect(() => {
+    playPlayer(post.id);
+  }, [currentTime]);
 
   return <>
     <Accordion
@@ -64,6 +72,7 @@ function PostDetail(props: { post: Post }) {
             <div className={styles['reaction__left']}>
               <div className={styles['reaction__title']}>
                 {tag.entry.title}
+                {currentPlayer === post.id && tag.startTime <= currentTime && currentTime <= tag.endTime && <Chip className={styles['reaction__playing']} label='Playing' size='small' />}
               </div>
 
               <div className={styles['reaction__description']}>
