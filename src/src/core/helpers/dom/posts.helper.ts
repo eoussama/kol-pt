@@ -33,17 +33,17 @@ export class PostsHelper {
    * @param post The post information to attach
    * @param postEl The target element on the DOM to attach to
    */
-  static attachToPost(post: Post, postEl: HTMLDivElement): void {
+  static async attachToPost(post: Post, postEl: HTMLDivElement): Promise<void> {
 
     // Attaching metadata
     postEl.dataset['kol_pt'] = JSON.stringify(true);
 
+    // Attaching raw player
+    await PlayerHelper.attach(postEl);
+
     // Injecting post detail
     const sibling = (postEl.querySelector('[data-tag="post-content-collapse"]') ?? postEl.querySelector('[data-tag="post-content"]')) as HTMLDivElement;
     InjectHelper.postDetail(post, sibling);
-
-    // Attaching raw player
-    PlayerHelper.attach(postEl);
 
     // Styling post
     postEl.style.borderRadius = '10px';

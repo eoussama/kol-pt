@@ -12,24 +12,26 @@ export class PlayerHelper {
    *
    * @param post The target post
    */
-  static attach(post: HTMLDivElement): void {
+  static attach(post: HTMLDivElement): Promise<void> {
+    return new Promise(resolve => {
 
-    // Getting the media container, this is the element that contains the video's thumbnail
-    const mediaEl = (post.querySelector('[data-tag="media-container"]') as HTMLDataElement).parentElement;
+      // Getting the media container, this is the element that contains the video's thumbnail
+      const mediaEl = (post.querySelector('[data-tag="media-container"]') as HTMLDataElement).parentElement;
 
-    if (mediaEl) {
+      if (mediaEl) {
 
-      // Swaping the iframe's source
-      this.updateSrc(post);
+        // Swaping the iframe's source
+        this.updateSrc(post).finally(() => resolve());
 
-      // Getting the thumbnail's play button element
-      const playButton = mediaEl.querySelector('button[title="Start playback"]') as HTMLDivElement;
+        // Getting the thumbnail's play button element
+        const playButton = mediaEl.querySelector('button[title="Start playback"]') as HTMLDivElement;
 
-      // Simulating a button click on the play button, this is done to trigger the iframe into loading
-      if (playButton) {
-        playButton.click();
+        // Simulating a button click on the play button, this is done to trigger the iframe into loading
+        if (playButton) {
+          playButton.click();
+        }
       }
-    }
+    });
   }
 
   /**
@@ -38,27 +40,32 @@ export class PlayerHelper {
    *
    * @param post The target post that contains the iframe
    */
-  private static updateSrc(post: HTMLDivElement): void {
-    const observer = new MutationObserver(mutations => {
+  private static updateSrc(post: HTMLDivElement): Promise<void> {
+    return new Promise(resolve => {
+      const observer = new MutationObserver(mutations => {
 
-      // Watching added mutations
-      if (mutations.some(e => e.addedNodes.length > 0)) {
+        // Watching added mutations
+        if (mutations.some(e => e.addedNodes.length > 0)) {
 
-        // Getting the target iframe to decode and update
-        const patreonEmbed = post.querySelector('iframe') as HTMLIFrameElement;
+          // Getting the target iframe to decode and update
+          const patreonEmbed = post.querySelector('iframe') as HTMLIFrameElement;
 
-        // Decoding the raw link
-        const src = URLHelper.decode(patreonEmbed?.src);
+          // Decoding the raw link
+          const src = URLHelper.decode(patreonEmbed?.src);
 
-        // Updating the source
-        patreonEmbed.src = src;
+          // Updating the source
+          patreonEmbed.src = src;
 
-        // Unsubscribing from mutation observable
-        observer.disconnect();
-      }
+          // Unsubscribing from mutation observable
+          observer.disconnect();
+
+          // Finishing
+          resolve();
+        }
+      });
+
+      // Observe mutations on post card
+      observer.observe(post, { childList: true, subtree: true });
     });
-
-    // Observe mutations on post card
-    observer.observe(post, { childList: true, subtree: true });
   }
 }

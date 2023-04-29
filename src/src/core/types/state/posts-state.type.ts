@@ -7,5 +7,5 @@ export interface IPostsState {
   posts: Array<Post>;
 
   clearCache: () => void;
-  loadPosts: (cache?: boolean) => void
+  loadPosts: (cache?: boolean) => void;
 }

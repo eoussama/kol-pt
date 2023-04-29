@@ -1,11 +1,12 @@
 import styles from './PostDetail.module.scss';
 
-import { useState } from 'react';
 import Vimeo from '@vimeo/player';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Post } from '../../../core/models/post.model';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { usePlayerStore } from '../../../state/player.state';
 import MuiAccordion, { AccordionProps } from '@mui/material/Accordion';
 import { AccordionDetails, AccordionSummary, IconButton, Tooltip, styled } from '@mui/material';
 
@@ -26,14 +27,23 @@ const Accordion = styled((props: AccordionProps) => (
 function PostDetail(props: { post: Post }) {
   const { post } = props;
   const [expanded, setExpanded] = useState<boolean>(true);
+  const { currentPlayer, playPlayer } = usePlayerStore();
 
-  const onSkip = async (seconds: number) => {
-    const video = document.querySelector(`[data-kol_pt_id="${post.id}"] iframe`) as HTMLIFrameElement;
-    const player = new Vimeo(video);
+  const video = useMemo<HTMLIFrameElement>(() => document.querySelector(`[data-kol_pt_id="${post.id}"] iframe`)!, [post.id]);
+  const player = useMemo(() => new Vimeo(video), [video]);
 
+  const onSkip = useCallback(async (seconds: number) => {
     player.play();
     player.setCurrentTime(seconds);
-  }
+
+    playPlayer(post.id);
+  }, [player]);
+
+  useEffect(() => {
+    if (currentPlayer !== post.id) {
+      player.pause();
+    }
+  }, [currentPlayer])
 
   return <>
     <Accordion
