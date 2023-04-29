@@ -10,7 +10,7 @@ export interface IEntry {
 
   shortTitle?: string;
 
-  altTitle?: string;
+  altTitles?: Array<string>;
 
   title: string;
 

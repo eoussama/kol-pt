@@ -13,7 +13,7 @@ export class Entry {
 
   shortTitle: string;
 
-  altTitle: string;
+  altTitles: Array<string>;
 
   type: EntryType;
 
@@ -23,7 +23,7 @@ export class Entry {
     this.imdbId = model?.imdbId ?? '';
     this.type = model?.type ?? EntryType.Anime;
     this.shortTitle = model?.shortTitle ?? this.title ?? '';
-    this.altTitle = model?.altTitle ?? this.shortTitle ?? '';
+    this.altTitles = model?.altTitles ?? [this.shortTitle ?? ''];
   }
 
   openIMDb(): void {
