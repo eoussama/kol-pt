@@ -4,14 +4,15 @@ import Vimeo from '@vimeo/player';
 import { Tag } from '../../../core/models/tag.model';
 import { Post } from '../../../core/models/post.model';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import { Anime } from '../../../core/models/anime.model';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { Nullable } from '../../../core/types/nullable.type';
 import { usePlayerStore } from '../../../state/player.state';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import MuiAccordion, { AccordionProps } from '@mui/material/Accordion';
 import { AccordionDetails, AccordionSummary, Chip, IconButton, Menu, MenuItem, Tooltip, styled } from '@mui/material';
-import { Nullable } from '../../../core/types/nullable.type';
-import { Anime } from '../../../core/models/anime.model';
 
 
 
@@ -145,7 +146,9 @@ function PostDetail(props: { post: Post }) {
             mr: 1,
           },
           '& .MuiMenuItem-root': {
-            fontSize: 14
+            fontSize: 14,
+            display: 'flex',
+            alignItems: 'center'
           },
           '&:before': {
             content: '""',
@@ -164,10 +167,10 @@ function PostDetail(props: { post: Post }) {
       transformOrigin={{ horizontal: 'right', vertical: 'top' }}
       anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
     >
-      <MenuItem onClick={() => { (selectedTag?.entry as Anime).openMAL(); onClose(); }}>View on MyAnimeList</MenuItem>
-      <MenuItem onClick={() => { (selectedTag?.entry as Anime).openAniList(); onClose(); }}>View on AniList</MenuItem>
-      <MenuItem onClick={() => { (selectedTag?.entry as Anime).openKitsu(); onClose(); }}>View on Kitsu</MenuItem>
-      <MenuItem onClick={() => { selectedTag?.entry.openIMDb(); onClose(); }}>View on IMDb</MenuItem>
+      <MenuItem className={styles['popover-item']} onClick={() => { (selectedTag?.entry as Anime).openMAL(); onClose(); }}><img className={styles['popover-icon']} src={chrome.runtime.getURL('./images/platforms/mal.png')} alt="MAL icon" /> View on MyAnimeList <OpenInNewIcon /></MenuItem>
+      <MenuItem className={styles['popover-item']} onClick={() => { (selectedTag?.entry as Anime).openAniList(); onClose(); }}><img className={styles['popover-icon']} src={chrome.runtime.getURL('./images/platforms/anilist.png')} alt="AniList icon" /> View on AniList <OpenInNewIcon /></MenuItem>
+      <MenuItem className={styles['popover-item']} onClick={() => { (selectedTag?.entry as Anime).openKitsu(); onClose(); }}><img className={styles['popover-icon']} src={chrome.runtime.getURL('./images/platforms/kitsu.png')} alt="Kitsu icon" /> View on Kitsu <OpenInNewIcon /></MenuItem>
+      <MenuItem className={styles['popover-item']} onClick={() => { selectedTag?.entry.openIMDb(); onClose(); }}><img className={styles['popover-icon']} src={chrome.runtime.getURL('./images/platforms/imdb.png')} alt="IMDb icon" /> View on IMDb <OpenInNewIcon /></MenuItem>
     </Menu>
   </>
 }

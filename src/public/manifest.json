@@ -34,7 +34,8 @@
   "web_accessible_resources": [
     {
       "resources": [
-        "icons/*.png"
+        "icons/*.png",
+        "images/*.png"
       ],
       "matches": [
         "https://www.patreon.com/*"
