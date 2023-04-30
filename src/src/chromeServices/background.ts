@@ -1,16 +1,16 @@
 import { config } from "../config/env";
-import { FirebaseHelper } from "../core/helpers/firebase/firebase.helper";
 import { PostsHelper } from "../core/helpers/firebase/posts.helper";
+import { FirebaseHelper } from "../core/helpers/firebase/firebase.helper";
 
 
 // Initializing firebase instance
 FirebaseHelper.init();
 
 // On update
-chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, _) => {
+chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
 
-  // On page load
-  if (changeInfo.status === "complete") {
+  // On patreon page load
+  if (changeInfo.status === "complete" && tab.url?.startsWith(`${config.patreonUrl}`)) {
 
     // Fetching the posts
     const posts = await PostsHelper.load();
