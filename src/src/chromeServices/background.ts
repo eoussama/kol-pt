@@ -3,12 +3,10 @@ import { FirebaseHelper } from "../core/helpers/firebase/firebase.helper";
 import { PostsHelper } from "../core/helpers/firebase/posts.helper";
 
 
+// Initializing firebase instance
+FirebaseHelper.init();
 
-// eslint-disable-next-line
-self.addEventListener('install', () => {
-  FirebaseHelper.init();
-});
-
+// On update
 chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, _) => {
 
   // On page load
