@@ -24,6 +24,7 @@ export class PlayerHelper {
         // Getting the thumbnail's play button element
         const playButton = mediaEl.querySelector('button[title="Start playback"]') as HTMLDivElement;
 
+        // The media button is still not clicked
         if (playButton) {
 
           // Swaping the iframe's source
@@ -31,6 +32,15 @@ export class PlayerHelper {
 
           // Simulating a button click on the play button, this is done to trigger the iframe into loading
           playButton.click();
+
+          // In case the user has already pressed on the media player button
+        } else {
+
+          // Updating the iframe
+          this.updateVideo(post);
+
+          // Resolving promise
+          resolve();
         }
       }
     });
@@ -49,14 +59,8 @@ export class PlayerHelper {
         // Watching added mutations
         if (mutations.some(e => e.addedNodes.length > 0)) {
 
-          // Getting the target iframe to decode and update
-          const patreonEmbed = post.querySelector('iframe') as HTMLIFrameElement;
-
-          // Decoding the raw link
-          const src = URLHelper.decode(patreonEmbed?.src);
-
-          // Updating the source
-          patreonEmbed.src = src;
+          // Updating the iframe
+          this.updateVideo(post);
 
           // Unsubscribing from mutation observable
           observer.disconnect();
@@ -69,5 +73,23 @@ export class PlayerHelper {
       // Observe mutations on post card
       observer.observe(post, { childList: true, subtree: true });
     });
+  }
+
+  /**
+   * @description
+   * Updates iframe video src
+   *
+   * @param post The target post that contains the iframe
+   */
+  private static updateVideo(post: HTMLDivElement): void {
+
+    // Getting the target iframe to decode and update
+    const patreonEmbed = post.querySelector('iframe') as HTMLIFrameElement;
+
+    // Decoding the raw link
+    const src = URLHelper.decode(patreonEmbed?.src);
+
+    // Updating the source
+    patreonEmbed.src = src;
   }
 }
