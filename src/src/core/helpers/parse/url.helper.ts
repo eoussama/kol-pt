@@ -1,4 +1,14 @@
+import { config } from "../../../config/env";
+
+
+
 export class URLHelper {
+
+  /**
+   * @description
+   * The patreon url regex pattern
+   */
+  private static readonly PATREON_URL_RGX = new RegExp(`${config.patreonUrl}/*`, 'g');
 
   /**
    * @description
@@ -13,5 +23,15 @@ export class URLHelper {
 
     // Decoding the url
     return decodeURIComponent(src);
+  }
+
+  /**
+   * @description
+   * Checks if url is within the Patreon domain
+   *
+   * @param url The URL to check
+   */
+  static isPatreon(url: string): boolean {
+    return this.PATREON_URL_RGX.test(url ?? '');
   }
 }
