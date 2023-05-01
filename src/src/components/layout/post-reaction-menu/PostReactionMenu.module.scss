@@ -1,0 +1,28 @@
+.popover {
+  &-icon {
+    width: 18px;
+    height: auto;
+    margin-right: 10px;
+  }
+
+  &-item {
+    svg {
+      opacity: 0;
+      font-size: 18px;
+      color: #c4c4c4;
+
+      margin-left: auto;
+      padding-left: 10px;
+
+      position: relative;
+      top: -1px;
+
+      transition-duration: 0.2s;
+      transition-property: opacity;
+    }
+
+    &:hover svg {
+      opacity: 1;
+    }
+  }
+}

@@ -1,0 +1,70 @@
+.reaction {
+  padding: 10px 15px;
+  background-color: #ffffff;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  &__playing {
+    margin-left: 5px;
+    font-size: 11px !important;
+
+    margin-top: -4px;
+    padding: 4px !important;
+    height: 20px !important;
+
+    animation-duration: 0.2s;
+    animation-fill-mode: both;
+    animation-name: chipFadeIn;
+    animation-timing-function: ease-in-out;
+  }
+
+  &__title {
+    font-size: 14px;
+    color: #232630;
+    font-weight: 400;
+  }
+
+  &__description {
+    color: grey;
+    font-size: 12px;
+    font-weight: 300;
+  }
+
+  &__right,
+  &__extra {
+    opacity: 0;
+
+    transition-duration: 0.2s;
+    transition-property: opacity;
+  }
+
+  &__right button {
+    color: #b9b9b9;
+  }
+
+  &:not(:last-of-type) {
+    border-bottom: 1px solid #e1e1e1;
+  }
+
+  &:hover {
+
+    .reaction__right,
+    .reaction__extra {
+      opacity: 1;
+    }
+  }
+}
+
+@keyframes chipFadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-2px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}

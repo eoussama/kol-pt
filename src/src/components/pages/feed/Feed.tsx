@@ -11,7 +11,13 @@ import RestartAltOutlinedIcon from '@mui/icons-material/RestartAltOutlined';
 
 
 
-function Feed() {
+/**
+ * @description
+ * The Feed component is responsible for rendering the list of posts in the main feed of the application. It also provides the user with the option to switch between view modes (Expanded and Compact) and displays the number of available streams.
+ *
+ * @returns JSX.Element
+*/
+function Feed(): JSX.Element {
   const [viewMode, setViewMode] = useState(ViewMode.Expanded);
   const { posts, loading, loadPosts } = usePostStore();
 

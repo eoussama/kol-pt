@@ -6,9 +6,21 @@ import { usePostStore } from '../../../state/posts.state';
 
 
 
-function Header() {
+
+/**
+ * @description
+ * The Header component renders the application's header, including the logo and title,
+ * and provides the user with the ability to open the Patreon page in a new tab.
+ * 
+ * @returns {JSX.Element} The JSX representation of the component.
+ */
+function Header(): JSX.Element {
   const { loadPosts } = usePostStore();
 
+  /**
+   * @description
+   * Handles the click event of the logo image to refresh the post list.
+   */
   const onRefresh = () => {
     loadPosts(false);
   }

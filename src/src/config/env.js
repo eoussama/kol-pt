@@ -1,3 +1,19 @@
+/**
+ * @description
+ * Configuration object containing various environment variables
+ * and constants required for the application.
+ * 
+ * @property appId - Firebase app ID.
+ * @property apiKey - Firebase API key.
+ * @property projectId - Firebase project ID.
+ * @property authDomain - Firebase auth domain.
+ * @property databaseURL - Firebase database URL.
+ * @property measurementId - Firebase measurement ID.
+ * @property storageBucket - Firebase storage bucket.
+ * @property messagingSenderId - Firebase messaging sender ID.
+ * @property patreonUrl - Patreon URL of the creator.
+ * @property creatorName - Creator name.
+*/
 export const config = {
   appId: process.env.REACT_APP_FIREBASE_APP_ID,
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,

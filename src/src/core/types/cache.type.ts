@@ -1,8 +1,12 @@
-import { IEntry } from "./entry.type";
 import { IPost } from "./post.type";
+import { IEntry } from "./entry.type";
 
 
 
+/**
+ * @description
+ * Local cache data definition
+ */
 export interface ICache {
 
   /**
@@ -15,5 +19,16 @@ export interface ICache {
    * @description
    * Cached database model
    */
-  db: { posts: Array<IPost>, entries: Array<IEntry> };
+  db: {
+
+    /**
+     * Array of cached posts.
+     */
+    posts: Array<IPost>;
+
+    /**
+     * Array of cached entries.
+     */
+    entries: Array<IEntry>;
+  };
 }

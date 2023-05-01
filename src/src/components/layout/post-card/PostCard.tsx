@@ -2,17 +2,28 @@ import styles from './PostCard.module.scss';
 
 import { Post } from '../../../core/models/post.model';
 import { ViewMode } from '../../../core/enums/view-mode.enum';
+import { IPostCardProps } from '../../../core/types/props/post-card-props.type';
 import { Box, Card, CardContent, CardMedia, Chip, Tooltip, Typography } from '@mui/material';
 
 
 
-function PostCard(props: { post: Post, viewMode: ViewMode }) {
+/**
+ * @description
+ * Renders a card for displaying a post, with an image, title, date, description and tags.
+ */
+function PostCard(props: IPostCardProps): JSX.Element {
   const { post } = props;
   const { viewMode } = props;
 
   const viewModeClasses = viewMode === ViewMode.Compact ? styles['card--compact'] : styles['card--expanded'];
   const cardClasses = `${styles['card']} ${viewModeClasses}`
 
+  /**
+   * @description
+   * Opens the post in a new window when the card is clicked.
+   *
+   * @param post The post to open.
+   */
   const goToPost = (post: Post) => {
     window.open(`https://www.patreon.com/posts/${post.id}`, '_blank');
   }

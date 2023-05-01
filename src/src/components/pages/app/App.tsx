@@ -5,7 +5,14 @@ import Header from '../../layout/header/Header';
 
 
 
-function App() {
+/**
+ * @description
+ * The root component of the application.
+ * It renders the header and feed components within the main element.
+ * 
+ * @returns {JSX.Element} The JSX representation of the component.
+ */
+function App(): JSX.Element {
   return (
     <main className={styles['root']}>
       <Header />
