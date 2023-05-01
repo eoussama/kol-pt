@@ -1,5 +1,5 @@
 import { IPost } from "./post.type";
-import { IEntry } from "./entry.type";
+import { IEntry } from "./entry/entry.type";
 
 
 

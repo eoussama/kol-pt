@@ -1,4 +1,4 @@
-import { ITag } from "./tag.type";
+import { ITag } from "./tag/tag.type";
 
 
 

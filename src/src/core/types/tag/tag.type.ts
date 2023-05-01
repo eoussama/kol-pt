@@ -1,3 +1,5 @@
+import { IEntryContext } from "./entry-context.type";
+
 /**
  * @description
  * Interface representing a tag.
@@ -9,6 +11,12 @@ export interface ITag {
    * The ID of the tag.
    */
   id: string;
+
+  /**
+   * @description
+   * The tag's entry context, extra data passed down to the entry.
+   */
+  context: IEntryContext;
 
   /**
    * @description

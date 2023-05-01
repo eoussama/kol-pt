@@ -25,4 +25,10 @@ export interface IAnimeEntry extends IEntry {
    * The ID of the anime in Kitsu.
    */
   kitsuId: string;
+
+  /**
+   * @description
+   * The ID of the Zoro.to page.
+   */
+  zoroId: string;
 }

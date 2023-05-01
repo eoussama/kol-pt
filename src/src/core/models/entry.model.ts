@@ -1,7 +1,8 @@
-import { IEntry } from "../types/entry.type";
-import { EntryType } from "../enums/entry-type.enum";
 import { IOption } from "../types/option.type";
+import { IEntry } from "../types/entry/entry.type";
+import { EntryType } from "../enums/entry-type.enum";
 import { IconHelper } from "../helpers/asset/icon.helper";
+import { IEntryContext } from "../types/tag/entry-context.type";
 
 
 
@@ -72,13 +73,16 @@ export class Entry {
    * @override
    * @description
    * Gets the list of menu options
+   *
+   * @param context The parent tag's context, passed for extra context
    */
-  getOptions(): Array<IOption> {
+  getOptions(context: IEntryContext): Array<IOption> {
     return [
       {
         iconAlt: 'IMDb icon',
         label: 'View on IMDb',
         action: this.openIMDb.bind(this),
+        canShow: () => (this.imdbId?.length ?? 0) > 0,
         icon: IconHelper.getIcon('imdb', 'platforms')
       }
     ]

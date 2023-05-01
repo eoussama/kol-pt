@@ -1,7 +1,7 @@
 import styles from './PostReactionMenu.module.scss';
 
 import { useContext } from 'react';
-import { Menu, MenuItem } from '@mui/material';
+import { Divider, Menu, MenuItem } from '@mui/material';
 import { IOption } from '../../../core/types/option.type';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { ReactionMenuContext } from '../../../context/ReactionMenuContext';
@@ -73,19 +73,24 @@ function PostReactionMenu(): JSX.Element {
       transformOrigin={{ horizontal: 'right', vertical: 'top' }}
       anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
     >
-      {tag?.entry.getOptions().map((option, i) => <MenuItem
-        key={i}
-        className={styles['popover-item']}
-        onClick={() => onOptionClick(option)}
-      >
-        <img
-          className={styles['popover-icon']}
-          src={option.icon}
-          alt={option.iconAlt}
-        />
-        <span>{option.label}</span>
-        <OpenInNewIcon />
-      </MenuItem>)}
+      {tag?.entry.getOptions(tag.context).map((option, i) => option.canShow() && <>
+        <MenuItem
+          key={i}
+          className={styles['popover-item']}
+          onClick={() => onOptionClick(option)}
+        >
+          <img
+            className={styles['popover-icon']}
+            src={option.icon}
+            alt={option.iconAlt}
+          />
+          <span>{option.label}</span>
+          <OpenInNewIcon />
+        </MenuItem>
+
+        {option.divider && <Divider />}
+      </>
+      )}
     </Menu >
   </>
 }

@@ -1,5 +1,5 @@
 import { Entry } from "./entry.model";
-import { ITag } from "../types/tag.type";
+import { ITag } from "../types/tag/tag.type";
 import { EntryType } from "../enums/entry-type.enum";
 import { TimeHelper } from "../helpers/parse/time.helper";
 import { EntriesHelper } from "../helpers/firebase/entries.helper";
@@ -17,6 +17,12 @@ export class Tag {
    * The unique identifier for the tag
    */
   id: string;
+
+  /**
+   * @description
+   * The tag's context, extra data passed down to the entry
+   */
+  context: any;
 
   /**
    * @description
@@ -59,6 +65,8 @@ export class Tag {
 
     this.endTime = model.endTime ?? 0;
     this.startTime = model.startTime ?? 0;
+
+    this.context = model.context ?? {};
 
     if ('entry' in model) {
       this.entry = EntriesHelper.initEntry(model.entry);

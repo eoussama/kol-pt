@@ -1,9 +1,9 @@
-import { IEntry } from "../../types/entry.type";
 import { Entry } from "../../models/entry.model";
-import { Nullable } from "../../types/nullable.type";
-import { FirebaseHelper } from "./firebase.helper";
-import { EntryType } from "../../enums/entry-type.enum";
 import { Anime } from "../../models/anime.model";
+import { FirebaseHelper } from "./firebase.helper";
+import { Nullable } from "../../types/nullable.type";
+import { IEntry } from "../../types/entry/entry.type";
+import { EntryType } from "../../enums/entry-type.enum";
 
 
 
