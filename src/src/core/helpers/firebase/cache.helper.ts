@@ -1,5 +1,6 @@
 import { ICache } from "../../types/cache.type";
 import { Nullable } from "../../types/nullable.type";
+import { StorageHelper } from "../chrome/storage.helper";
 
 
 
@@ -27,25 +28,28 @@ export class CacheHelper {
    * @param key Specific value key to check
    * if it exists in the cache or not.
    */
-  static isValid(key: 'posts' | 'entries'): boolean {
-    try {
+  static isValid(key: 'posts' | 'entries'): Promise<boolean> {
+    return new Promise(async resolve => {
+      try {
 
-      // Getting the cached data
-      const cache = this.load();
+        // Getting the cached data
+        const cache = await this.load();
 
-      if (cache) {
+        if (cache) {
 
-        // Calculating the expiry time
-        const expiryTime = cache.updateTime + CacheHelper.CACHE_LIFE;
+          // Calculating the expiry time
+          const expiryTime = cache.updateTime + CacheHelper.CACHE_LIFE;
 
-        // Checking if the cache has expired
-        return expiryTime > Date.now() && cache.db[key].length > 0;
+          // Checking if the cache has expired
+          resolve(expiryTime > Date.now() && cache.db[key].length > 0);
+          return true;
+        }
+
+        resolve(false);
+      } catch (err) {
+        resolve(false);
       }
-
-      return false;
-    } catch (err) {
-      return false;
-    }
+    });
   }
 
   /**
@@ -55,28 +59,34 @@ export class CacheHelper {
    * @param key The key to update
    * @param data The new data to replace the old one with
    */
-  static update(key: string, data: any) {
-    try {
+  static update(key: string, data: any): Promise<void> {
+    return new Promise(async (resolve, reject) => {
+      try {
 
-      // Getting the cached data
-      const cache = this.load();
+        // Getting the cached data
+        const cache = await this.load();
 
-      if (cache) {
+        if (cache) {
 
-        // Cloning old cache
-        const newCache = { ...cache };
+          // Cloning old cache
+          const newCache = { ...cache };
 
-        // Assigning values
-        newCache.updateTime = Date.now();
-        newCache.db = { ...cache.db, [key]: data };
+          // Assigning values
+          newCache.updateTime = Date.now();
+          newCache.db = { ...cache.db, [key]: data };
 
-        // Sanitizing the new cache
-        const newCacheStr = JSON.stringify(newCache);
+          // Sanitizing the new cache
+          const newCacheStr = JSON.stringify(newCache);
 
-        // Saving the new cache
-        localStorage.setItem(CacheHelper.CACHE_KEY, newCacheStr);
+          // Saving the new cache
+          StorageHelper.set(CacheHelper.CACHE_KEY, newCacheStr);
+
+          resolve();
+        }
+      } catch (err) {
+        reject(err);
       }
-    } catch (err) { }
+    });
   }
 
   /**
@@ -86,16 +96,18 @@ export class CacheHelper {
    * @param key The key to fetch
    */
   static get(key: 'posts' | 'entries') {
-    try {
+    return new Promise(async resolve => {
+      try {
 
-      // Getting the cached data
-      const cache = this.load();
+        // Getting the cached data
+        const cache = await this.load();
 
-      // Returning cached data
-      return cache?.db[key] ?? [];
-    } catch (err) {
-      return [];
-    }
+        // Returning cached data
+        resolve(cache?.db[key] ?? []);
+      } catch (err) {
+        resolve([]);
+      }
+    })
   }
 
   /**
@@ -103,30 +115,34 @@ export class CacheHelper {
    * Clears the local cache
    */
   static clear(): void {
-    localStorage.removeItem(CacheHelper.CACHE_KEY);
+    StorageHelper.clear(CacheHelper.CACHE_KEY);
   }
 
   /**
    * @description
    * Fetches the cached data
    */
-  private static load(): Nullable<ICache> {
-    try {
-      // Getting the cached data
-      const cache = localStorage.getItem(CacheHelper.CACHE_KEY) as string;
+  private static load(): Promise<Nullable<ICache>> {
+    return new Promise(async resolve => {
+      try {
 
-      // Checking if cached data is valid
-      if (!Boolean(cache)) {
-        return this.compose();
+        // Getting the cached data
+        const cache = await StorageHelper.get(CacheHelper.CACHE_KEY);
+
+        // Checking if cached data is valid
+        if (!Boolean(cache)) {
+          resolve(this.compose());
+          return false;
+        }
+        // Parsing the cached data
+        const parsedCache: ICache = JSON.parse(cache) ?? this.compose();
+
+        // Returned the sanitized cached data
+        resolve(parsedCache);
+      } catch (err) {
+        resolve(this.compose());
       }
-      // Parsing the cached data
-      const parsedCache: ICache = JSON.parse(cache) ?? this.compose();
-
-      // Returned the sanitized cached data
-      return parsedCache;
-    } catch (err) {
-      return this.compose();
-    }
+    });
   }
 
   /**

@@ -3,6 +3,7 @@ import { Nullable } from '../core/types/nullable.type';
 import { URLHelper } from '../core/helpers/parse/url.helper';
 import { PostsHelper } from '../core/helpers/firebase/posts.helper';
 import { FirebaseHelper } from '../core/helpers/firebase/firebase.helper';
+import { RequestHelper } from '../core/helpers/chrome/request.helper';
 
 
 
@@ -26,6 +27,9 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
 
       // Fetching the posts
       const posts = await PostsHelper.load();
+
+      // Waiting for requests to resolve
+      await RequestHelper.wait();
 
       // Forwarding the fetched posts over to active page
       chrome.tabs.sendMessage(tabId, { action: 'attach', posts });

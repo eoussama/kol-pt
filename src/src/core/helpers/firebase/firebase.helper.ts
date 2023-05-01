@@ -37,7 +37,7 @@ export class FirebaseHelper {
    */
   static get<T = any>(key: 'posts' | 'entries', cache: boolean = true): Promise<T> {
     return new Promise(async resolve => {
-      if (cache && CacheHelper.isValid(key)) {
+      if (cache && await CacheHelper.isValid(key)) {
 
         // Fetching data from cache
         const data = CacheHelper.get(key);

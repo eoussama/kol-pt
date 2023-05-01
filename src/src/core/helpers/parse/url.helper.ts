@@ -19,7 +19,7 @@ export class URLHelper {
   static decode(url: string): string {
 
     // Getting the encoded patreon link
-    const src = url.split('=')[1].split('&')[0];
+    const src = url?.split('=')[1]?.split('&')[0];
 
     // Decoding the url
     return decodeURIComponent(src);

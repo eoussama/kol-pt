@@ -47,6 +47,7 @@
   ],
   "permissions": [
     "tabs",
+    "storage",
     "activeTab",
     "webRequest"
   ]
