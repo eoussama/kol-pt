@@ -50,5 +50,5 @@ export function usePlayer(postId: string) {
   player.on('pause', e => setPlaying(false));
   player.on('timeupdate', e => setPlayback(e.seconds));
 
-  return { playerPostId, playing, playback, onSkip };
+  return { playerPostId, playing, playback, player, onSkip };
 }

@@ -1,7 +1,7 @@
 import styles from './PostReactions.module.scss';
 
-import { useContext, useState } from 'react';
-import { Post } from '../../../core/models/post.model';
+import { usePlayer } from '../../../hooks/player.hook';
+import { useContext, useEffect, useState } from 'react';
 import PostReaction from '../post-reaction/PostReaction';
 import { PostContext } from '../../../context/PostContext';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -17,7 +17,14 @@ import PostReactionMenu from '../post-reaction-menu/PostReactionMenu';
  */
 function PostReactions(): JSX.Element {
   const { post } = useContext(PostContext);
+  const { player } = usePlayer(post.id);
   const [expanded, setExpanded] = useState<boolean>(true);
+
+  useEffect(() => {
+    for (const tag of post.tags) {
+      player.addCuePoint(tag.startTime, { tag });
+    }
+  }, []);
 
   /**
    * @description
