@@ -1,5 +1,6 @@
 import { Entry } from "./entry.model";
 import { ITag } from "../types/tag.type";
+import { EntryType } from "../enums/entry-type.enum";
 import { TimeHelper } from "../helpers/parse/time.helper";
 import { EntriesHelper } from "../helpers/firebase/entries.helper";
 
@@ -92,5 +93,15 @@ export class Tag {
    */
   getDetailExtra(): string {
     return `Starts at ${TimeHelper.parse(this.startTime)}, Reaction time: ${TimeHelper.format(this.endTime - this.startTime)}`;
+  }
+
+  /**
+   * @description
+   * Checks if instance is of a given type
+   *
+   * @param type The type to check against
+   */
+  is(type: EntryType): boolean {
+    return this.entry.type === type;
   }
 }

@@ -2,7 +2,7 @@ import styles from './PostReactionMenu.module.scss';
 
 import { useContext } from 'react';
 import { Menu, MenuItem } from '@mui/material';
-import { Anime } from '../../../core/models/anime.model';
+import { IOption } from '../../../core/types/option.type';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { ReactionMenuContext } from '../../../context/ReactionMenuContext';
 
@@ -23,6 +23,15 @@ function PostReactionMenu(): JSX.Element {
    */
   const onClose = () => {
     setAnchorOpened(false);
+  };
+
+  /**
+   * @description
+   * Invokes option action and closes the menu element
+   */
+  const onOptionClick = (option: IOption): void => {
+    onClose();
+    option.action();
   };
 
   return <>
@@ -64,11 +73,20 @@ function PostReactionMenu(): JSX.Element {
       transformOrigin={{ horizontal: 'right', vertical: 'top' }}
       anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
     >
-      <MenuItem className={styles['popover-item']} onClick={() => { (tag?.entry as Anime).openMAL(); onClose(); }}><img className={styles['popover-icon']} src={chrome.runtime.getURL('./images/platforms/mal.png')} alt="MAL icon" /> View on MyAnimeList <OpenInNewIcon /></MenuItem>
-      <MenuItem className={styles['popover-item']} onClick={() => { (tag?.entry as Anime).openAniList(); onClose(); }}><img className={styles['popover-icon']} src={chrome.runtime.getURL('./images/platforms/anilist.png')} alt="AniList icon" /> View on AniList <OpenInNewIcon /></MenuItem>
-      <MenuItem className={styles['popover-item']} onClick={() => { (tag?.entry as Anime).openKitsu(); onClose(); }}><img className={styles['popover-icon']} src={chrome.runtime.getURL('./images/platforms/kitsu.png')} alt="Kitsu icon" /> View on Kitsu <OpenInNewIcon /></MenuItem>
-      <MenuItem className={styles['popover-item']} onClick={() => { tag?.entry.openIMDb(); onClose(); }}><img className={styles['popover-icon']} src={chrome.runtime.getURL('./images/platforms/imdb.png')} alt="IMDb icon" /> View on IMDb <OpenInNewIcon /></MenuItem>
-    </Menu>
+      {tag?.entry.getOptions().map((option, i) => <MenuItem
+        key={i}
+        className={styles['popover-item']}
+        onClick={() => onOptionClick(option)}
+      >
+        <img
+          className={styles['popover-icon']}
+          src={option.icon}
+          alt={option.iconAlt}
+        />
+        <span>{option.label}</span>
+        <OpenInNewIcon />
+      </MenuItem>)}
+    </Menu >
   </>
 }
 

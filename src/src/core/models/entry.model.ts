@@ -1,5 +1,7 @@
 import { IEntry } from "../types/entry.type";
 import { EntryType } from "../enums/entry-type.enum";
+import { IOption } from "../types/option.type";
+import { IconHelper } from "../helpers/asset/icon.helper";
 
 
 
@@ -64,5 +66,21 @@ export class Entry {
    */
   openIMDb(): void {
     window.open(`https://www.imdb.com/title/${this.imdbId}`, '_blank');
+  }
+
+  /**
+   * @override
+   * @description
+   * Gets the list of menu options
+   */
+  getOptions(): Array<IOption> {
+    return [
+      {
+        iconAlt: 'IMDb icon',
+        label: 'View on IMDb',
+        action: this.openIMDb.bind(this),
+        icon: IconHelper.getIcon('imdb', 'platforms')
+      }
+    ]
   }
 }

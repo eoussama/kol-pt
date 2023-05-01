@@ -1,6 +1,8 @@
 import { Entry } from "./entry.model";
+import { IOption } from "../types/option.type";
 import { EntryType } from "../enums/entry-type.enum";
 import { IAnimeEntry } from "../types/anime-entry.type";
+import { IconHelper } from "../helpers/asset/icon.helper";
 
 
 
@@ -63,5 +65,35 @@ export class Anime extends Entry {
    */
   openKitsu(): void {
     window.open(`https://kitsu.io/anime/${this.kitsuId}`, '_blank');
+  }
+
+  /**
+ * @description
+ * Gets the list of menu options
+ */
+  getOptions(): Array<IOption> {
+    const options = super.getOptions();
+
+    return [
+      {
+        iconAlt: 'MAL icon',
+        label: 'View on MyAnimeList',
+        action: this.openMAL.bind(this),
+        icon: IconHelper.getIcon('mal', 'platforms')
+      },
+      {
+        iconAlt: 'AniList icon',
+        label: 'View on AniList',
+        action: this.openAniList.bind(this),
+        icon: IconHelper.getIcon('anilist', 'platforms')
+      },
+      {
+        iconAlt: 'Kitsu icon',
+        label: 'View on Kitsu',
+        action: this.openKitsu.bind(this),
+        icon: IconHelper.getIcon('kitsu', 'platforms')
+      },
+      ...options
+    ]
   }
 }
