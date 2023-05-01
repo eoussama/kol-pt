@@ -46,8 +46,8 @@ export function usePlayer(postId: string) {
     }
   }, [playing]);
 
-  player.on('play', e => setPlaying(true));
-  player.on('pause', e => setPlaying(false));
+  player.on('play', () => setPlaying(true));
+  player.on('pause', () => setPlaying(false));
   player.on('timeupdate', e => setPlayback(e.seconds));
 
   return { playerPostId, playing, playback, player, onSkip };

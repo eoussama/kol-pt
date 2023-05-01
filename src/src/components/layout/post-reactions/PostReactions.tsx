@@ -21,8 +21,20 @@ function PostReactions(): JSX.Element {
   const [expanded, setExpanded] = useState<boolean>(true);
 
   useEffect(() => {
+
+    // Adding cue points
     for (const tag of post.tags) {
       player.addCuePoint(tag.startTime, { tag });
+    }
+
+    // Auto playing reaction
+    const urlSearch = new URLSearchParams(window.location.search);
+    const reactionId = urlSearch.get('reactionId');
+    const canAutoPlay = (reactionId?.length ?? 0) > 0
+
+    if (canAutoPlay) {
+      const reaction = post.tags.find(tag => tag.id === reactionId);
+      player.setCurrentTime(reaction?.startTime ?? 0);
     }
   }, []);
 

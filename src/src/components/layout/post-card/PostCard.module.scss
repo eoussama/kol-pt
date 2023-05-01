@@ -46,6 +46,14 @@
 
     .tag {
       margin: 2px;
+      cursor: pointer;
+
+      transition-duration: 0.2s;
+      transition-property: background-color;
+
+      &:hover {
+        background-color: rgba(var(--color-primary-rgb), 0.2);
+      }
     }
 
     &:hover {

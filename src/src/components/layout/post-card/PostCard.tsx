@@ -1,6 +1,5 @@
 import styles from './PostCard.module.scss';
 
-import { Post } from '../../../core/models/post.model';
 import { ViewMode } from '../../../core/enums/view-mode.enum';
 import { IPostCardProps } from '../../../core/types/props/post-card-props.type';
 import { Box, Card, CardContent, CardMedia, Chip, Tooltip, Typography } from '@mui/material';
@@ -21,16 +20,28 @@ function PostCard(props: IPostCardProps): JSX.Element {
   /**
    * @description
    * Opens the post in a new window when the card is clicked.
-   *
-   * @param post The post to open.
    */
-  const goToPost = (post: Post) => {
+  const goToPost = () => {
     window.open(`https://www.patreon.com/posts/${post.id}`, '_blank');
+  }
+
+  /**
+   * @description
+   * Opens the post in a new window and plays specific reaction
+   *
+   * @param e The mouse click event
+   * @param reactionId The id of the reaction
+   */
+  const goToReaction = (e: React.MouseEvent<HTMLDivElement, MouseEvent>, reactionId: string) => {
+    e.stopPropagation();
+    e.preventDefault();
+
+    window.open(`https://www.patreon.com/posts/${post.id}?reactionId=${reactionId}`, '_blank');
   }
 
   return (
     <>
-      <Card sx={{ display: 'flex' }} className={cardClasses} onClick={() => goToPost(post)}>
+      <Card sx={{ display: 'flex' }} className={cardClasses} onClick={() => goToPost()}>
         <CardMedia
           component="img"
           alt={post.title}
@@ -56,7 +67,12 @@ function PostCard(props: IPostCardProps): JSX.Element {
           <div className={styles['card__tags']}>
             {post.tags.map(tag => <Box key={tag.id} ml={1}>
               <Tooltip title={tag.description}>
-                <Chip className={styles['tag']} size='small' label={tag.getMinTitle()} />
+                <Chip
+                  size='small'
+                  className={styles['tag']}
+                  label={tag.getMinTitle()}
+                  onClick={e => goToReaction(e, tag.id)}
+                />
               </Tooltip>
             </Box>)}
           </div>

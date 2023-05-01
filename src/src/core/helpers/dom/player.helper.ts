@@ -86,10 +86,13 @@ export class PlayerHelper {
     // Getting the target iframe to decode and update
     const patreonEmbed = post.querySelector('iframe') as HTMLIFrameElement;
 
-    // Decoding the raw link
-    const src = URLHelper.decode(patreonEmbed?.src);
+    if (patreonEmbed) {
 
-    // Updating the source
-    patreonEmbed.src = src;
+      // Decoding the raw link
+      const src = URLHelper.decode(patreonEmbed?.src);
+
+      // Updating the source
+      patreonEmbed.src = src;
+    }
   }
 }
