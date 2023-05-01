@@ -1,0 +1,28 @@
+.loader {
+  border-radius: 10px;
+  background: #ffffff;
+  border: 1px solid #dadada;
+
+  padding: 30px 15px;
+
+  font-size: 16px;
+  text-align: center;
+  color: var(--color-text);
+
+  animation-duration: 1s;
+  animation-fill-mode: both;
+  animation-name: loaderFade;
+  animation-iteration-count: infinite;
+  animation-direction: alternate-reverse;
+  animation-timing-function: ease-in-out;
+}
+
+@keyframes loaderFade {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0.5;
+  }
+}

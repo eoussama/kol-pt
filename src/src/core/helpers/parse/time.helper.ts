@@ -49,4 +49,12 @@ export class TimeHelper {
 
     return timeString.trim();
   }
+
+  /**
+   * @description
+   * Checks if timestamp has ellapsed
+   */
+  static ellapsed(timestamp: number, time: number): boolean {
+    return timestamp + time < Date.now()
+  }
 }

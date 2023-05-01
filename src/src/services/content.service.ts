@@ -1,47 +1,33 @@
-import { Post } from '../core/models/post.model';
 import { PostsHelper } from '../core/helpers/dom/posts.helper';
+import { TimeHelper } from '../core/helpers/parse/time.helper';
 
 
 
 (() => {
+
+  /**
+   * @description
+   * Last page initialization timestamp
+   */
   let lastInit = 0;
+
+  /**
+   * @description
+   * Initialization timeout in milliseconds
+   */
   const timeout = 500;
 
+  // Listening for messages
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (message.action === 'attach' && canInit()) {
-      init(message.posts);
+
+    // Initializinh attachments
+    if (message.action === 'attach' && TimeHelper.ellapsed(lastInit, timeout)) {
+      PostsHelper.init();
+      PostsHelper.attach(message.posts);
+
+      lastInit = Date.now();
     }
   });
-
-  /**
-   * @description
-   * Initializes the attachments
-   *
-   * @param posts The list of target posts
-   */
-  function init(posts: Array<Post>) {
-    const postIds = posts.map(post => post.id);
-    const postEls = PostsHelper.getPostsElements(postIds);
-
-    for (const postEl of postEls) {
-      if (!postEl.dataset['kol_pt']) {
-        const postId = postEl.dataset['kol_pt_id'];
-        const post = new Post(posts.find(e => e.id === postId) as any);
-
-        PostsHelper.attachToPost(post, postEl);
-      }
-    }
-
-    lastInit = Date.now();
-  }
-
-  /**
-   * @description
-   * Checks if initialization timeout has passed
-   */
-  function canInit(): boolean {
-    return lastInit + timeout < Date.now();
-  }
 })();
 
 export { }
