@@ -25,7 +25,7 @@ import { TimeHelper } from '../core/helpers/parse/time.helper';
       PostsHelper.init();
       PostsHelper.attach(message.posts);
       PostsHelper.clean();
-
+      
       lastInit = Date.now();
     }
   });

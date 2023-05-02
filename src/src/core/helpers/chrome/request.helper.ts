@@ -33,21 +33,28 @@ export class RequestHelper {
        * @description
        * Decrements count when a request is about to be sent
        */
-      const onCompleted = () => {
+      const onCompleted = (force: boolean = false) => {
+
+        // Force shutting
+        if (force) {
+          return resolve();
+        }
+
         numRequests--;
 
         if (numRequests === 0) {
           resolve();
 
           chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequest);
-          chrome.webRequest.onCompleted.removeListener(onCompleted);
+          chrome.webRequest.onCompleted.removeListener(() => onCompleted());
         }
       };
 
       chrome.webRequest.onBeforeRequest.addListener(onBeforeRequest, { urls: ["<all_urls>"] }, ["requestBody"]);
-      chrome.webRequest.onCompleted.addListener(onCompleted, { urls: ["<all_urls>"] }, ["responseHeaders"]);
+      chrome.webRequest.onCompleted.addListener(() => onCompleted(), { urls: ["<all_urls>"] }, ["responseHeaders"]);
 
-      setTimeout(onCompleted, this.MAX_WAIT);
+      // Fallback timeout
+      setTimeout(() => onCompleted(true), this.MAX_WAIT);
     });
   }
 }
