@@ -9,7 +9,7 @@ import styles from './PostLoader.module.scss';
  */
 function PostLoader(): JSX.Element {
   return <>
-    <div className={styles['loader']}>
+    <div data-kol_pt_loader className={styles['loader']}>
       Loading post info...
     </div>
   </>

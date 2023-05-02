@@ -29,12 +29,13 @@ export class InjectHelper {
    * @description
    * Injects a post's loader into a target element.
    * 
+   * @param post The parent post element
    * @param target The HTMLDivElement to inject the post's loader into.
    */
-  static postLoader(target: HTMLDivElement) {
+  static postLoader(post: HTMLDivElement, target: HTMLDivElement) {
     const postWrapper = document.createElement("div");
 
-    postWrapper.dataset['kol_pt_loader'] = JSON.stringify(true);
+    post.dataset['kol_pt_loader'] = JSON.stringify(true);
     ReactDOM.render(<PostLoader />, postWrapper);
     target.after(postWrapper);
   }

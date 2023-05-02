@@ -14,10 +14,27 @@ export class PostsHelper {
     document
       .querySelectorAll('[data-tag="post-card"]')
       .forEach(post => {
-        if (!PostsHelper.isPostLocked(post as HTMLDivElement) && !post.querySelector('[data-kol_pt_loader="true"]')) {
-          const sibling = InjectHelper.getInjectionTarget(post as HTMLDivElement);
-          InjectHelper.postLoader(sibling);
+        const postEl = post as HTMLDivElement;
+
+        if (!PostsHelper.isPostLocked(postEl as HTMLDivElement) && !Boolean(postEl.dataset['kol_pt_loader'])) {
+          const sibling = InjectHelper.getInjectionTarget(postEl as HTMLDivElement);
+          InjectHelper.postLoader(postEl as HTMLDivElement, sibling);
         }
+      });
+  }
+
+  /**
+   * @description
+   * Cleans up posts after injection, removes loaders.
+   */
+  static clean(): void {
+    document
+      .querySelectorAll('[data-tag="post-card"][data-kol_pt_loader]')
+      .forEach(post => {
+        const postEl = post as HTMLDivElement;
+
+        postEl.removeAttribute('data-kol_pt_loader');
+        postEl.querySelector('[data-kol_pt_loader]')?.remove();
       });
   }
 
@@ -85,7 +102,8 @@ export class PostsHelper {
     postEl.style.boxShadow = '0 0 20px 0px rgba(25, 118, 210, 0.5)';
 
     // Removing the loader
-    postEl.querySelector('[data-kol_pt_loader="true"]')?.remove();
+    postEl.removeAttribute('data-kol_pt_loader');
+    postEl.querySelector('[data-kol_pt_loader]')?.remove();
   }
 
   /**

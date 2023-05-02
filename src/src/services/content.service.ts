@@ -24,6 +24,7 @@ import { TimeHelper } from '../core/helpers/parse/time.helper';
     if (message.action === 'attach' && TimeHelper.ellapsed(lastInit, timeout)) {
       PostsHelper.init();
       PostsHelper.attach(message.posts);
+      PostsHelper.clean();
 
       lastInit = Date.now();
     }
