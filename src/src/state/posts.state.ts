@@ -19,6 +19,12 @@ export const usePostStore = create<IPostsState>(set => ({
 
   /**
    * @description
+   * If an error has occured.
+   */
+  error: false,
+
+  /**
+   * @description
   * Flag to indicate if posts are currently being loaded.
   */
   loading: false,
@@ -31,12 +37,18 @@ export const usePostStore = create<IPostsState>(set => ({
    * then falls back to Firebase if no cache is available. If false, forces a load from Firebase.
    */
   loadPosts: async (cache: boolean = true) => {
-    set({ loading: true });
+    try {
+      set({ error: false });
+      set({ loading: true });
+  
+      const data = await PostsHelper.load(cache);
 
-    const data = await PostsHelper.load(cache);
-
-    set({ loading: false });
-    set(() => ({ posts: data }));
+      set(() => ({ posts: data }));
+    } catch(err) {
+      set({ error: true });
+    } finally {
+      set({ loading: false });
+    }
   },
 
   /**

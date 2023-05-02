@@ -16,6 +16,12 @@ export interface IPostsState {
 
   /**
    * @description
+   * Flag indicating if posts were not able to be loaded.
+   */
+  error: boolean;
+
+  /**
+   * @description
    * Array of Post objects representing the posts that have been loaded.
    */
   posts: Array<Post>;

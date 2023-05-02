@@ -5,6 +5,7 @@ import PostCard from '../../layout/post-card/PostCard';
 import ViewListIcon from '@mui/icons-material/ViewList';
 import { Chip, IconButton, Tooltip } from '@mui/material';
 import { usePostStore } from '../../../state/posts.state';
+import PostError from '../../layout/post-error/PosrError';
 import ViewStreamIcon from '@mui/icons-material/ViewStream';
 import { ViewMode } from '../../../core/enums/view-mode.enum';
 import RestartAltOutlinedIcon from '@mui/icons-material/RestartAltOutlined';
@@ -19,7 +20,7 @@ import RestartAltOutlinedIcon from '@mui/icons-material/RestartAltOutlined';
 */
 function Feed(): JSX.Element {
   const [viewMode, setViewMode] = useState(ViewMode.Expanded);
-  const { posts, loading, loadPosts } = usePostStore();
+  const { posts, error, loading, loadPosts } = usePostStore();
 
   const compactViewColor = viewMode === ViewMode.Compact ? 'primary' : 'default';
   const expandedViewColor = viewMode === ViewMode.Expanded ? 'primary' : 'default';
@@ -53,8 +54,12 @@ function Feed(): JSX.Element {
       </h3>
 
       <ul className={styles['cards']}>
-        {loading && <div className={styles['cards__loader']}>{<RestartAltOutlinedIcon />}</div>}
-        {!loading && posts.map(post => <li key={post.id} className={styles['cards-wrapper']}><PostCard post={post} viewMode={viewMode} /></li>)}
+        <PostError error={error} message='Could not load data'>
+          {loading
+            ? <div className={styles['cards__loader']}>{<RestartAltOutlinedIcon />}</div>
+            : <>{posts.map(post => <li key={post.id} className={styles['cards-wrapper']}><PostCard post={post} viewMode={viewMode} /></li>)}</>
+          }
+        </PostError>
       </ul >
     </>
   );
