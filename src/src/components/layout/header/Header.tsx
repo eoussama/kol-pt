@@ -1,8 +1,9 @@
 import styles from './Header.module.scss';
 
-import { Button } from '@mui/material';
-import { config } from '../../../config/env';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { Icon, IconButton, Tooltip } from '@mui/material';
 import { usePostStore } from '../../../state/posts.state';
+import { config } from '../../../config/env';
 
 
 
@@ -25,6 +26,14 @@ function Header(): JSX.Element {
     loadPosts(false);
   }
 
+  /**
+   * @description
+   * Opens the creator's Patreon page
+   */
+  const onPatreonOpen = () => {
+    window.open(`${config.patreonUrl}/${config.creatorName}`, '_blank');
+  }
+
   return (
     <header className={styles['header']}>
       <div className={styles['header__branding']}>
@@ -38,12 +47,22 @@ function Header(): JSX.Element {
         </div>
       </div>
       <div className={styles['header__actions']}>
-        <Button
+        {/* <Button
           className={styles['header__button']}
           target='_blank'
           variant="outlined"
           href={`${config.patreonUrl}/${config.creatorName}`}
-        >Open Patreon</Button>
+        >Open Patreon</Button> */}
+
+        <Tooltip title="Open Patreon">
+          <IconButton
+            aria-label="Open Patreon"
+            onClick={onPatreonOpen}
+            className={styles['header__button']}
+          >
+            <img src="./images/platforms/patreon.png" alt="Patreon icon" />
+          </IconButton>
+        </Tooltip>
       </div>
     </header>
   );
