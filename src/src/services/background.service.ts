@@ -2,8 +2,8 @@ import { config } from '../config/env';
 import { Nullable } from '../core/types/nullable.type';
 import { URLHelper } from '../core/helpers/parse/url.helper';
 import { PostsHelper } from '../core/helpers/firebase/posts.helper';
-import { FirebaseHelper } from '../core/helpers/firebase/firebase.helper';
 import { RequestHelper } from '../core/helpers/chrome/request.helper';
+import { FirebaseHelper } from '../core/helpers/firebase/firebase.helper';
 
 
 

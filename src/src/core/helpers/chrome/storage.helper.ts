@@ -12,7 +12,7 @@ export class StorageHelper {
    */
   static get(key: string): Promise<string> {
     return new Promise(async resolve => {
-      if (chrome) {
+      if (chrome?.storage) {
         chrome.storage.local.get(key, data => resolve(data[key]));
       } else {
         const data = localStorage.getItem(key) as string;
@@ -30,7 +30,7 @@ export class StorageHelper {
    */
   static set(key: string, value: any): Promise<void> {
     return new Promise(async resolve => {
-      if (chrome) {
+      if (chrome?.storage) {
         chrome.storage.local.set({ [key]: value }, () => resolve());
       } else {
         localStorage.setItem(key, value);
@@ -46,7 +46,7 @@ export class StorageHelper {
    * @param key The root key to get rid of
    */
   static clear(key: string): void {
-    if (chrome) {
+    if (chrome?.storage) {
       chrome.storage.local.clear();
     } else {
       localStorage.removeItem(key);
