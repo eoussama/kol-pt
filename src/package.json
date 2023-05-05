@@ -51,6 +51,7 @@
   },
   "devDependencies": {
     "@types/chrome": "^0.0.233",
+    "@types/serviceworker": "^0.0.67",
     "@types/vimeo__player": "^2.18.0",
     "mini-css-extract-plugin": "^2.7.5"
   }

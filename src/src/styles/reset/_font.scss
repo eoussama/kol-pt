@@ -1,1 +1,26 @@
-@import url('https://fonts.googleapis.com/css2?family=Bangers&family=Open+Sans:wght@300;400;700&display=swap');
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 100;
+  font-stretch: 100%;
+  font-display: swap;
+  src: url(./../../../public/fonts/opensans/light.ttf) format('ttf');
+}
+
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 400;
+  font-stretch: 100%;
+  font-display: swap;
+  src: url(./../../../public/fonts/opensans/regular.ttf) format('ttf');
+}
+
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 700;
+  font-stretch: 100%;
+  font-display: swap;
+  src: url(./../../../public/fonts/opensans/bold.ttf) format('ttf');
+}

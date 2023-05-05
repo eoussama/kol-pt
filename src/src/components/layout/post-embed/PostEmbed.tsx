@@ -1,3 +1,5 @@
+import './../../../styles/index.scss';
+
 import PostReactions from "../post-reactions/PostReactions";
 import { PostProvider } from "../../../context/PostContext";
 import { ReactionMenuProvider } from "../../../context/ReactionMenuContext";
