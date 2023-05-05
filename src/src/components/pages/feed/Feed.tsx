@@ -56,7 +56,7 @@ function Feed(): JSX.Element {
         || tag.entry.altTitles.some(altTitle => altTitle.toLowerCase().includes(search))
       )
     ));
-  }, [search]);
+  }, [search, posts]);
 
   return (
     <>
