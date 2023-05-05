@@ -1,10 +1,8 @@
 import styles from './Header.module.scss';
 
-import DeleteIcon from '@mui/icons-material/Delete';
-import { Icon, IconButton, Tooltip } from '@mui/material';
-import { usePostStore } from '../../../state/posts.state';
 import { config } from '../../../config/env';
-
+import { IconButton, Tooltip } from '@mui/material';
+import { usePostStore } from '../../../state/posts.state';
 
 
 
@@ -42,18 +40,11 @@ function Header(): JSX.Element {
         </div>
 
         <div className={styles['header__info']}>
-          <h1 className={styles['header__title']}>KOL PT</h1>
-          <h2 className={styles['header__subtitle']}>Patreon Tracker</h2>
+          <h2 className={styles['header__subtitle']}>KOL PT</h2>
+          <h1 className={styles['header__title']}>Feed</h1>
         </div>
       </div>
       <div className={styles['header__actions']}>
-        {/* <Button
-          className={styles['header__button']}
-          target='_blank'
-          variant="outlined"
-          href={`${config.patreonUrl}/${config.creatorName}`}
-        >Open Patreon</Button> */}
-
         <Tooltip title="Open Patreon">
           <IconButton
             aria-label="Open Patreon"
