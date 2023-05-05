@@ -30,9 +30,11 @@
   &__search {
     flex: 1;
 
-    .search {
+    .search,
+    ::placeholder {
       width: 100%;
       font-size: 14px;
+      font-family: 'Open Sans', sans-serif;
     }
   }
 
