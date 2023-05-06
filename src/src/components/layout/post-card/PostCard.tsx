@@ -49,8 +49,8 @@ function PostCard(props: IPostCardProps): JSX.Element {
           className={styles['card__thumbnail']}
         />
 
-        <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-          <CardContent sx={{ flex: '1 0 auto' }} className={styles['card__body']}>
+        <CardContent sx={{ flex: '1 0 auto' }} className={styles['card__body']}>
+          <div className={styles['card__info']}>
             <Typography component="div" variant="h5" className={styles['card__title']}>
               {post.title}
             </Typography>
@@ -62,7 +62,7 @@ function PostCard(props: IPostCardProps): JSX.Element {
             <Typography variant="subtitle1" color="text.secondary" className={styles['card__description']} component="div">
               {post.description}
             </Typography>
-          </CardContent>
+          </div>
 
           <div className={styles['card__tags']}>
             {post.tags.map(tag => <Box key={tag.id} ml={1}>
@@ -76,7 +76,7 @@ function PostCard(props: IPostCardProps): JSX.Element {
               </Tooltip>
             </Box>)}
           </div>
-        </Box>
+        </CardContent>
       </Card>
     </>
   );

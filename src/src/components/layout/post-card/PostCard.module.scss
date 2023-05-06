@@ -1,11 +1,12 @@
 .card {
+  position: relative;
   cursor: pointer;
 
   border-radius: 8px !important;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1) !important;
 
   transition-duration: 0.2s !important;
-  transition-property: box-shadow !important;
+  transition-property: box-shadow border-color padding !important;
 
   &__title {
     font-size: 16px !important;
@@ -24,11 +25,33 @@
   }
 
   &__thumbnail {
-    filter: blur(2px);
-    width: 40px !important;
+    position: absolute;
+    left: 0;
+    top: 0;
+
+    z-index: 0;
+
+    width: 100%;
+    height: 100%;
+
+    transition-duration: 5s;
+    transition-property: transform;
+    transition-timing-function: ease-out;
+  }
+
+  &__body {
+    z-index: 1;
+
+    width: 100%;
+    height: 100%;
+    padding-bottom: 8px !important;
+
+    box-sizing: border-box;
+    backdrop-filter: blur(2px);
+    background-image: linear-gradient(to right, rgba(255, 255, 255, 0.9) 50%, rgba(255, 255, 255, 0.6));
 
     transition-duration: 0.2s;
-    transition-property: width filter;
+    transition-property: backdrop-filter background-image padding;
   }
 
   &__tags {
@@ -36,16 +59,15 @@
     flex-wrap: nowrap;
     flex-direction: row;
 
-    max-width: 330px;
-
     overflow: hidden;
+
+    margin-top: 8px;
     padding-bottom: 8px;
 
     transition-duration: 0.2s;
-    transition-property: max-width;
+    transition-property: height padding-bottom;
 
     .tag {
-      margin: 2px;
       cursor: pointer;
 
       transition-duration: 0.2s;
@@ -56,23 +78,42 @@
       }
     }
 
+    &> :first-of-type {
+      margin-left: 0;
+    }
+
+    &::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+
+      border-radius: 10px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      border-radius: 10px;
+      background-color: rgba(0, 0, 0, 0.2);
+    }
+
     &:hover {
       overflow: overlay;
     }
   }
 
   &--expanded {
-    max-height: 145px;
+    &:hover {
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.3) !important;
+    }
   }
 
   &--compact {
-    .card__thumbnail {
-      display: none;
-    }
+    box-shadow: none !important;
+    border: 1px solid rgba(var(--color-text-rgb), 0.2);
+
+    transition-duration: 0.2s;
+    transition-property: border-color;
 
     .card__tags {
       font-size: 12px;
-      max-width: 370px;
 
       .tag {
         font-size: 12px;
@@ -80,27 +121,28 @@
     }
 
     .card__body {
-      padding-bottom: 0 !important;
+      padding: 8px 12px 5px 12px !important;
+
+      backdrop-filter: blur(5px) !important;
+      background-image: rgba(255, 255, 255, 0.9);
 
       .card__description {
         display: none;
       }
     }
 
+    &:hover {
+      border: 1px solid rgba(var(--color-primary-rgb), 0.8);
+    }
   }
 
   &:hover {
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3) !important;
+    .card__body {
+      backdrop-filter: blur(0px);
+    }
 
-    &.card--expanded {
-      .card__thumbnail {
-        filter: blur(0);
-        width: 120px !important;
-      }
-
-      .card__tags {
-        max-width: 250px;
-      }
+    .card__thumbnail {
+      transform: scale(1.1);
     }
   }
 }
