@@ -1,5 +1,6 @@
-import { IPost } from "../types/post.type";
 import { Tag } from "./tag.model";
+import { IPost } from "../types/post.type";
+import { ISearch } from "../types/search.type";
 
 
 
@@ -7,7 +8,7 @@ import { Tag } from "./tag.model";
  * @description
  * A class representing a post containing information about a post
  */
-export class Post {
+export class Post implements ISearch {
 
   /**
    * @description
@@ -56,5 +57,38 @@ export class Post {
     this.description = model.description ?? '';
     this.creationDate = new Date(model.creationDate);
     this.tags = model.tags.map(tag => new Tag(tag)) ?? [];
+  }
+
+  /**
+   * @description
+   * Checks if model matches search query
+   *
+   * @param search The search query
+   */
+  match(search: string): boolean {
+    const query = search.toLowerCase();
+    const searchTarget = this.title
+      .concat(this.description)
+      .concat(this.creationDate.toLocaleString())
+      .concat(this.getTagsQuery())
+      .toLowerCase();
+
+    return searchTarget.includes(query);
+  }
+
+  /**
+   * @description
+   * Returns a string of tag info
+   */
+  private getTagsQuery(): string {
+    return this.tags
+      .map(tag => tag.label
+        .toString()
+        .concat(tag.description)
+        .concat(tag.entry.title)
+        .concat(tag.entry.shortTitle)
+        .concat(tag.entry.altTitles.join())
+      )
+      .join('');
   }
 }
