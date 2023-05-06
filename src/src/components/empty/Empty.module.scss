@@ -1,0 +1,23 @@
+.empty {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+
+  padding: 40px 10px;
+
+  &__icon {
+    width: 80px;
+  }
+
+  &__message {
+    margin-top: 20px;
+    
+    font-weight: 400;
+    color: var(--color-text);
+
+    b {
+      font-weight: 500;
+    }
+  }
+}

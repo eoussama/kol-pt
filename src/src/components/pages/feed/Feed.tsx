@@ -1,6 +1,7 @@
 import styles from './Feed.module.scss';
 
 import { useState } from 'react';
+import Empty from '../../empty/Empty';
 import { usePosts } from '../../../hooks/posts.hook';
 import PostCard from '../../layout/post-card/PostCard';
 import ViewListIcon from '@mui/icons-material/ViewList';
@@ -22,10 +23,11 @@ import RestartAltOutlinedIcon from '@mui/icons-material/RestartAltOutlined';
 */
 function Feed(): JSX.Element {
   const [viewMode, setViewMode] = useState(ViewMode.Expanded);
-  const { posts, error, loading, postsCount, onSearch } = usePosts();
+  const { posts, error, loading, search, postsCount, onSearch } = usePosts();
 
   const compactViewColor = viewMode === ViewMode.Compact ? 'primary' : 'default';
   const expandedViewColor = viewMode === ViewMode.Expanded ? 'primary' : 'default';
+  const emptyMessage = postsCount > 0 ? <>No posts match <b>{search}</b></> : 'No posts found';
 
   return (
     <>
@@ -63,7 +65,11 @@ function Feed(): JSX.Element {
         <PostError error={error} message='Could not load data'>
           {loading
             ? <div className={styles['cards__loader']}>{<RestartAltOutlinedIcon />}</div>
-            : <>{posts.map(post => <li key={post.id} className={styles['cards-wrapper']}><PostCard post={post} viewMode={viewMode} /></li>)}</>
+            : <>
+              <Empty message={emptyMessage}>
+                {posts.map(post => <li key={post.id} className={styles['cards-wrapper']}><PostCard post={post} viewMode={viewMode} /></li>)}
+              </Empty>
+            </>
           }
         </PostError>
       </ul >

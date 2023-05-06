@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from "react";
-import { Post } from "../core/models/post.model";
 import { usePostStore } from "../state/posts.state";
 
 
@@ -32,5 +31,5 @@ export function usePosts() {
     setSearch(value);
   }
 
-  return { error, loading, posts: filteredPosts, postsCount: posts.length, onSearch };
+  return { error, loading, search, posts: filteredPosts, postsCount: posts.length, onSearch };
 }
