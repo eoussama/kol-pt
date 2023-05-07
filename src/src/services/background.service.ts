@@ -1,8 +1,10 @@
 import { config } from '../config/env';
 import { Nullable } from '../core/types/nullable.type';
+import { MessageType } from '../core/enums/message-type.enum';
 import { URLHelper } from '../core/helpers/parse/url.helper';
 import { PostsHelper } from '../core/helpers/firebase/posts.helper';
 import { RequestHelper } from '../core/helpers/chrome/request.helper';
+import { MessageHelper } from '../core/helpers/navigator/message.helper';
 import { FirebaseHelper } from '../core/helpers/firebase/firebase.helper';
 
 
@@ -25,6 +27,9 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
       // Set the current tab ID
       currentTabId = tabId;
 
+      // Sending initialization message to content
+      await MessageHelper.send(tabId, MessageType.Init);
+
       // Fetching the posts
       const posts = await PostsHelper.load();
 
@@ -32,7 +37,7 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
       await RequestHelper.wait();
 
       // Forwarding the fetched posts over to active page
-      chrome.tabs.sendMessage(tabId, { action: 'attach', posts });
+      await MessageHelper.send(tabId, MessageType.Attach, { posts });
 
       // Intercepting all post potential update requests
       chrome.webRequest.onCompleted.addListener(onWebRequestCompleted, { urls: ['<all_urls>'] });
@@ -59,7 +64,7 @@ async function onWebRequestCompleted(e: chrome.webRequest.WebResponseCacheDetail
     const posts = await PostsHelper.load();
 
     // Forwarding the fetched posts over to active page
-    chrome.tabs.sendMessage(currentTabId, { action: 'attach', posts });
+    MessageHelper.send(currentTabId, MessageType.Attach, { posts });
   }
 }
 

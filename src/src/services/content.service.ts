@@ -1,3 +1,6 @@
+import { Post } from '../core/models/post.model';
+import { Imessage } from '../core/types/message.type';
+import { MessageType } from '../core/enums/message-type.enum';
 import { PostsHelper } from '../core/helpers/dom/posts.helper';
 import { TimeHelper } from '../core/helpers/parse/time.helper';
 
@@ -18,15 +21,30 @@ import { TimeHelper } from '../core/helpers/parse/time.helper';
   const timeout = 500;
 
   // Listening for messages
-  chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
+  chrome.runtime.onMessage.addListener((message: Imessage<{ posts: Array<Post> }>, sender, sendResponse) => {
 
-    // Initializinh attachments
-    if (message.action === 'attach' && TimeHelper.ellapsed(lastInit, timeout)) {
-      PostsHelper.init();
-      PostsHelper.attach(message.posts);
-      PostsHelper.clean();
+    if (TimeHelper.ellapsed(lastInit, timeout)) {
+      switch (message.type) {
+        case MessageType.Init: {
+          PostsHelper.init();
+          lastInit = Date.now();
 
-      lastInit = Date.now();
+          break;
+        }
+
+        case MessageType.Attach: {
+          PostsHelper.attach(message.payload?.posts ?? []);
+          PostsHelper.clean();
+
+          break;
+        }
+      }
+
+      // Notifying the sender
+      sendResponse();
+
+      // This return is important to ensure asynchronousity
+      return true;
     }
   });
 })();
