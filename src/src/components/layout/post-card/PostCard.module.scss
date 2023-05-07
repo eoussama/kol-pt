@@ -93,10 +93,6 @@
       border-radius: 10px;
       background-color: rgba(0, 0, 0, 0.2);
     }
-
-    &:hover {
-      overflow: overlay;
-    }
   }
 
   &--expanded {
@@ -108,9 +104,6 @@
   &--compact {
     box-shadow: none !important;
     border: 1px solid rgba(var(--color-text-rgb), 0.2);
-
-    transition-duration: 0.2s;
-    transition-property: border-color;
 
     .card__tags {
       font-size: 12px;
@@ -143,6 +136,10 @@
 
     .card__thumbnail {
       transform: scale(1.1);
+    }
+
+    .card__tags {
+      overflow: overlay;
     }
   }
 }
