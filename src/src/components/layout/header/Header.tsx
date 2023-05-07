@@ -3,6 +3,7 @@ import styles from './Header.module.scss';
 import { config } from '../../../config/env';
 import { IconButton, Tooltip } from '@mui/material';
 import { usePostStore } from '../../../state/posts.state';
+import BugReportIcon from '@mui/icons-material/BugReport';
 
 
 
@@ -15,6 +16,7 @@ import { usePostStore } from '../../../state/posts.state';
  */
 function Header(): JSX.Element {
   const { loadPosts } = usePostStore();
+  const projectUrl = 'https://github.com/EOussama/kol-pt';
 
   /**
    * @description
@@ -22,6 +24,22 @@ function Header(): JSX.Element {
    */
   const onRefresh = () => {
     loadPosts(false);
+  }
+
+  /**
+   * @description
+   * Opens the bug report page
+   */
+  const onBugOpen = () => {
+    window.open(`${projectUrl}/issues/new?assignees=EOussama&labels=%F0%9F%AA%B2+Bug&template=bug_report.md&title=`, '_blank');
+  }
+
+  /**
+   * @description
+   * Opens the project's Github page
+   */
+  const onProjectOpen = () => {
+    window.open(projectUrl, '_blank');
   }
 
   /**
@@ -45,6 +63,26 @@ function Header(): JSX.Element {
         </div>
       </div>
       <div className={styles['header__actions']}>
+        <Tooltip title="Report bug">
+          <IconButton
+            aria-label="Opens the bug reporting issue"
+            onClick={onBugOpen}
+            className={`${styles['header__button']} ${styles['header__button--bug']}`}
+          >
+            <BugReportIcon />
+          </IconButton>
+        </Tooltip>
+
+        <Tooltip title="Project page">
+          <IconButton
+            aria-label="Opens project's Github page"
+            onClick={onProjectOpen}
+            className={`${styles['header__button']} ${styles['header__button--project']}`}
+          >
+            <img src="./images/platforms/github.png" alt="Github icon" />
+          </IconButton>
+        </Tooltip>
+
         <Tooltip title="Open Patreon">
           <IconButton
             aria-label="Open Patreon"

@@ -62,8 +62,16 @@
     color: #ffffff !important;
 
     img {
-      width: 22px;
+      width: 20px;
       border-radius: 4px;
+    }
+
+    &--bug {
+      color: #000000 !important;
+    }
+
+    &--project {
+      filter: brightness(0);
     }
   }
 }
