@@ -1,9 +1,8 @@
 import styles from './Header.module.scss';
 
-import { config } from '../../../config/env';
 import { IconButton, Tooltip } from '@mui/material';
 import { usePostStore } from '../../../state/posts.state';
-import BugReportIcon from '@mui/icons-material/BugReport';
+import { NavigationHelper } from '../../../core/helpers/navigator/navigation.helper';
 
 
 
@@ -16,7 +15,6 @@ import BugReportIcon from '@mui/icons-material/BugReport';
  */
 function Header(): JSX.Element {
   const { loadPosts } = usePostStore();
-  const projectUrl = 'https://github.com/EOussama/kol-pt';
 
   /**
    * @description
@@ -24,30 +22,6 @@ function Header(): JSX.Element {
    */
   const onRefresh = () => {
     loadPosts(false);
-  }
-
-  /**
-   * @description
-   * Opens the bug report page
-   */
-  const onBugOpen = () => {
-    window.open(`${projectUrl}/issues/new?assignees=EOussama&labels=%F0%9F%AA%B2+Bug&template=bug_report.md&title=`, '_blank');
-  }
-
-  /**
-   * @description
-   * Opens the project's Github page
-   */
-  const onProjectOpen = () => {
-    window.open(projectUrl, '_blank');
-  }
-
-  /**
-   * @description
-   * Opens the creator's Patreon page
-   */
-  const onPatreonOpen = () => {
-    window.open(`${config.patreonUrl}/${config.creatorName}`, '_blank');
   }
 
   return (
@@ -63,31 +37,31 @@ function Header(): JSX.Element {
         </div>
       </div>
       <div className={styles['header__actions']}>
-        <Tooltip title="Report bug">
-          <IconButton
-            aria-label="Opens the bug reporting issue"
-            onClick={onBugOpen}
-            className={`${styles['header__button']} ${styles['header__button--bug']}`}
-          >
-            <BugReportIcon />
-          </IconButton>
-        </Tooltip>
-
-        <Tooltip title="Project page">
+        <Tooltip title="Project Page">
           <IconButton
             aria-label="Opens project's Github page"
-            onClick={onProjectOpen}
+            onClick={NavigationHelper.openProject}
             className={`${styles['header__button']} ${styles['header__button--project']}`}
           >
             <img src="./images/platforms/github.png" alt="Github icon" />
           </IconButton>
         </Tooltip>
 
+        <Tooltip title="Open Discord">
+          <IconButton
+            aria-label="Opens KOl's Discord server"
+            onClick={NavigationHelper.openDiscord}
+            className={`${styles['header__button']} ${styles['header__button--discord']}`}
+          >
+            <img src="./images/platforms/discord.png" alt="Discord icon" />
+          </IconButton>
+        </Tooltip>
+
         <Tooltip title="Open Patreon">
           <IconButton
             aria-label="Open Patreon"
-            onClick={onPatreonOpen}
-            className={styles['header__button']}
+            onClick={NavigationHelper.openPatreon}
+            className={`${styles['header__button']} ${styles['header__button--patreon']}`}
           >
             <img src="./images/platforms/patreon.png" alt="Patreon icon" />
           </IconButton>

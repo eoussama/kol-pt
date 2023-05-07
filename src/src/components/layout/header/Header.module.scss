@@ -65,13 +65,25 @@
       width: 20px;
       border-radius: 4px;
     }
-
+    
     &--bug {
       color: #000000 !important;
     }
-
+    
     &--project {
       filter: brightness(0);
+
+      img {
+        width: 18px;
+      }
+    }
+    
+    &--discord {
+      filter: brightness(0);
+
+      img {
+        width: 21px;
+      }
     }
   }
 }

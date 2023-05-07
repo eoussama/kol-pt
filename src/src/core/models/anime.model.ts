@@ -1,9 +1,10 @@
 import { Entry } from "./entry.model";
 import { IOption } from "../types/option.type";
 import { EntryType } from "../enums/entry-type.enum";
-import { IAnimeEntry } from "../types/entry/anime-entry.type";
 import { IconHelper } from "../helpers/asset/icon.helper";
+import { IAnimeEntry } from "../types/entry/anime-entry.type";
 import { IAnimeContext } from "../types/tag/anime-context.type";
+import { NavigationHelper } from "../helpers/navigator/navigation.helper";
 
 
 
@@ -56,7 +57,7 @@ export class Anime extends Entry {
    * Opens the MyAnimeList page of the anime in a new tab.
    */
   viewMAL(): void {
-    window.open(`https://myanimelist.net/anime/${this.malId}`, '_blank');
+    NavigationHelper.openMAL(this.malId);
   }
 
   /**
@@ -64,7 +65,7 @@ export class Anime extends Entry {
    * Opens the AniList page of the anime in a new tab.
    */
   viewAniList(): void {
-    window.open(`https://anilist.co/anime/${this.anilistId}`, '_blank');
+    NavigationHelper.openAniList(this.anilistId);
   }
 
   /**
@@ -72,7 +73,7 @@ export class Anime extends Entry {
    * Opens the Kitsu page of the anime in a new tab.
    */
   viewKitsu(): void {
-    window.open(`https://kitsu.io/anime/${this.kitsuId}`, '_blank');
+    NavigationHelper.openKitsu(this.kitsuId);
   }
 
   /**
@@ -80,7 +81,7 @@ export class Anime extends Entry {
    * Opens the Zoro.to page of the anime in a new tab.
    */
   viewZoro(): void {
-    window.open(`https://zoro.to/watch/${this.zoroId}`, '_blank');
+    NavigationHelper.openZoro(this.zoroId);
   }
 
   /**
@@ -90,7 +91,7 @@ export class Anime extends Entry {
    * @param episodeId The ID of the episode
    */
   watchZoro(episodeId: number): void {
-    window.open(`https://zoro.to/watch/${this.zoroId}?ep=${episodeId}`, '_blank');
+    NavigationHelper.openZoroEpisode(this.zoroId, episodeId);
   }
 
   /**

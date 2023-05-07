@@ -3,6 +3,7 @@ import styles from './PostCard.module.scss';
 import { ViewMode } from '../../../core/enums/view-mode.enum';
 import { IPostCardProps } from '../../../core/types/props/post-card-props.type';
 import { Box, Card, CardContent, CardMedia, Chip, Tooltip, Typography } from '@mui/material';
+import { NavigationHelper } from '../../../core/helpers/navigator/navigation.helper';
 
 
 
@@ -22,7 +23,7 @@ function PostCard(props: IPostCardProps): JSX.Element {
    * Opens the post in a new window when the card is clicked.
    */
   const goToPost = () => {
-    window.open(`https://www.patreon.com/posts/${post.id}`, '_blank');
+    NavigationHelper.openPost(post.id);
   }
 
   /**
@@ -36,7 +37,7 @@ function PostCard(props: IPostCardProps): JSX.Element {
     e.stopPropagation();
     e.preventDefault();
 
-    window.open(`https://www.patreon.com/posts/${post.id}?reactionId=${reactionId}`, '_blank');
+    NavigationHelper.openReaction(post.id, reactionId);
   }
 
   return (

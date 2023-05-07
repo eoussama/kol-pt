@@ -3,6 +3,7 @@ import { IEntry } from "../types/entry/entry.type";
 import { EntryType } from "../enums/entry-type.enum";
 import { IconHelper } from "../helpers/asset/icon.helper";
 import { IEntryContext } from "../types/tag/entry-context.type";
+import { NavigationHelper } from "../helpers/navigator/navigation.helper";
 
 
 
@@ -66,7 +67,7 @@ export class Entry {
    * Opens the IMDb page for the entry in a new window.
    */
   openIMDb(): void {
-    window.open(`https://www.imdb.com/title/${this.imdbId}`, '_blank');
+    NavigationHelper.openIMDb(this.imdbId ?? '');
   }
 
   /**

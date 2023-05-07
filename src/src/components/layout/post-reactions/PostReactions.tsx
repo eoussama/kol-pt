@@ -6,8 +6,10 @@ import PostReaction from '../post-reaction/PostReaction';
 import { PostContext } from '../../../context/PostContext';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { PostAccordion } from '../post-accordion/PostAccordion';
-import { AccordionDetails, AccordionSummary } from '@mui/material';
+import { IconHelper } from "../../../core/helpers/asset/icon.helper";
 import PostReactionMenu from '../post-reaction-menu/PostReactionMenu';
+import { NavigationHelper } from '../../../core/helpers/navigator/navigation.helper';
+import { AccordionDetails, AccordionSummary, IconButton, Tooltip } from '@mui/material';
 
 
 
@@ -51,6 +53,19 @@ function PostReactions(): JSX.Element {
     return `${reactionCount} ${reactionText}`;
   }
 
+  /**
+   * @description
+   * Opens the Passione channel
+   *
+   * @param e The mouse click event object
+   */
+  const OnPassioneOpen = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    e.stopPropagation();
+    e.preventDefault();
+
+    NavigationHelper.openPassione();
+  }
+
   return <>
     <PostAccordion
       expanded={expanded}
@@ -58,7 +73,19 @@ function PostReactions(): JSX.Element {
       onChange={() => setExpanded(!expanded)}
     >
       <AccordionSummary className={styles['post__head']} expandIcon={<ExpandMoreIcon />}>
-        <h3 className={styles['post__title']}>{getReactionsTitle()}</h3>
+        <div className={styles['post__head-wrapper']}>
+          <h3 className={styles['post__title']}>{getReactionsTitle()}</h3>
+
+          <Tooltip title="Open Passione Channel">
+            <IconButton
+              aria-label="Opens KOl's Discord server"
+              onClick={OnPassioneOpen}
+              className={`${styles['post__action']} ${styles['post__action--discord']}`}
+            >
+              <img src={IconHelper.getIcon('discord', 'platforms')} alt="Discord icon" />
+            </IconButton>
+          </Tooltip>
+        </div>
       </AccordionSummary>
 
       <AccordionDetails className={styles['post__body']}>
