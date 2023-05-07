@@ -1,8 +1,12 @@
+import * as base64 from 'base-64';
+
+
+
 /**
  * @description
  * Helps with encyption/decryption
  */
-export class EncryptionHelper {
+export class Base64Helper {
 
   /**
    * @description
@@ -11,7 +15,7 @@ export class EncryptionHelper {
    * @param input The input to encryption
    */
   static encrypt(input: string): string {
-    return window.btoa(input);
+    return base64.encode(input);
   }
 
   /**
@@ -21,6 +25,6 @@ export class EncryptionHelper {
   * @param input The input to decrypt
   */
   static decrypt(input: string): string {
-    return window.atob(input);
+    return base64.decode(input);
   }
 }

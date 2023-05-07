@@ -1,4 +1,4 @@
-import { EncryptionHelper } from "../parse/encryption.helper";
+import { Base64Helper } from "../parse/base64.helper";
 
 
 
@@ -19,12 +19,12 @@ export class StorageHelper {
       if (chrome?.storage) {
         chrome.storage.local.get(key, data => {
           const value = data[key] ?? '';
-          const output = EncryptionHelper.decrypt(value);
+          const output = Base64Helper.decrypt(value);
           resolve(output);
         });
       } else {
         const data = localStorage.getItem(key) as string;
-        const output = EncryptionHelper.decrypt(data);
+        const output = Base64Helper.decrypt(data);
 
         resolve(output);
       }
@@ -39,7 +39,7 @@ export class StorageHelper {
    * @param value The value to set
    */
   static set(key: string, value: string): Promise<void> {
-    const input = EncryptionHelper.encrypt(value);
+    const input = Base64Helper.encrypt(value);
 
     return new Promise(async resolve => {
       if (chrome?.storage) {

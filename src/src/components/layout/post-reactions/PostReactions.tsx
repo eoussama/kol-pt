@@ -76,7 +76,7 @@ function PostReactions(): JSX.Element {
         <div className={styles['post__head-wrapper']}>
           <h3 className={styles['post__title']}>{getReactionsTitle()}</h3>
 
-          <Tooltip title="Open Passione Channel">
+          <Tooltip title="Open Passione Club Channel">
             <IconButton
               aria-label="Opens KOl's Discord server"
               onClick={OnPassioneOpen}
