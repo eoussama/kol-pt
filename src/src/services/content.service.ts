@@ -21,12 +21,12 @@ import { TimeHelper } from '../core/helpers/parse/time.helper';
   const timeout = 500;
 
   // Listening for messages
-  chrome.runtime.onMessage.addListener((message: Imessage<{ posts: Array<Post> }>, sender, sendResponse) => {
+  chrome.runtime.onMessage.addListener((message: Imessage<{ posts: Array<Post> }>, _, sendResponse) => {
 
     if (TimeHelper.ellapsed(lastInit, timeout)) {
       switch (message.type) {
         case MessageType.Init: {
-          PostsHelper.init();
+          PostsHelper.init().then(() => sendResponse());
           lastInit = Date.now();
 
           break;
@@ -35,13 +35,11 @@ import { TimeHelper } from '../core/helpers/parse/time.helper';
         case MessageType.Attach: {
           PostsHelper.attach(message.payload?.posts ?? []);
           PostsHelper.clean();
+          sendResponse();
 
           break;
         }
       }
-
-      // Notifying the sender
-      sendResponse();
 
       // This return is important to ensure asynchronousity
       return true;

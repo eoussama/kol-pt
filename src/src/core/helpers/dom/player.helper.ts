@@ -2,6 +2,10 @@ import { URLHelper } from "../parse/url.helper";
 
 
 
+/**
+ * @description
+ * Helper that handles Vimeo player operations
+ */
 export class PlayerHelper {
 
   /**

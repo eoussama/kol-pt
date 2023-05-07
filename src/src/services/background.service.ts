@@ -16,41 +16,44 @@ let currentTabId: Nullable<number>;
 FirebaseHelper.init();
 
 // On update
-chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
+chrome.webNavigation.onCompleted.addListener(async ({ tabId, url }) => {
 
   // On patreon page update
-  if (URLHelper.isPatreon(tab.url ?? '')) {
+  if (URLHelper.isPatreon(url ?? '')) {
 
-    // On fully loaded
-    if ([undefined, 'complete'].includes(changeInfo.status)) {
+    // Set the current tab ID
+    currentTabId = tabId;
 
-      // Set the current tab ID
-      currentTabId = tabId;
+    // Sending initialization message to content
+    await MessageHelper.send(tabId, MessageType.Init);
 
-      // Sending initialization message to content
-      await MessageHelper.send(tabId, MessageType.Init);
+    // Fetching the posts
+    const posts = await PostsHelper.load();
 
-      // Fetching the posts
-      const posts = await PostsHelper.load();
+    // Waiting for requests to resolve
+    await RequestHelper.wait();
 
-      // Waiting for requests to resolve
-      await RequestHelper.wait();
+    // Forwarding the fetched posts over to active page
+    await MessageHelper.send(tabId, MessageType.Attach, { posts });
 
-      // Forwarding the fetched posts over to active page
-      await MessageHelper.send(tabId, MessageType.Attach, { posts });
-
-      // Intercepting all post potential update requests
-      chrome.webRequest.onCompleted.addListener(onWebRequestCompleted, { urls: ['<all_urls>'] });
-    } else if (changeInfo.status === 'loading') {
-
-      // Remove the web request listener
-      chrome.webRequest.onCompleted.removeListener(onWebRequestCompleted);
-
-      // Set the current tab ID to null
-      currentTabId = null;
-    }
+    // Intercepting all post potential update requests
+    chrome.webRequest.onCompleted.addListener(onWebRequestCompleted, { urls: ['<all_urls>'] });
   }
 });
+
+// Cleanung up old requests handlers
+chrome.tabs.onUpdated.addListener((_, { url, status }) => {
+
+  // If the page is still loading
+  if (URLHelper.isPatreon(url ?? '') && status === 'loading') {
+
+    // Remove the web request listener
+    chrome.webRequest.onCompleted.removeListener(onWebRequestCompleted);
+
+    // Set the current tab ID to null
+    currentTabId = null;
+  }
+})
 
 // Web request completed handler
 async function onWebRequestCompleted(e: chrome.webRequest.WebResponseCacheDetails) {
@@ -62,8 +65,8 @@ async function onWebRequestCompleted(e: chrome.webRequest.WebResponseCacheDetail
 
     // Fetching the posts
     const posts = await PostsHelper.load();
-
     // Forwarding the fetched posts over to active page
+
     MessageHelper.send(currentTabId, MessageType.Attach, { posts });
   }
 }

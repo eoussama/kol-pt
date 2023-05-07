@@ -4,23 +4,57 @@ import { PlayerHelper } from "./player.helper";
 
 
 
+/**
+ * @description
+ * Helper that handles all treatments on post DOM elements
+ */
 export class PostsHelper {
 
   /**
    * @description
    * Attaches loading indicator to posts
    */
-  static init(): void {
-    document
-      .querySelectorAll('[data-tag="post-card"]')
-      .forEach(post => {
-        const postEl = post as HTMLDivElement;
+  static init(): Promise<void> {
+    return new Promise(resolve => {
 
-        if (!PostsHelper.isPostLocked(postEl as HTMLDivElement) && !Boolean(postEl.dataset['kol_pt_loader'])) {
-          const sibling = InjectHelper.getInjectionTarget(postEl as HTMLDivElement);
-          InjectHelper.postLoader(postEl as HTMLDivElement, sibling);
+      // Defining mutation observer on the main content
+      const observer = new MutationObserver(mutations => {
+
+        // If any posts were added
+        if (mutations.some(e =>
+
+          // Checking if any nodes were added
+          e.addedNodes.length > 0
+
+          // Checking if any of the added nodes are post elements
+          && (e.target as HTMLDivElement).closest('#renderPageContentWrapper')?.querySelector('[data-tag="post-card"]')
+        )) {
+
+          // Discarding observer
+          observer.disconnect();
+
+          setTimeout(() => {
+            document
+              .querySelectorAll('[data-tag="post-card"]')
+              .forEach(post => {
+                const postEl = post as HTMLDivElement;
+
+                // Checking if the post is available for the user
+                if (!PostsHelper.isPostLocked(postEl as HTMLDivElement) && !Boolean(postEl.dataset['kol_pt_loader'])) {
+                  const sibling = InjectHelper.getInjectionTarget(postEl as HTMLDivElement);
+
+                  InjectHelper.postLoader(postEl as HTMLDivElement, sibling);
+                }
+              });
+
+            resolve();
+          });
         }
       });
+
+      // Observe mutations on the page
+      observer.observe(document.getElementById('renderPageContentWrapper') as any, { childList: true, subtree: true });
+    });
   }
 
   /**
