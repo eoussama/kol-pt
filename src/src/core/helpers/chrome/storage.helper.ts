@@ -1,3 +1,7 @@
+import { EncryptionHelper } from "../parse/encryption.helper";
+
+
+
 /**
  * @description
  * Helps with chrome storage
@@ -13,10 +17,16 @@ export class StorageHelper {
   static get(key: string): Promise<string> {
     return new Promise(async resolve => {
       if (chrome?.storage) {
-        chrome.storage.local.get(key, data => resolve(data[key]));
+        chrome.storage.local.get(key, data => {
+          const value = data[key] ?? '';
+          const output = EncryptionHelper.decrypt(value);
+          resolve(output);
+        });
       } else {
         const data = localStorage.getItem(key) as string;
-        resolve(data);
+        const output = EncryptionHelper.decrypt(data);
+
+        resolve(output);
       }
     });
   }
@@ -28,12 +38,14 @@ export class StorageHelper {
    * @param key The key to set
    * @param value The value to set
    */
-  static set(key: string, value: any): Promise<void> {
+  static set(key: string, value: string): Promise<void> {
+    const input = EncryptionHelper.encrypt(value);
+
     return new Promise(async resolve => {
       if (chrome?.storage) {
-        chrome.storage.local.set({ [key]: value }, () => resolve());
+        chrome.storage.local.set({ [key]: input }, () => resolve());
       } else {
-        localStorage.setItem(key, value);
+        localStorage.setItem(key, input);
         resolve();
       }
     });
