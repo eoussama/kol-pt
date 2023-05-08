@@ -15,5 +15,12 @@ export enum MessageType {
    * Dictate that the page needs to attach
    * embeds to posts
    */
-  Attach
+  Attach,
+
+  /**
+   * @description
+   * Tells the service worker to load the posts
+   * and forward them to the content script
+   */
+  Load
 }

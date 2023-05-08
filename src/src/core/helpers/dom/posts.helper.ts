@@ -1,5 +1,6 @@
 import { Post } from "../../models/post.model";
 import { InjectHelper } from "./inject.helper";
+import { ObserverHelper } from "./observer.helper";
 import { PlayerHelper } from "./player.helper";
 
 
@@ -15,45 +16,29 @@ export class PostsHelper {
    * Attaches loading indicator to posts
    */
   static init(): Promise<void> {
-    return new Promise(resolve => {
+    return new Promise(async resolve => {
 
-      // Defining mutation observer on the main content
-      const observer = new MutationObserver(mutations => {
+      const target = '[data-tag="post-card"]';
+      const parent = document.getElementById('renderPageContentWrapper') as HTMLDivElement;
 
-        // If any posts were added
-        if (mutations.some(e =>
+      await ObserverHelper.onAddedOnce(parent, target);
 
-          // Checking if any nodes were added
-          e.addedNodes.length > 0
+      setTimeout(() => {
+        document
+          .querySelectorAll(target)
+          .forEach(post => {
+            const postEl = post as HTMLDivElement;
 
-          // Checking if any of the added nodes are post elements
-          && (e.target as HTMLDivElement).closest('#renderPageContentWrapper')?.querySelector('[data-tag="post-card"]')
-        )) {
+            // Checking if the post is available for the user
+            if (!PostsHelper.isPostLocked(postEl as HTMLDivElement) && !Boolean(postEl.dataset['kol_pt_loader'])) {
+              const sibling = InjectHelper.getInjectionTarget(postEl as HTMLDivElement);
 
-          // Discarding observer
-          observer.disconnect();
-
-          setTimeout(() => {
-            document
-              .querySelectorAll('[data-tag="post-card"]')
-              .forEach(post => {
-                const postEl = post as HTMLDivElement;
-
-                // Checking if the post is available for the user
-                if (!PostsHelper.isPostLocked(postEl as HTMLDivElement) && !Boolean(postEl.dataset['kol_pt_loader'])) {
-                  const sibling = InjectHelper.getInjectionTarget(postEl as HTMLDivElement);
-
-                  InjectHelper.postLoader(postEl as HTMLDivElement, sibling);
-                }
-              });
-
-            resolve();
+              InjectHelper.postLoader(postEl as HTMLDivElement, sibling);
+            }
           });
-        }
-      });
 
-      // Observe mutations on the page
-      observer.observe(document.getElementById('renderPageContentWrapper') as any, { childList: true, subtree: true });
+        resolve();
+      });
     });
   }
 

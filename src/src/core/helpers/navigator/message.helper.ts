@@ -20,6 +20,10 @@ export class MessageHelper {
    * @returns The response
    */
   static send<T = any, U = any>(tabId: number, type: MessageType, payload?: T): Promise<U> {
-    return chrome.tabs.sendMessage(tabId, { type, payload });
+    if (Boolean(chrome.tabs)) {
+      return chrome.tabs.sendMessage(tabId, { type, payload });
+    } else {
+      return new Promise(resolve => chrome.runtime.sendMessage({ tabId, type, payload }, resolve));
+    }
   }
 }
