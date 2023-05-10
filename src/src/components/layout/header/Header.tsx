@@ -1,9 +1,11 @@
 import styles from './Header.module.scss';
 
-import { IconButton, Tooltip } from '@mui/material';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Page } from '../../../core/enums/page.enum';
 import { usePostStore } from '../../../state/posts.state';
+import { IconButton, Tab, Tabs, Tooltip } from '@mui/material';
 import { NavigationHelper } from '../../../core/helpers/navigator/navigation.helper';
-import { Link } from 'react-router-dom';
 
 
 
@@ -15,7 +17,9 @@ import { Link } from 'react-router-dom';
  * @returns {JSX.Element} The JSX representation of the component.
  */
 function Header(): JSX.Element {
+  const navigate = useNavigate();
   const { loadPosts } = usePostStore();
+  const [value, setValue] = useState(0);
 
   /**
    * @description
@@ -23,6 +27,28 @@ function Header(): JSX.Element {
    */
   const onRefresh = () => {
     loadPosts(false);
+  }
+
+  /**
+   * @description
+   * Handles navigation change on the tabs
+   *
+   * @param tab The new tab index
+   */
+  const onNavigate = (_: React.SyntheticEvent, tab: number) => {
+    setValue(tab);
+  };
+
+  /**
+   * @description
+   * Handles page redirects
+   *
+   * @param event The mouse clock event object
+   * @param page The target page
+   */
+  const onTabClick = (event: React.MouseEvent, page: Page) => {
+    event.preventDefault();
+    navigate(page);
   }
 
   return (
@@ -73,9 +99,15 @@ function Header(): JSX.Element {
       </header>
 
       <nav>
-        <Link to='/feed'>Feed </Link>
-        -
-        <Link to='/entries'> Entries</Link>
+        <Tabs
+          variant='fullWidth'
+          value={value}
+          onChange={onNavigate}
+          aria-label="Main navigation tabs"
+        >
+          <Tab label="Feed" onClick={e => onTabClick(e, Page.Feed)} />
+          <Tab label="Entries" onClick={e => onTabClick(e, Page.Entries)} />
+        </Tabs>
       </nav>
     </>
   );

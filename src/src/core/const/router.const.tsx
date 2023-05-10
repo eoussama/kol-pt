@@ -1,7 +1,8 @@
+import { Page } from '../enums/page.enum';
+import App from '../../components/pages/app/App';
 import Feed from '../../components/pages/feed/Feed';
 import Entries from '../../components/pages/entries/Entries';
 import { Navigate, createBrowserRouter } from 'react-router-dom';
-import App from '../../components/pages/app/App';
 
 
 
@@ -11,20 +12,20 @@ import App from '../../components/pages/app/App';
  */
 export const router = createBrowserRouter([
   {
-    path: '/',
+    path: Page.Index,
     element: <App />,
     children: [
       {
-        path: 'feed',
+        path: Page.Feed,
         element: <Feed />,
       },
       {
-        path: 'entries',
+        path: Page.Entries,
         element: <Entries />,
       },
       {
         index: true,
-        element: <Navigate to='/feed' />
+        element: <Navigate to={Page.Feed} />
       }
     ]
   },
