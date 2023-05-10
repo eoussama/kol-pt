@@ -66,7 +66,7 @@ function Feed(): JSX.Element {
             </>
           }
         </PostError>
-      </ul >
+      </ul>
     </>
   );
 }

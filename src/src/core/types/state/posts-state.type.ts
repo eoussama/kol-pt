@@ -28,12 +28,6 @@ export interface IPostsState {
 
   /**
    * @description
-   * Function to clear the cache of loaded posts.
-   */
-  clearCache: () => void;
-
-  /**
-   * @description
    * Function to load posts. If `cache` is true, attempts to load posts from cache.
    * Otherwise, loads posts from API.
    * 

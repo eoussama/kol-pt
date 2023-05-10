@@ -1,4 +1,4 @@
-import styles from './PostError.module.scss';
+import styles from './Error.module.scss';
 
 import { Fragment } from 'react';
 import WarningIcon from '@mui/icons-material/Warning';

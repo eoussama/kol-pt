@@ -1,3 +1,4 @@
+import { ISearch } from "../types/search.type";
 import { IOption } from "../types/option.type";
 import { IEntry } from "../types/entry/entry.type";
 import { EntryType } from "../enums/entry-type.enum";
@@ -11,7 +12,7 @@ import { NavigationHelper } from "../helpers/navigator/navigation.helper";
  * @description
  * Represents a media entry, such as a movie, anime, cartoon or YouTube video.
  */
-export class Entry {
+export class Entry implements ISearch {
 
   /**
    * @description
@@ -87,5 +88,23 @@ export class Entry {
         icon: IconHelper.getIcon('imdb', 'platforms')
       }
     ]
+  }
+
+  /**
+   * @description
+   * Checks if model matches search query
+   *
+   * @param search The search query
+   */
+  match(search: string): boolean {
+    const query = search.toLowerCase();
+    const searchTarget = this.title
+      .concat(this.title)
+      .concat(this.shortTitle)
+      .concat(this.imdbId ?? '')
+      .concat(this.altTitles.join())
+      .toLowerCase();
+
+    return searchTarget.includes(query);
   }
 }

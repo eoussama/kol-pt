@@ -49,11 +49,5 @@ export const usePostStore = create<IPostsState>(set => ({
     } finally {
       set({ loading: false });
     }
-  },
-
-  /**
-   * @description
-   * Clears the cache for posts.
-   */
-  clearCache: () => { CacheHelper.clear() }
+  }
 }));
