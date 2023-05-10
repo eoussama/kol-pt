@@ -1,3 +1,4 @@
+import * as utf8 from 'utf8';
 import * as base64 from 'base-64';
 
 
@@ -15,7 +16,8 @@ export class Base64Helper {
    * @param input The input to encryption
    */
   static encrypt(input: string): string {
-    return base64.encode(input);
+    const bytes = utf8.encode(input);
+    return base64.encode(bytes);
   }
 
   /**
