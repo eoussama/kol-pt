@@ -2,7 +2,7 @@ import { Page } from '../enums/page.enum';
 import App from '../../components/pages/app/App';
 import Feed from '../../components/pages/feed/Feed';
 import Entries from '../../components/pages/entries/Entries';
-import { Navigate, createBrowserRouter } from 'react-router-dom';
+import { Navigate, createBrowserRouter, createHashRouter } from 'react-router-dom';
 
 
 
@@ -10,7 +10,7 @@ import { Navigate, createBrowserRouter } from 'react-router-dom';
  * @description
  * The routing hierarchy
  */
-export const router = createBrowserRouter([
+export const router = createHashRouter([
   {
     path: Page.Index,
     element: <App />,
