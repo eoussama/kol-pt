@@ -2,11 +2,16 @@ import { Entry } from "../../models/entry.model";
 import { Anime } from "../../models/anime.model";
 import { FirebaseHelper } from "./firebase.helper";
 import { Nullable } from "../../types/nullable.type";
+import { YouTube } from "../../models/youtube.model";
 import { IEntry } from "../../types/entry/entry.type";
 import { EntryType } from "../../enums/entry-type.enum";
 
 
 
+/**
+ * @description
+ * Helps with managing entries
+ */
 export class EntriesHelper {
 
   /**
@@ -47,6 +52,7 @@ export class EntriesHelper {
   static initEntry(entry: IEntry): Entry {
     switch (entry.type) {
       case EntryType.Anime: return new Anime(entry as any);
+      case EntryType.YouTube: return new YouTube(entry as any);
       default: return new Entry(entry);
     }
   }

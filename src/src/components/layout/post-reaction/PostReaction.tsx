@@ -62,7 +62,11 @@ function PostReaction(props: IPostReactionProps): JSX.Element {
           {tag.getDetailDescription()}
 
           <span className={styles['reaction__extra']}>
-            , {tag.getDetailExtra()}
+            , Starts at <span
+              className={styles['reaction__highlight']}
+              onClick={() => onSkip(tag.startTime)}>{tag.getReadableStartTime()}
+            </span>
+            , Duration: {tag.getReadableDuration()}
           </span>
         </div>
       </div>

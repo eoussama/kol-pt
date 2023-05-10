@@ -90,17 +90,26 @@ export class Tag {
    * @returns A string describing the tag and the episode it corresponds to
    */
   getDetailDescription(): string {
-    return `Episode ${this.label}`;
+    switch (this.entry.type) {
+      case EntryType.Anime: return `Episode ${this.label}`;
+      default: return `${this.label}`;
+    }
   }
 
   /**
    * @description
-   * Gets extra details about the tag
-   *
-   * @returns A string representing the start time of the tag and the duration of the reaction
+   * Returns a human readable reaction starting time
    */
-  getDetailExtra(): string {
-    return `Starts at ${TimeHelper.parse(this.startTime)}, Reaction time: ${TimeHelper.format(this.endTime - this.startTime)}`;
+  getReadableStartTime(): string {
+    return TimeHelper.parse(this.startTime);
+  }
+
+  /**
+   * @description
+   * Returns a human readable reaction duration
+   */
+  getReadableDuration(): string {
+    return TimeHelper.format(this.endTime - this.startTime);
   }
 
   /**

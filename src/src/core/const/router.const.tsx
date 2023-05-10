@@ -2,7 +2,7 @@ import { Page } from '../enums/page.enum';
 import App from '../../components/pages/app/App';
 import Feed from '../../components/pages/feed/Feed';
 import Entries from '../../components/pages/entries/Entries';
-import { Navigate, createBrowserRouter, createHashRouter } from 'react-router-dom';
+import { Navigate, createHashRouter } from 'react-router-dom';
 
 
 

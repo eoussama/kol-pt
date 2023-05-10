@@ -10,15 +10,15 @@ export interface IYouTubeEntry extends IEntry {
 
   /**
    * @description
-   * The URL of the YouTube video.
+   * The ID of the YouTube video.
    */
-  videoUrl: string;
+  videoId: string;
 
   /**
    * @description
-   * The URL of the YouTube channel that uploaded the video.
+   * The YouTube channel handle id.
    */
-  channelUrl: string;
+  channelId: string;
 
   /**
    * @description

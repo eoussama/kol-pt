@@ -78,7 +78,7 @@ export class Entry implements ISearch {
    *
    * @param context The parent tag's context, passed for extra context
    */
-  getOptions(context: IEntryContext): Array<IOption> {
+  getOptions(context?: IEntryContext): Array<IOption> {
     return [
       {
         iconAlt: 'IMDb icon',

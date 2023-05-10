@@ -44,6 +44,20 @@
     color: #b9b9b9;
   }
 
+  &__highlight {
+    cursor: pointer;
+    
+    opacity: 0.8;
+    font-weight: 600;
+
+    transition-duration: 0.2s;
+    transition-property: opacity;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+
   &:not(:last-of-type) {
     border-bottom: 1px solid #e1e1e1;
   }

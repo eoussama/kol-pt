@@ -141,4 +141,28 @@ export class NavigationHelper {
   }
 
   //#endregion
+
+  //#region YouTube
+
+  /**
+   * @description
+   * Opens YouTube video in a new tab.
+   *
+   * @param videoId The ID of the YouTube video
+   */
+  static openYoutubeVideo(videoId: string): void {
+    window.open(`https://www.youtube.com/watch?v=${videoId}`, '_blank');
+  }
+
+  /**
+   * @description
+   * Opens YouTube channel in a new tab.
+   *
+   * @param channelId The handle ID of the channel
+   */
+  static openYoutubeChannel(channelId: string): void {
+    window.open(`https://www.youtube.com/@${channelId}`, '_blank');
+  }
+
+  //#endregion
 }
