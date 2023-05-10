@@ -2,13 +2,14 @@ import styles from './Feed.module.scss';
 
 import { useState } from 'react';
 import Empty from '../../empty/Empty';
+import Search from '../../layout/search/Search';
 import { usePosts } from '../../../hooks/posts.hook';
 import PostCard from '../../layout/post-card/PostCard';
 import ViewListIcon from '@mui/icons-material/ViewList';
 import PostError from '../../layout/post-error/PosrError';
+import { Chip, IconButton, Tooltip } from '@mui/material';
 import ViewStreamIcon from '@mui/icons-material/ViewStream';
 import { ViewMode } from '../../../core/enums/view-mode.enum';
-import { Chip, IconButton, InputBase, Tooltip } from '@mui/material';
 import RestartAltOutlinedIcon from '@mui/icons-material/RestartAltOutlined';
 
 
@@ -31,35 +32,28 @@ function Feed(): JSX.Element {
 
   return (
     <>
-      <h3 className={styles['title']}>
-        <span className={styles['title__search']}>
-          <InputBase
-            size="small"
-            type='search'
-            onChange={onSearch}
-            placeholder='Search...'
-            className={styles['search']}
-          />
-        </span>
+      <Search
+        onSearch={onSearch}
+        actions={
+          <>
+            <Tooltip title="Expanded">
+              <IconButton color={expandedViewColor} size='small' aria-label="expanded" onClick={() => setViewMode(ViewMode.Expanded)}>
+                <ViewStreamIcon />
+              </IconButton>
+            </Tooltip>
 
-        <div className={styles['title__actions']}>
-          <Tooltip title="Expanded">
-            <IconButton color={expandedViewColor} size='small' aria-label="expanded" onClick={() => setViewMode(ViewMode.Expanded)}>
-              <ViewStreamIcon />
-            </IconButton>
-          </Tooltip>
+            <Tooltip title="Compact">
+              <IconButton color={compactViewColor} size='small' aria-label="compact" onClick={() => setViewMode(ViewMode.Compact)}>
+                <ViewListIcon />
+              </IconButton>
+            </Tooltip>
 
-          <Tooltip title="Compact">
-            <IconButton color={compactViewColor} size='small' aria-label="compact" onClick={() => setViewMode(ViewMode.Compact)}>
-              <ViewListIcon />
-            </IconButton>
-          </Tooltip>
-
-          <Tooltip title="Available streams">
-            <Chip className={styles['title__count']} size='small' label={postsCount} />
-          </Tooltip>
-        </div>
-      </h3>
+            <Tooltip title="Available Streams">
+              <Chip className={styles['actions__count']} size='small' label={postsCount} />
+            </Tooltip>
+          </>
+        }
+      />
 
       <ul className={styles['cards']}>
         <PostError error={error} message='Could not load data'>

@@ -1,5 +1,8 @@
 import styles from './Entries.module.scss';
 
+import Search from '../../layout/search/Search';
+import { Chip, Tooltip } from '@mui/material';
+
 
 
 /**
@@ -8,9 +11,20 @@ import styles from './Entries.module.scss';
  * on one place.
  */
 function Entries(): JSX.Element {
-  return <>
-    Entries {Date.now()}
-  </>
+  return (
+    <>
+      <Search
+        onSearch={console.log}
+        actions={
+          <>
+            <Tooltip title="Available Entries">
+              <Chip className={styles['actions__count']} size='small' label={0} />
+            </Tooltip>
+          </>
+        }
+      />
+    </>
+  );
 }
 
 export default Entries;
