@@ -12,7 +12,7 @@ import { IPostErrorProps } from '../../../core/types/props/post-error.type';
  *
  * @param props The error props
  */
-function PostError(props: IPostErrorProps): JSX.Element {
+function Error(props: IPostErrorProps): JSX.Element {
   const { error, message, children } = props;
 
   if (!error) {
@@ -27,4 +27,4 @@ function PostError(props: IPostErrorProps): JSX.Element {
   </>
 }
 
-export default PostError;
+export default Error;

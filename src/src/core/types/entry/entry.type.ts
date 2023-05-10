@@ -22,12 +22,6 @@ export interface IEntry {
 
   /**
    * @description
-   * Short title for the entry
-   */
-  shortTitle?: string;
-
-  /**
-   * @description
    * Alternative titles for the entry
    */
   altTitles?: Array<string>;

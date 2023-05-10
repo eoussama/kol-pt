@@ -59,8 +59,8 @@ export class Entry implements ISearch {
     this.title = model?.title ?? '';
     this.imdbId = model?.imdbId ?? '';
     this.type = model?.type ?? EntryType.Anime;
-    this.shortTitle = model?.shortTitle ?? this.title ?? '';
-    this.altTitles = model?.altTitles ?? [this.shortTitle ?? ''];
+    this.altTitles = model?.altTitles ?? [this.title];
+    this.shortTitle = this.altTitles.sort((a: string, b: string) => a.length - b.length)[0] ?? this.title ?? '';
   }
 
   /**

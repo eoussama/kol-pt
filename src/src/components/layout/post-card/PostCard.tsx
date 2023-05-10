@@ -71,7 +71,7 @@ function PostCard(props: IPostCardProps): JSX.Element {
                 <Chip
                   size='small'
                   className={styles['tag']}
-                  label={tag.getMinTitle()}
+                  label={tag.getShortTitle()}
                   onClick={e => goToReaction(e, tag.id)}
                 />
               </Tooltip>

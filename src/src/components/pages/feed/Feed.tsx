@@ -6,7 +6,7 @@ import Search from '../../layout/search/Search';
 import { usePosts } from '../../../hooks/posts.hook';
 import PostCard from '../../layout/post-card/PostCard';
 import ViewListIcon from '@mui/icons-material/ViewList';
-import PostError from '../../layout/post-error/PosrError';
+import Error from '../../layout/error/Error';
 import { Chip, IconButton, Tooltip } from '@mui/material';
 import ViewStreamIcon from '@mui/icons-material/ViewStream';
 import { ViewMode } from '../../../core/enums/view-mode.enum';
@@ -56,7 +56,7 @@ function Feed(): JSX.Element {
       />
 
       <ul className={styles['cards']}>
-        <PostError error={error} message='Could not load data'>
+        <Error error={error} message='Could not load data'>
           {loading
             ? <div className={styles['cards__loader']}>{<RestartAltOutlinedIcon />}</div>
             : <>
@@ -65,7 +65,7 @@ function Feed(): JSX.Element {
               </Empty>
             </>
           }
-        </PostError>
+        </Error>
       </ul>
     </>
   );

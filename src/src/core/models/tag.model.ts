@@ -79,7 +79,7 @@ export class Tag {
    *
    * @returns A string representing the entry's title and the tag's label
    */
-  getMinTitle(): string {
+  getShortTitle(): string {
     return `${this.entry?.shortTitle} - ${this.label}`;
   }
 

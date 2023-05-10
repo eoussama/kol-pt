@@ -3,7 +3,7 @@ import styles from './Entries.module.scss';
 import Search from '../../layout/search/Search';
 import { Chip, Tooltip } from '@mui/material';
 import { useEntries } from '../../../hooks/entries.hook';
-import PostError from '../../layout/post-error/PosrError';
+import Error from '../../layout/error/Error';
 import RestartAltOutlinedIcon from '@mui/icons-material/RestartAltOutlined';
 import Empty from '../../empty/Empty';
 
@@ -21,7 +21,7 @@ function Entries(): JSX.Element {
   return (
     <>
       <Search
-        onSearch={console.log}
+        onSearch={onSearch}
         actions={
           <>
             <Tooltip title="Available Entries">
@@ -32,16 +32,18 @@ function Entries(): JSX.Element {
       />
 
       <ul className={styles['entries']}>
-        <PostError error={error} message='Could not load data'>
+        <Error error={error} message='Could not load data'>
           {loading
             ? <div className={styles['cards__loader']}>{<RestartAltOutlinedIcon />}</div>
             : <>
               <Empty message={emptyMessage}>
-                {entries.map(post => <li key={post.id} className={styles['cards-wrapper']}>entry</li>)}
+                {entries.map(post => <li key={post.id} className={styles['cards-wrapper']}>
+                  {post.title} - {post.altTitles.join(',')}
+                </li>)}
               </Empty>
             </>
           }
-        </PostError>
+        </Error>
       </ul>
     </>
   );
