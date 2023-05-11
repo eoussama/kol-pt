@@ -1,7 +1,7 @@
 import styles from './Feed.module.scss';
 
 import { useState } from 'react';
-import Empty from '../../empty/Empty';
+import Empty from '../../layout/empty/Empty';
 import Search from '../../layout/search/Search';
 import { usePosts } from '../../../hooks/posts.hook';
 import PostCard from '../../layout/post-card/PostCard';

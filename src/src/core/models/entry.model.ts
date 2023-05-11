@@ -1,10 +1,11 @@
-import { ISearch } from "../types/search.type";
-import { IOption } from "../types/option.type";
-import { IEntry } from "../types/entry/entry.type";
-import { EntryType } from "../enums/entry-type.enum";
-import { IconHelper } from "../helpers/asset/icon.helper";
-import { IEntryContext } from "../types/tag/entry-context.type";
-import { NavigationHelper } from "../helpers/navigator/navigation.helper";
+import { Post } from './post.model';
+import { ISearch } from '../types/search.type';
+import { IOption } from '../types/option.type';
+import { IEntry } from '../types/entry/entry.type';
+import { EntryType } from '../enums/entry-type.enum';
+import { IconHelper } from '../helpers/asset/icon.helper';
+import { IEntryContext } from '../types/tag/entry-context.type';
+import { NavigationHelper } from '../helpers/navigator/navigation.helper';
 
 
 
@@ -51,6 +52,12 @@ export class Entry implements ISearch {
   type: EntryType;
 
   /**
+   * @description
+   * The list of all posts that include the entry
+   */
+  reactions: Array<Post>;
+
+  /**
    * @constructor
    * @param model An optional object containing the initial values for the Entry.
    */
@@ -61,6 +68,12 @@ export class Entry implements ISearch {
     this.type = model?.type ?? EntryType.Anime;
     this.altTitles = model?.altTitles ?? [this.title];
     this.shortTitle = this.altTitles.sort((a: string, b: string) => a.length - b.length)[0] ?? this.title ?? '';
+
+    if (model && 'reactions' in model) {
+      this.reactions = (model?.reactions as Array<Post>) ?? [];
+    } else {
+      this.reactions = [];
+    }
   }
 
   /**
@@ -111,6 +124,7 @@ export class Entry implements ISearch {
       .concat(this.title)
       .concat(this.shortTitle)
       .concat(this.imdbId ?? '')
+      .concat(this.getTypeName())
       .concat(this.altTitles.join())
       .toLowerCase();
 

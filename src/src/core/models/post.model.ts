@@ -69,11 +69,11 @@ export class Post implements ISearch {
     const query = search.toLowerCase();
     const searchTarget = this.title
       .concat(this.description)
-      .concat(this.creationDate.toLocaleString())
       .concat(this.getTagsQuery())
+      .concat(this.creationDate.toLocaleString())
       .toLowerCase();
 
-    return searchTarget.includes(query);
+    return searchTarget.includes(query) || this.tags.some(tag => tag.entry.match(query));
   }
 
   /**
@@ -85,9 +85,6 @@ export class Post implements ISearch {
       .map(tag => tag.label
         .toString()
         .concat(tag.description)
-        .concat(tag.entry.title)
-        .concat(tag.entry.shortTitle)
-        .concat(tag.entry.altTitles.join())
       )
       .join('');
   }

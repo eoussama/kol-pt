@@ -1,11 +1,12 @@
 import styles from './Entries.module.scss';
 
-import Search from '../../layout/search/Search';
-import { Chip, Tooltip } from '@mui/material';
-import { useEntries } from '../../../hooks/entries.hook';
+import Empty from '../../layout/empty/Empty';
 import Error from '../../layout/error/Error';
+import Search from '../../layout/search/Search';
+import { ListItemText } from '../../styled/ListItemText';
+import { useEntries } from '../../../hooks/entries.hook';
 import RestartAltOutlinedIcon from '@mui/icons-material/RestartAltOutlined';
-import Empty from '../../empty/Empty';
+import { Avatar, Chip, Divider, List, ListItem, ListItemAvatar, Tooltip } from '@mui/material';
 
 
 
@@ -31,20 +32,34 @@ function Entries(): JSX.Element {
         }
       />
 
-      <ul className={styles['entries']}>
+      <List className={styles['entries']}>
         <Error error={error} message='Could not load data'>
           {loading
-            ? <div className={styles['cards__loader']}>{<RestartAltOutlinedIcon />}</div>
+            ? <div className={styles['entries__loader']}>{<RestartAltOutlinedIcon />}</div>
             : <>
               <Empty message={emptyMessage}>
-                {entries.map(post => <li key={post.id} className={styles['cards-wrapper']}>
-                  {post.title} - {post.altTitles.join(',')}
-                </li>)}
+                {entries.map(entry => <div key={entry.id}>
+                  <ListItem className={styles['entry']}>
+                    <ListItemAvatar className={`${styles['entry__type']} ${styles[`entry__type--${entry.type}`]}`}>
+                      <Tooltip title={entry.getTypeName()}>
+                        <Avatar className={styles['entry__avatar']}>{entry.getTypeName()[0]}</Avatar>
+                      </Tooltip>
+                    </ListItemAvatar>
+
+                    <ListItemText
+                      primary={entry.title}
+                      className={styles['entry__detail']}
+                      secondary={<span className={styles['entry__alt']}>{entry.altTitles.join(', ')}</span>}
+                    />
+                  </ListItem>
+                  <Divider variant="inset" component="li" />
+                </div>
+                )}
               </Empty>
             </>
           }
         </Error>
-      </ul>
+      </List>
     </>
   );
 }
