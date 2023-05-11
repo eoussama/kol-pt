@@ -100,8 +100,8 @@ function Header(): JSX.Element {
 
       <nav>
         <Tabs
-          variant='fullWidth'
           value={value}
+          variant='fullWidth'
           onChange={onNavigate}
           aria-label="Main navigation tabs"
         >
