@@ -72,6 +72,15 @@ export class Entry implements ISearch {
   }
 
   /**
+   * @description
+   * Returns the type as a readable name
+   */
+  getTypeName(): string {
+    const types = Object.keys(EntryType).filter(key => isNaN(parseInt(key)));
+    return types[this.type];
+  }
+
+  /**
    * @override
    * @description
    * Gets the list of menu options

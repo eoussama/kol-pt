@@ -59,6 +59,10 @@ function PostReaction(props: IPostReactionProps): JSX.Element {
         </div>
 
         <div className={styles['reaction__description']}>
+          <span
+            className={`${styles['reaction__type']} ${styles['reaction__type--' + tag.entry.type]}`}
+          >{tag.entry.getTypeName()}, </span>
+
           {tag.getDetailDescription()}
 
           <span className={styles['reaction__extra']}>

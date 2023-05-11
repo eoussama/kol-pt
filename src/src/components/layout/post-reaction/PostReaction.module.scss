@@ -32,6 +32,25 @@
     font-weight: 300;
   }
 
+  &__type {
+    font-weight: 500;
+    // &--0 {
+    //   color: #389bf8;
+    // }
+
+    // &--1 {
+    //   color: #50dd68;
+    // }
+
+    // &--2 {
+    //   color: #b362e9;
+    // }
+
+    // &--3 {
+    //   color: #ec3535;
+    // }
+  }
+
   &__right,
   &__extra {
     opacity: 0;
@@ -46,7 +65,7 @@
 
   &__highlight {
     cursor: pointer;
-    
+
     opacity: 0.8;
     font-weight: 600;
 
