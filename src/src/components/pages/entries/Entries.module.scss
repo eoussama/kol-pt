@@ -5,7 +5,11 @@
 }
 
 .entries {
+  overflow: hidden;
+  border-radius: 10px;
+
   padding: 0 !important;
+  margin: 20px 15px !important;
 
   .entry {
     cursor: pointer;
@@ -57,7 +61,7 @@
     }
 
     &:hover {
-      background-color: #f0f0f0;
+      background-color: #f5f5f5;
     }
   }
 }
