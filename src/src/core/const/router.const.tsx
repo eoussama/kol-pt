@@ -1,6 +1,7 @@
 import { Page } from '../enums/page.enum';
 import App from '../../components/pages/app/App';
 import Feed from '../../components/pages/feed/Feed';
+import Entry from '../../components/pages/entry/Entry';
 import Entries from '../../components/pages/entries/Entries';
 import { Navigate, createHashRouter } from 'react-router-dom';
 
@@ -22,6 +23,10 @@ export const router = createHashRouter([
       {
         path: Page.Entries,
         element: <Entries />,
+      },
+      {
+        path: `${Page.Entry}/:entryId`,
+        element: <Entry />,
       },
       {
         index: true,

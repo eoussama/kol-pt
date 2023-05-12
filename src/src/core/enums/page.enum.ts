@@ -20,5 +20,11 @@ export enum Page {
    * @description
    * The entries page list
    */
-  Entries = 'entries'
+  Entries = 'entries',
+
+  /**
+   * @description
+   * The entry detail page
+   */
+  Entry = 'entry'
 }

@@ -3,6 +3,8 @@ import styles from './Entries.module.scss';
 import Empty from '../../layout/empty/Empty';
 import Error from '../../layout/error/Error';
 import Search from '../../layout/search/Search';
+import { useNavigate } from 'react-router-dom';
+import { Page } from '../../../core/enums/page.enum';
 import { ListItemText } from '../../styled/ListItemText';
 import { useEntries } from '../../../hooks/entries.hook';
 import RestartAltOutlinedIcon from '@mui/icons-material/RestartAltOutlined';
@@ -16,8 +18,19 @@ import { Avatar, Chip, Divider, List, ListItem, ListItemAvatar, Tooltip } from '
  * on one place.
  */
 function Entries(): JSX.Element {
+  const navigate = useNavigate();
   const { entries, error, loading, search, entriesCount, onSearch } = useEntries();
   const emptyMessage = entriesCount > 0 ? <>No posts match <b>{search}</b></> : 'No entries found';
+
+  /**
+   * @description
+   * Handles entry detail navigation
+   *
+   * @param entryId The entry ID to navigate to
+   */
+  const onEntryClick = (entryId: string) => {
+    navigate(`/${Page.Entry}/${entryId}`);
+  }
 
   return (
     <>
@@ -39,7 +52,7 @@ function Entries(): JSX.Element {
             : <>
               <Empty message={emptyMessage}>
                 {entries.map(entry => <div key={entry.id}>
-                  <ListItem className={styles['entry']}>
+                  <ListItem className={styles['entry']} onClick={() => onEntryClick(entry.id)}>
                     <ListItemAvatar className={`${styles['entry__type']} ${styles[`entry__type--${entry.type}`]}`}>
                       <Tooltip title={entry.getTypeName()}>
                         <Avatar className={styles['entry__avatar']}>{entry.getTypeName()[0]}</Avatar>

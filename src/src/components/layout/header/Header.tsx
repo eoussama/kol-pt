@@ -1,9 +1,9 @@
 import styles from './Header.module.scss';
 
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useMemo, useState } from 'react';
 import { Page } from '../../../core/enums/page.enum';
 import { usePostStore } from '../../../state/posts.state';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { IconButton, Tab, Tabs, Tooltip } from '@mui/material';
 import { NavigationHelper } from '../../../core/helpers/navigator/navigation.helper';
 
@@ -17,9 +17,28 @@ import { NavigationHelper } from '../../../core/helpers/navigator/navigation.hel
  * @returns {JSX.Element} The JSX representation of the component.
  */
 function Header(): JSX.Element {
+  const location = useLocation();
   const navigate = useNavigate();
   const { loadPosts } = usePostStore();
   const [value, setValue] = useState(0);
+
+  /**
+   * @description
+   * Memorizes the current route
+   */
+  const route = useMemo(() => {
+    const path = location.pathname ?? '';
+    const frags = path.split('/') ?? [];
+    const sanitizedFrags = frags.filter(e => e.trim().length > 0);
+
+    return sanitizedFrags[0];
+  }, [location.pathname]);
+
+  /**
+   * @description
+   * Condition to show/hide the tabs
+   */
+  const canShowTabs = useMemo(() => [Page.Feed, Page.Entries].includes(route as Page), [route]);
 
   /**
    * @description
@@ -98,7 +117,7 @@ function Header(): JSX.Element {
         </div>
       </header>
 
-      <nav>
+      {canShowTabs && <nav>
         <Tabs
           value={value}
           variant='fullWidth'
@@ -108,7 +127,7 @@ function Header(): JSX.Element {
           <Tab label="Feed" onClick={e => onTabClick(e, Page.Feed)} />
           <Tab label="Entries" onClick={e => onTabClick(e, Page.Entries)} />
         </Tabs>
-      </nav>
+      </nav>}
     </>
   );
 }
