@@ -100,7 +100,7 @@ export class Anime extends Entry {
  *
  * @param context The parent tag's context, passed for extra context
  */
-  getOptions(context: IAnimeContext): Array<IOption> {
+  getOptions(context?: IAnimeContext): Array<IOption> {
     const options = super.getOptions(context);
 
     return [
@@ -108,9 +108,9 @@ export class Anime extends Entry {
         divider: true,
         label: 'Watch on Zoro',
         iconAlt: 'Zoro.to icon',
-        canShow: () => Boolean(context.zoroId),
+        canShow: () => Boolean(context?.zoroId),
         icon: IconHelper.getIcon('zoro', 'platforms'),
-        action: () => this.watchZoro.call(this, context.zoroId ?? -1)
+        action: () => this.watchZoro.call(this, context?.zoroId ?? -1)
       },
       {
         iconAlt: 'MAL icon',
