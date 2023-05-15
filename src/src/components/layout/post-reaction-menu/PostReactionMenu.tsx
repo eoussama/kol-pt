@@ -73,7 +73,7 @@ function PostReactionMenu(): JSX.Element {
       transformOrigin={{ horizontal: 'right', vertical: 'top' }}
       anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
     >
-      {tag?.entry.getOptions(tag.context).map((option, i) => option.canShow() && <>
+      {tag?.entry.getOptions(tag.context).filter(option => option.canShow()).map((option, i) => <>
         <MenuItem
           key={i}
           className={styles['popover-item']}
