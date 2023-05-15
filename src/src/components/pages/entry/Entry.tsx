@@ -1,12 +1,12 @@
 import styles from './Entry.module.scss';
 
+import Error from '../../layout/error/Error';
 import { useEffect, useMemo, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import EntryLinks from '../../layout/entry-links/EntryLinks';
-import { EntriesHelper } from '../../../core/helpers/firebase/entries.helper';
 import { Nullable } from '../../../core/types/nullable.type';
 import { Entry as EntryModel } from '../../../core/models/entry.model';
-import Error from '../../layout/error/Error';
+import { EntriesHelper } from '../../../core/helpers/firebase/entries.helper';
 
 
 
@@ -16,6 +16,7 @@ import Error from '../../layout/error/Error';
  */
 function Entry(): JSX.Element {
   const params = useParams();
+  const navigate = useNavigate();
   const [entry, setEntry] = useState<Nullable<EntryModel>>(null);
   const entryId = useMemo(() => params.entryId, [params]);
 
@@ -30,6 +31,7 @@ function Entry(): JSX.Element {
   return (
     <Error error={!entry} message='Could not retrieve entry'>
       <div className={styles['root']}>
+        <button onClick={() => navigate('/entries')}>back</button>
         <EntryLinks entry={entry as EntryModel} />
       </div>
     </Error >

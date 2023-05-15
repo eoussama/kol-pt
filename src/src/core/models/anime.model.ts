@@ -133,6 +133,13 @@ export class Anime extends Entry {
         canShow: () => (this.kitsuId?.length ?? 0) > 0,
         icon: IconHelper.getIcon('kitsu', 'platforms')
       },
+      {
+        label: 'View on Zoro',
+        iconAlt: 'Zoro.to icon',
+        action: this.viewZoro.bind(this),
+        canShow: () => Boolean(this.zoroId),
+        icon: IconHelper.getIcon('zoro', 'platforms'),
+      },
       ...options
     ]
   }
