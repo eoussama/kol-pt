@@ -11,6 +11,8 @@ export class IconHelper {
    * @param icon The name of the icon
    */
   static getIcon(icon: string, category: 'platforms'): string {
-    return chrome.runtime.getURL(`./images/${category}/${icon}.png`);
+    return chrome?.runtime ?
+      chrome.runtime.getURL(`./images/${category}/${icon}.png`)
+      : `./images/${category}/${icon}.png`;
   }
 }
