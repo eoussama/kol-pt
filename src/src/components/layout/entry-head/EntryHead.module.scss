@@ -5,7 +5,7 @@
     &__back {
       display: flex;
       cursor: pointer;
-      
+
       padding: 6px;
       opacity: 0.5;
       transform: scale(0.8);
@@ -104,5 +104,12 @@
       }
     }
 
+    &__genres {
+      padding: 0 25px;
+
+      .head__genre:not(:last-of-type) {
+        margin-right: 8px;
+      }
+    }
   }
 }

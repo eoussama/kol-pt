@@ -21,13 +21,16 @@ export class JikanHelper {
         .then(e => e.json())
         .then(e => e.data)
         .then((e: IJikanResponse) => {
+          console.log(e)
           resolve({
             description: e.synopsis,
-            photo: e.images.webp.large_image_url,
+            genres: e.genres.map(e => e.name),
+            photo: e.images.webp.large_image_url
           });
         })
         .catch(() => {
           resolve({
+            genres: [],
             description: '',
             photo: './images/graphs/placeholder.jpg',
           });

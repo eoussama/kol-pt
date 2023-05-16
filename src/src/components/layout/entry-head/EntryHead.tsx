@@ -1,6 +1,7 @@
 import styles from './EntryHead.module.scss';
 
 import millify from 'millify';
+import { Chip } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Page } from '../../../core/enums/page.enum';
@@ -24,6 +25,7 @@ function EntryHead(props: IEntryPageSectionProps): JSX.Element {
   const [more, setMore] = useState(false);
   const [viewCount, setViewCount] = useState(0);
   const [description, setDescription] = useState('');
+  const [genres, setGenres] = useState<Array<string>>([]);
   const [fullDescription, setFullDescription] = useState('');
   const [photo, setPhoto] = useState('./images/graphs/placeholder.jpg');
 
@@ -50,6 +52,7 @@ function EntryHead(props: IEntryPageSectionProps): JSX.Element {
           .getAnimeInfo((entry as Anime).malId)
           .then(e => {
             setPhoto(e.photo);
+            setGenres(e.genres);
             setFullDescription(e.description);
           });
       } else if (entry.type === EntryType.YouTube) {
@@ -89,11 +92,11 @@ function EntryHead(props: IEntryPageSectionProps): JSX.Element {
       <div className={styles['head__content']}>
         <h5 className={styles['head__type']}>
           {entry.getTypeName()}
-
           {entry.type === EntryType.YouTube &&
             <> - {millify(viewCount)} views</>
           }
         </h5>
+
         <h3 className={styles['head__title']}>{entry.title}</h3>
       </div>
 
@@ -108,7 +111,17 @@ function EntryHead(props: IEntryPageSectionProps): JSX.Element {
           }
         </p>
       </div>
-      <div className={styles['head__genres']}></div>
+
+      {genres.length > 0 &&
+        <div className={styles['head__genres']}>
+          {genres.map((e, i) => <Chip
+            key={i}
+            label={e}
+            size='small'
+            className={styles['head__genre']}
+          />)}
+        </div>
+      }
     </div>
   );
 }

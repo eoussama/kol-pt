@@ -3,11 +3,11 @@ import styles from './Entry.module.scss';
 import Error from '../../layout/error/Error';
 import { useParams } from 'react-router-dom';
 import { useEffect, useMemo, useState } from 'react';
+import EntryHead from '../../layout/entry-head/EntryHead';
 import EntryLinks from '../../layout/entry-links/EntryLinks';
 import { Nullable } from '../../../core/types/nullable.type';
 import { Entry as EntryModel } from '../../../core/models/entry.model';
 import { EntriesHelper } from '../../../core/helpers/firebase/entries.helper';
-import EntryHead from '../../layout/entry-head/EntryHead';
 
 
 

@@ -15,4 +15,10 @@ export interface IAnimeInfo {
    * The photo of the Anime.
    */
   photo: string;
+
+  /**
+   * @description
+   * The list of genres
+   */
+  genres: Array<string>;
 }

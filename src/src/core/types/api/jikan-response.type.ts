@@ -16,4 +16,10 @@ export interface IJikanResponse {
    * Associated Anime images
    */
   images: { webp: { large_image_url: string } };
+
+  /**
+   * @description
+   * The list of genres
+   */
+  genres: Array<{ name: string }>;
 }
