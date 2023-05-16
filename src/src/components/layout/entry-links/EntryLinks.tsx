@@ -16,7 +16,6 @@ function EntryLinks(props: IEntryPageSectionProps): JSX.Element {
   const { entry } = props;
   const links = useMemo(() => entry.getOptions().filter(option => option.canShow()), [entry.id]);
 
-  console.log(links);
   return (
     <div className={styles['entry-links']}>
       <div className={styles['links']}>

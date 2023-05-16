@@ -4,6 +4,9 @@ import { useNavigate } from 'react-router-dom';
 import { Page } from '../../../core/enums/page.enum';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { IEntryPageSectionProps } from '../../../core/types/props/entry-section.props';
+import { useEffect, useState } from 'react';
+import { EntryType } from '../../../core/enums/entry-type.enum';
+import { Anime } from '../../../core/models/anime.model';
 
 
 
@@ -14,6 +17,10 @@ import { IEntryPageSectionProps } from '../../../core/types/props/entry-section.
 function EntryHead(props: IEntryPageSectionProps): JSX.Element {
   const { entry } = props;
   const navigate = useNavigate();
+  const [more, setMore] = useState(false);
+  const [description, setDescription] = useState('');
+  const [fullDescription, setFullDescription] = useState('');
+  const [photo, setPhoto] = useState('./images/graphs/placeholder.jpg');
 
   /**
    * @description
@@ -22,6 +29,38 @@ function EntryHead(props: IEntryPageSectionProps): JSX.Element {
   const onBack = () => {
     navigate(`${Page.Index}${Page.Entries}`);
   }
+
+  /**
+   * @description
+   * Toggles more/less description content
+   */
+  const onMoreToggle = () => {
+    setMore(!more)
+  }
+
+  useEffect(() => {
+    if (entry.id) {
+      if (entry.type === EntryType.Anime) {
+        fetch(`https://api.jikan.moe/v4/anime/${(entry as Anime).malId}`)
+          .then(e => e.json())
+          .then(e => e.data)
+          .then(e => {
+            setPhoto(e.images.webp.large_image_url);
+            setFullDescription(e.synopsis);
+          });
+      } else if (entry.type === EntryType.YouTube) {
+
+      }
+    }
+  }, [entry.id]);
+
+  useEffect(() => {
+    const newDescription = (more && fullDescription.length > 200)
+      ? fullDescription
+      : `${fullDescription.slice(0, 200)}...`;
+
+    setDescription(newDescription);
+  }, [more, fullDescription]);
 
   return (
     <div className={styles['entry-head']}>
@@ -32,7 +71,7 @@ function EntryHead(props: IEntryPageSectionProps): JSX.Element {
       <div className={styles['head__hero']}>
         <div
           className={styles['head__photo']}
-          style={{ backgroundImage: 'url(https://cdn.myanimelist.net/images/anime/6/73245.jpg)' }}
+          style={{ backgroundImage: `url(${photo})` }}
         >
         </div>
       </div>
@@ -40,9 +79,20 @@ function EntryHead(props: IEntryPageSectionProps): JSX.Element {
       <div className={styles['head__content']}>
         <h5 className={styles['head__type']}>{entry.getTypeName()}</h5>
         <h3 className={styles['head__title']}>{entry.title}</h3>
-        <p className={styles['head__description']}>lorem</p>
-        <div className={styles['head__genres']}></div>
       </div>
+
+      <div className={styles['head__description-wrapper']}>
+        <p className={styles['head__description']}>
+          {description}
+          {fullDescription.length > 200 &&
+            <span
+              onClick={onMoreToggle}
+              className={styles['head__more']}
+            >read {more ? 'less' : 'more'}</span>
+          }
+        </p>
+      </div>
+      <div className={styles['head__genres']}></div>
     </div>
   );
 }
