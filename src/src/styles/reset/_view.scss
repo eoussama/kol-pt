@@ -1,6 +1,9 @@
 body.root {
-  width: 400px;
-  height: 500px;
+  --max-width: 400px;
+  --max-height: 500px;
+
+  width: var(--max-width);
+  height: var(--max-height);
 
   #root {
     width: 100%;
