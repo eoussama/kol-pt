@@ -79,8 +79,8 @@ function Header(): JSX.Element {
           </div>
 
           <div className={styles['header__info']}>
-            <h2 className={styles['header__subtitle']}>KOL PT</h2>
-            <h1 className={styles['header__title']}>Feed</h1>
+            <h2 className={styles['header__subtitle']}>test@gmail.com</h2>
+            <h1 className={styles['header__title']}>KOL PT</h1>
           </div>
         </div>
 

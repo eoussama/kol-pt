@@ -6,7 +6,7 @@ import { Entry } from '../../models/entry.model';
  * @description
  * Props of the entry links component.
  */
-export interface IEntryLinksProps {
+export interface IEntryPageSectionProps {
 
   /**
    * @description
