@@ -7,6 +7,7 @@ import { IEntryPageSectionProps } from '../../../core/types/props/entry-section.
 import { useEffect, useState } from 'react';
 import { EntryType } from '../../../core/enums/entry-type.enum';
 import { Anime } from '../../../core/models/anime.model';
+import { JikanHelper } from '../../../core/helpers/api/jikan.helper';
 
 
 
@@ -41,12 +42,11 @@ function EntryHead(props: IEntryPageSectionProps): JSX.Element {
   useEffect(() => {
     if (entry.id) {
       if (entry.type === EntryType.Anime) {
-        fetch(`https://api.jikan.moe/v4/anime/${(entry as Anime).malId}`)
-          .then(e => e.json())
-          .then(e => e.data)
+        JikanHelper
+          .getAnimeInfo((entry as Anime).malId)
           .then(e => {
-            setPhoto(e.images.webp.large_image_url);
-            setFullDescription(e.synopsis);
+            setPhoto(e.photo);
+            setFullDescription(e.description);
           });
       } else if (entry.type === EntryType.YouTube) {
 
