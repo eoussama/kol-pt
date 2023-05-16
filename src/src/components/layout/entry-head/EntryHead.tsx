@@ -1,13 +1,16 @@
 import styles from './EntryHead.module.scss';
 
+import millify from 'millify';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Page } from '../../../core/enums/page.enum';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { IEntryPageSectionProps } from '../../../core/types/props/entry-section.props';
-import { useEffect, useState } from 'react';
-import { EntryType } from '../../../core/enums/entry-type.enum';
 import { Anime } from '../../../core/models/anime.model';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { YouTube } from '../../../core/models/youtube.model';
+import { EntryType } from '../../../core/enums/entry-type.enum';
 import { JikanHelper } from '../../../core/helpers/api/jikan.helper';
+import { YouTubeHelper } from '../../../core/helpers/api/youtube.helper';
+import { IEntryPageSectionProps } from '../../../core/types/props/entry-section.props';
 
 
 
@@ -19,6 +22,7 @@ function EntryHead(props: IEntryPageSectionProps): JSX.Element {
   const { entry } = props;
   const navigate = useNavigate();
   const [more, setMore] = useState(false);
+  const [viewCount, setViewCount] = useState(0);
   const [description, setDescription] = useState('');
   const [fullDescription, setFullDescription] = useState('');
   const [photo, setPhoto] = useState('./images/graphs/placeholder.jpg');
@@ -49,7 +53,13 @@ function EntryHead(props: IEntryPageSectionProps): JSX.Element {
             setFullDescription(e.description);
           });
       } else if (entry.type === EntryType.YouTube) {
-
+        YouTubeHelper
+          .getVideoInfo((entry as YouTube).videoId)
+          .then(e => {
+            setPhoto(e.thumbnail);
+            setViewCount(e.totlaViews);
+            setFullDescription(e.description);
+          });
       }
     }
   }, [entry.id]);
@@ -77,7 +87,13 @@ function EntryHead(props: IEntryPageSectionProps): JSX.Element {
       </div>
 
       <div className={styles['head__content']}>
-        <h5 className={styles['head__type']}>{entry.getTypeName()}</h5>
+        <h5 className={styles['head__type']}>
+          {entry.getTypeName()}
+
+          {entry.type === EntryType.YouTube &&
+            <> - {millify(viewCount)} views</>
+          }
+        </h5>
         <h3 className={styles['head__title']}>{entry.title}</h3>
       </div>
 
