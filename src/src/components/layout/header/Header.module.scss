@@ -21,7 +21,6 @@
   &__info {
     flex: 1;
     margin-left: 5px;
-    line-height: 16px;
   }
 
   &__title,
@@ -35,11 +34,13 @@
   &__title {
     font-size: 18px;
     font-weight: 700;
+    font-family: 'Open Sans';
   }
 
   &__subtitle {
     font-size: 12px;
     font-weight: 400;
+    font-family: 'Open Sans';
   }
 
   &__actions {

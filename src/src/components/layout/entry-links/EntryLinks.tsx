@@ -2,7 +2,7 @@ import styles from './EntryLinks.module.scss';
 
 import { useMemo } from 'react';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
-import { IEntryLinksProps } from '../../../core/types/props/entry-links.props';
+import { IEntryPageSectionProps } from '../../../core/types/props/entry-section.props';
 
 
 
@@ -12,7 +12,7 @@ import { IEntryLinksProps } from '../../../core/types/props/entry-links.props';
  *
  * @param props The component's properties
  */
-function EntryLinks(props: IEntryLinksProps): JSX.Element {
+function EntryLinks(props: IEntryPageSectionProps): JSX.Element {
   const { entry } = props;
   const links = useMemo(() => entry.getOptions().filter(option => option.canShow()), [entry.id]);
 
