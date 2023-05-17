@@ -2,18 +2,14 @@ import styles from './EntryHead.module.scss';
 
 import millify from 'millify';
 import { Chip } from '@mui/material';
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Page } from '../../../core/enums/page.enum';
-import { Anime } from '../../../core/models/anime.model';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { YouTube } from '../../../core/models/youtube.model';
-import { EntryType } from '../../../core/enums/entry-type.enum';
-import { JikanHelper } from '../../../core/helpers/api/jikan.helper';
-import { YouTubeHelper } from '../../../core/helpers/api/youtube.helper';
-import { IEntryPageSectionProps } from '../../../core/types/props/entry-section.props.type';
 import Loader from '../loader/Loader';
+import { useNavigate } from 'react-router-dom';
 import TextExpand from '../text-expand/TextExpand';
+import { useEntry } from '../../../hooks/entry.hook';
+import { Page } from '../../../core/enums/page.enum';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { EntryType } from '../../../core/enums/entry-type.enum';
+import { IEntryPageSectionProps } from '../../../core/types/props/entry-section.props.type';
 
 
 
@@ -24,12 +20,7 @@ import TextExpand from '../text-expand/TextExpand';
 function EntryHead(props: IEntryPageSectionProps): JSX.Element {
   const { entry } = props;
   const navigate = useNavigate();
-
-  const [loading, setLoading] = useState(false);
-  const [viewCount, setViewCount] = useState(0);
-  const [description, setDescription] = useState('');
-  const [genres, setGenres] = useState<Array<string>>([]);
-  const [photo, setPhoto] = useState('./images/graphs/placeholder.jpg');
+  const {loading, photo, description, genres, viewCount} = useEntry(entry);
 
   /**
    * @description
@@ -38,32 +29,6 @@ function EntryHead(props: IEntryPageSectionProps): JSX.Element {
   const onBack = () => {
     navigate(`${Page.Index}${Page.Entries}`);
   }
-
-  useEffect(() => {
-    if (entry.id) {
-      setLoading(true);
-
-      if (entry.type === EntryType.Anime) {
-        JikanHelper
-          .getAnimeInfo((entry as Anime).malId)
-          .then(e => {
-            setPhoto(e.photo);
-            setGenres(e.genres);
-            setDescription(e.description);
-          })
-          .finally(() => setLoading(false));
-      } else if (entry.type === EntryType.YouTube) {
-        YouTubeHelper
-          .getVideoInfo((entry as YouTube).videoId)
-          .then(e => {
-            setPhoto(e.thumbnail);
-            setViewCount(e.totlaViews);
-            setDescription(e.description);
-          })
-          .finally(() => setLoading(false));
-      }
-    }
-  }, [entry.id]);
 
   return (
     <div className={styles['entry-head']}>
