@@ -1,12 +1,15 @@
 import { useEffect, useState } from 'react';
+import { Tag } from '../core/models/tag.model';
 import { Entry } from '../core/models/entry.model';
 import { Anime } from '../core/models/anime.model';
 import { Nullable } from '../core/types/nullable.type';
 import { YouTube } from '../core/models/youtube.model';
+import { IReaction } from '../core/types/reaction.type';
 import { EntryType } from '../core/enums/entry-type.enum';
 import { JikanHelper } from '../core/helpers/api/jikan.helper';
 import { YouTubeHelper } from '../core/helpers/api/youtube.helper';
 import { EntriesHelper } from '../core/helpers/firebase/entries.helper';
+import { IAnimeInfo } from '../core/types/api/anime-info.type';
 
 
 
@@ -22,8 +25,34 @@ export function useEntry(entryId: string) {
   const [description, setDescription] = useState('');
   const [genres, setGenres] = useState<Array<string>>([]);
   const [entry, setEntry] = useState<Nullable<Entry>>(null);
+  const [reactions, setReactions] = useState<Array<IReaction>>([]);
   const [photo, setPhoto] = useState('./images/graphs/placeholder.jpg');
   const [altTitles, setAltTitles] = useState<Array<{ title: string, official: boolean }>>([]);
+
+  /**
+   * @description
+   * Sanitizes alternative titles of an entry.
+   *
+   * @param animeInfo The Anime MAL info
+   * @param entry The target entry
+   */
+  const sanitizeAltTitles = (animeInfo: IAnimeInfo, entry: Entry) => {
+
+    // Sanitizing MAL's alt titles
+    const officialAltTitles = animeInfo.altTitles
+      .map(e => ({ ...e, title: e.title?.toString()?.trim() ?? '' }))
+      .filter(e => e.title?.length > 0)
+      .filter(e => e.title !== entry.title);
+
+    // Mapping KOL's own alt titles
+    const kolAltTitles = entry.altTitles.map(e => ({ title: e, official: false }));
+
+    // Merging alt titles and removing duplicates
+    const mergedAltTitles = [...officialAltTitles, ...kolAltTitles]
+      .filter((altTitle, i, tmp) => tmp.findIndex(e => e.title === altTitle.title) === i);
+
+    return mergedAltTitles;
+  }
 
   useEffect(() => {
     if (entryId) {
@@ -40,21 +69,8 @@ export function useEntry(entryId: string) {
                 setPhoto(e.photo);
                 setGenres(e.genres);
                 setDescription(e.description);
-
-                // Sanitizing MAL's alt titles
-                const officialAltTitles = e.altTitles
-                  .map(e => ({ ...e, title: e.title?.toString()?.trim() ?? '' }))
-                  .filter(e => e.title?.length > 0)
-                  .filter(e => e.title !== entry.title);
-
-                // Mapping KOL's own alt titles
-                const kolAltTitles = entry.altTitles.map(e => ({ title: e, official: false }));
-
-                // Merging alt titles and removing duplicates
-                const mergedAltTitles = [...officialAltTitles, ...kolAltTitles]
-                  .filter((altTitle, i, tmp) => tmp.findIndex(e => e.title === altTitle.title) === i);
-
-                setAltTitles(mergedAltTitles);
+                setAltTitles(sanitizeAltTitles(e, entry));
+                EntriesHelper.getReactions(entryId).then(setReactions);
               })
               .finally(() => setLoading(false));
           } else if (entry?.type === EntryType.YouTube) {
@@ -73,5 +89,5 @@ export function useEntry(entryId: string) {
     }
   }, [entryId]);
 
-  return { loading, entry, photo, description, genres, viewCount, altTitles };
+  return { loading, entry, photo, description, viewCount, genres, altTitles, reactions };
 }

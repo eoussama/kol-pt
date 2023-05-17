@@ -4,10 +4,10 @@ import { useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { useEntry } from '../../../hooks/entry.hook';
 import Error from '../../layout/generic/error/Error';
+import { Entry } from '../../../core/models/entry.model';
 import EntryAka from '../../layout/entry/entry-aka/EntryAka';
 import EntryHead from '../../layout/entry/entry-head/EntryHead';
 import EntryLinks from '../../layout/entry/entry-links/EntryLinks';
-import { Entry as EntryModel } from '../../../core/models/entry.model';
 import EntryReactions from '../../layout/entry/entry-reactions/EntryReactions';
 
 
@@ -19,7 +19,7 @@ import EntryReactions from '../../layout/entry/entry-reactions/EntryReactions';
 function EntryPage(): JSX.Element {
   const params = useParams();
   const entryId = useMemo(() => params.entryId, [params]);
-  const { loading, entry, description, photo, viewCount, altTitles, genres } = useEntry(entryId ?? '');
+  const { loading, entry, description, photo, viewCount, altTitles, genres, reactions } = useEntry(entryId ?? '');
 
   return (
     <Error error={!entry} message='Could not retrieve entry'>
@@ -30,7 +30,7 @@ function EntryPage(): JSX.Element {
           loading={loading}
           viewCount={viewCount}
           description={description}
-          entry={entry as EntryModel}
+          entry={entry as Entry}
         />
 
         <EntryAka
@@ -38,10 +38,13 @@ function EntryPage(): JSX.Element {
         />
 
         <EntryLinks
-          entry={entry as EntryModel}
+          entry={entry as Entry}
         />
 
-        <EntryReactions />
+        <EntryReactions
+          reactions={reactions}
+          entry={entry as Entry}
+        />
       </div>
     </Error >
   );

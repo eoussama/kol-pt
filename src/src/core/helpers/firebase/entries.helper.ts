@@ -1,10 +1,12 @@
-import { Entry } from "../../models/entry.model";
-import { Anime } from "../../models/anime.model";
-import { FirebaseHelper } from "./firebase.helper";
-import { Nullable } from "../../types/nullable.type";
-import { YouTube } from "../../models/youtube.model";
-import { IEntry } from "../../types/entry/entry.type";
-import { EntryType } from "../../enums/entry-type.enum";
+import { PostsHelper } from './posts.helper';
+import { Entry } from '../../models/entry.model';
+import { Anime } from '../../models/anime.model';
+import { FirebaseHelper } from './firebase.helper';
+import { Nullable } from '../../types/nullable.type';
+import { YouTube } from '../../models/youtube.model';
+import { IEntry } from '../../types/entry/entry.type';
+import { IReaction } from '../../types/reaction.type';
+import { EntryType } from '../../enums/entry-type.enum';
 
 
 
@@ -41,6 +43,32 @@ export class EntriesHelper {
   static async get(id: string, cache: boolean = true): Promise<Nullable<Entry>> {
     const data = await this.load(cache);
     return data.find(entry => entry.id === id);
+  }
+
+
+  /**
+   * @description
+   * Retrieves reactions of a certain entry
+   *
+   * @param id The ID of the entry to get the reactions of
+   * @param cache Whether to use cache when needed
+   */
+  static getReactions(id: string, cache: boolean = true): Promise<Array<IReaction>> {
+    return new Promise(async resolve => {
+      const posts = await PostsHelper.load(cache);
+      const associatedPosts = posts.filter(post => post.tags.some(tag => tag.entry.id === id));
+
+      const result: Array<IReaction> = associatedPosts
+        .flatMap(post => post.tags
+          .filter(tag => tag.entry.id === id)
+          .map(tag => ({
+            tag: tag,
+            postId: post.id,
+            date: post.creationDate
+          })));
+
+      resolve(result);
+    });
   }
 
   /**

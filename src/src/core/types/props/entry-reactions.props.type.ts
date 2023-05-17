@@ -1,3 +1,4 @@
+import { IReaction } from '../reaction.type';
 import { Entry } from '../../models/entry.model';
 
 
@@ -8,4 +9,15 @@ import { Entry } from '../../models/entry.model';
  */
 export interface IEntryPageReactionsSectionProps {
 
+  /**
+   * @description
+   * The parent entry.
+   */
+  entry: Entry;
+
+  /**
+   * @description
+   * The list of associated reactions.
+   */
+  reactions: Array<IReaction>;
 }

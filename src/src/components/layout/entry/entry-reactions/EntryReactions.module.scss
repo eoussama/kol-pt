@@ -7,6 +7,59 @@
     font-size: 16px;
     font-weight: 600;
 
+    margin-bottom: 15px;
     color: var(--color-text);
+  }
+
+  .reactions {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+
+    overflow: hidden;
+    border-radius: 10px;
+
+    .reaction {
+      padding: 8px 5px 8px 15px;
+      background-color: #ffffff;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      &__title {
+        font-size: 14px;
+        color: var(--color-text);
+        font-weight: 400;
+      }
+
+      &__date {
+        color: rgba(var(--color-text-rgb), 0.6);
+        font-size: 12px;
+        font-weight: 300;
+      }
+
+      &__right {
+        opacity: 0;
+
+        transition-duration: 0.2s;
+        transition-property: opacity;
+
+        button {
+          color: #b9b9b9;
+        }
+      }
+
+      &:not(:last-of-type) {
+        border-bottom: 1px solid #f3f3f3;
+      }
+
+      &:hover {
+
+        .reaction__right {
+          opacity: 1;
+        }
+      }
+    }
   }
 }
