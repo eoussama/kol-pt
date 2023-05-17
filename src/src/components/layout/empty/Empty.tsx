@@ -1,7 +1,7 @@
 import styles from './Empty.module.scss';
 
-import { useMemo } from "react";
-import { IEmptyProps } from "../../../core/types/props/empty.props";
+import { useMemo } from 'react';
+import { IEmptyProps } from '../../../core/types/props/empty.props.type';
 
 
 

@@ -11,8 +11,9 @@ import { YouTube } from '../../../core/models/youtube.model';
 import { EntryType } from '../../../core/enums/entry-type.enum';
 import { JikanHelper } from '../../../core/helpers/api/jikan.helper';
 import { YouTubeHelper } from '../../../core/helpers/api/youtube.helper';
-import { IEntryPageSectionProps } from '../../../core/types/props/entry-section.props';
+import { IEntryPageSectionProps } from '../../../core/types/props/entry-section.props.type';
 import Loader from '../loader/Loader';
+import TextExpand from '../text-expand/TextExpand';
 
 
 
@@ -23,12 +24,11 @@ import Loader from '../loader/Loader';
 function EntryHead(props: IEntryPageSectionProps): JSX.Element {
   const { entry } = props;
   const navigate = useNavigate();
-  const [more, setMore] = useState(false);
+
   const [loading, setLoading] = useState(false);
   const [viewCount, setViewCount] = useState(0);
   const [description, setDescription] = useState('');
   const [genres, setGenres] = useState<Array<string>>([]);
-  const [fullDescription, setFullDescription] = useState('');
   const [photo, setPhoto] = useState('./images/graphs/placeholder.jpg');
 
   /**
@@ -37,14 +37,6 @@ function EntryHead(props: IEntryPageSectionProps): JSX.Element {
    */
   const onBack = () => {
     navigate(`${Page.Index}${Page.Entries}`);
-  }
-
-  /**
-   * @description
-   * Toggles more/less description content
-   */
-  const onMoreToggle = () => {
-    setMore(!more)
   }
 
   useEffect(() => {
@@ -57,7 +49,7 @@ function EntryHead(props: IEntryPageSectionProps): JSX.Element {
           .then(e => {
             setPhoto(e.photo);
             setGenres(e.genres);
-            setFullDescription(e.description);
+            setDescription(e.description);
           })
           .finally(() => setLoading(false));
       } else if (entry.type === EntryType.YouTube) {
@@ -66,20 +58,12 @@ function EntryHead(props: IEntryPageSectionProps): JSX.Element {
           .then(e => {
             setPhoto(e.thumbnail);
             setViewCount(e.totlaViews);
-            setFullDescription(e.description);
+            setDescription(e.description);
           })
           .finally(() => setLoading(false));
       }
     }
   }, [entry.id]);
-
-  useEffect(() => {
-    const newDescription = (more && fullDescription.length > 200)
-      ? fullDescription
-      : `${fullDescription.slice(0, 200)}...`;
-
-    setDescription(newDescription);
-  }, [more, fullDescription]);
 
   return (
     <div className={styles['entry-head']}>
@@ -115,16 +99,7 @@ function EntryHead(props: IEntryPageSectionProps): JSX.Element {
         <div className={styles['head__description']}>
           {loading
             ? <Loader height='100px' />
-            : <>
-              {description}
-
-              {fullDescription.length > 200 &&
-                <span
-                  onClick={onMoreToggle}
-                  className={styles['head__more']}
-                >read {more ? 'less' : 'more'}</span>
-              }
-            </>
+            : <TextExpand content={description} />
           }
         </div>
       </div>

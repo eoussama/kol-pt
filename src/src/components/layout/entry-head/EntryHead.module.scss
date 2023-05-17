@@ -92,20 +92,6 @@
       font-weight: 400;
       font-family: 'Open Sans';
       color: var(--color-text);
-
-      .head__more {
-        cursor: pointer;
-        margin-left: 5px;
-
-        font-weight: 700;
-
-        transition-duration: 0.2s;
-        transition-property: opacity;
-
-        &:hover {
-          opacity: 0.8;
-        }
-      }
     }
 
     &__genres {
