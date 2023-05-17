@@ -66,17 +66,21 @@
 
         color: var(--color-text);
       }
-
+      
       .head__type {
-        margin: 0;
-        padding: 0;
-        transform: translateY(5px);
+        display: inline-block;
 
+        margin: 0;
+        padding: 0 5px;
+        transform: translateY(2px);
+        
         font-size: 12px;
         font-weight: 400;
         font-family: 'Open Sans';
-
         color: var(--color-text);
+        
+        border-radius: 10px;
+        background-color: #ffffff49;
       }
     }
 
