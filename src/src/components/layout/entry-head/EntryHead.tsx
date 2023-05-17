@@ -24,6 +24,7 @@ function EntryHead(props: IEntryPageSectionProps): JSX.Element {
   const { entry } = props;
   const navigate = useNavigate();
   const [more, setMore] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [viewCount, setViewCount] = useState(0);
   const [description, setDescription] = useState('');
   const [genres, setGenres] = useState<Array<string>>([]);
@@ -48,6 +49,8 @@ function EntryHead(props: IEntryPageSectionProps): JSX.Element {
 
   useEffect(() => {
     if (entry.id) {
+      setLoading(true);
+
       if (entry.type === EntryType.Anime) {
         JikanHelper
           .getAnimeInfo((entry as Anime).malId)
@@ -55,7 +58,8 @@ function EntryHead(props: IEntryPageSectionProps): JSX.Element {
             setPhoto(e.photo);
             setGenres(e.genres);
             setFullDescription(e.description);
-          });
+          })
+          .finally(() => setLoading(false));
       } else if (entry.type === EntryType.YouTube) {
         YouTubeHelper
           .getVideoInfo((entry as YouTube).videoId)
@@ -63,7 +67,8 @@ function EntryHead(props: IEntryPageSectionProps): JSX.Element {
             setPhoto(e.thumbnail);
             setViewCount(e.totlaViews);
             setFullDescription(e.description);
-          });
+          })
+          .finally(() => setLoading(false));
       }
     }
   }, [entry.id]);
@@ -83,12 +88,16 @@ function EntryHead(props: IEntryPageSectionProps): JSX.Element {
       </div>
 
       <div className={styles['head__hero']}>
-        <Loader height='250px' flat={true} overlay={true} />
-        <div
-          className={styles['head__photo']}
-          style={{ backgroundImage: `url(${photo})` }}
-        >
-        </div>
+        {loading
+          ? <Loader height='250px' flat={true} overlay={true} />
+          : <>
+            <div
+              className={styles['head__photo']}
+              style={{ backgroundImage: `url(${photo}), url(./images/graphs/placeholder.jpg)` }}
+            >
+            </div>
+          </>
+        }
       </div>
 
       <div className={styles['head__content']}>
@@ -104,15 +113,18 @@ function EntryHead(props: IEntryPageSectionProps): JSX.Element {
 
       <div className={styles['head__description-wrapper']}>
         <div className={styles['head__description']}>
-          <Loader height='100px' />
+          {loading
+            ? <Loader height='100px' />
+            : <>
+              {description}
 
-          {description}
-
-          {fullDescription.length > 200 &&
-            <span
-              onClick={onMoreToggle}
-              className={styles['head__more']}
-            >read {more ? 'less' : 'more'}</span>
+              {fullDescription.length > 200 &&
+                <span
+                  onClick={onMoreToggle}
+                  className={styles['head__more']}
+                >read {more ? 'less' : 'more'}</span>
+              }
+            </>
           }
         </div>
       </div>
