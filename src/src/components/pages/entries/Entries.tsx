@@ -17,7 +17,7 @@ import { Avatar, Chip, Divider, List, ListItem, ListItemAvatar, Tooltip } from '
  * The entries page, lists all available entries
  * on one place.
  */
-function Entries(): JSX.Element {
+function EntriesPage(): JSX.Element {
   const navigate = useNavigate();
   const { entries, error, loading, search, entriesCount, onSearch } = useEntries();
   const emptyMessage = entriesCount > 0 ? <>No posts match <b>{search}</b></> : 'No entries found';
@@ -77,4 +77,4 @@ function Entries(): JSX.Element {
   );
 }
 
-export default Entries;
+export default EntriesPage;

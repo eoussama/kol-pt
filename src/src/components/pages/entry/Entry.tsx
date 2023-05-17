@@ -15,7 +15,7 @@ import { Entry as EntryModel } from '../../../core/models/entry.model';
  * @description
  * The entry detail page
  */
-function Entry(): JSX.Element {
+function EntryPage(): JSX.Element {
   const params = useParams();
   const entryId = useMemo(() => params.entryId, [params]);
   const { loading, entry, description, photo, viewCount, altTitles, genres } = useEntry(entryId ?? '');
@@ -44,4 +44,4 @@ function Entry(): JSX.Element {
   );
 }
 
-export default Entry;
+export default EntryPage;

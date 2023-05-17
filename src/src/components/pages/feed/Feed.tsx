@@ -22,7 +22,7 @@ import RestartAltOutlinedIcon from '@mui/icons-material/RestartAltOutlined';
  *
  * @returns JSX.Element
 */
-function Feed(): JSX.Element {
+function FeedPage(): JSX.Element {
   const [viewMode, setViewMode] = useState(ViewMode.Expanded);
   const { posts, error, loading, search, postsCount, onSearch } = usePosts();
 
@@ -71,4 +71,4 @@ function Feed(): JSX.Element {
   );
 }
 
-export default Feed;
+export default FeedPage;
