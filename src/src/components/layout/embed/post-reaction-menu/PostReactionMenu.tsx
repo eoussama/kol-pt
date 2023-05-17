@@ -2,9 +2,9 @@ import styles from './PostReactionMenu.module.scss';
 
 import { useContext } from 'react';
 import { Divider, Menu, MenuItem } from '@mui/material';
-import { IOption } from '../../../core/types/option.type';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
-import { ReactionMenuContext } from '../../../context/ReactionMenuContext';
+import { IOption } from '../../../../core/types/option.type';
+import { ReactionMenuContext } from '../../../../context/ReactionMenuContext';
 
 
 

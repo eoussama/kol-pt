@@ -2,14 +2,14 @@ import styles from './PostReaction.module.scss';
 
 import { useContext } from 'react';
 import ReplayIcon from '@mui/icons-material/Replay';
-import { Tag } from '../../../core/models/tag.model';
-import { usePlayer } from '../../../hooks/player.hook';
+import { Tag } from '../../../../core/models/tag.model';
+import { usePlayer } from '../../../../hooks/player.hook';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { Chip, IconButton, Tooltip } from '@mui/material';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
-import { PostContext } from '../../../context/PostContext';
-import { ReactionMenuContext } from '../../../context/ReactionMenuContext';
-import { IPostReactionProps } from '../../../core/types/props/post-reaction-props.type';
+import { PostContext } from '../../../../context/PostContext';
+import { ReactionMenuContext } from '../../../../context/ReactionMenuContext';
+import { IPostReactionProps } from '../../../../core/types/props/post-reaction-props.type';
 
 
 

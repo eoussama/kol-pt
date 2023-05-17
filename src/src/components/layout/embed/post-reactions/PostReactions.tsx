@@ -1,14 +1,14 @@
 import styles from './PostReactions.module.scss';
 
-import { usePlayer } from '../../../hooks/player.hook';
+import { usePlayer } from '../../../../hooks/player.hook';
 import { useContext, useEffect, useState } from 'react';
 import PostReaction from '../post-reaction/PostReaction';
-import { PostContext } from '../../../context/PostContext';
+import { PostContext } from '../../../../context/PostContext';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { PostAccordion } from '../post-accordion/PostAccordion';
-import { IconHelper } from "../../../core/helpers/asset/icon.helper";
+import { IconHelper } from "../../../../core/helpers/asset/icon.helper";
 import PostReactionMenu from '../post-reaction-menu/PostReactionMenu';
-import { NavigationHelper } from '../../../core/helpers/navigator/navigation.helper';
+import { NavigationHelper } from '../../../../core/helpers/navigator/navigation.helper';
 import { AccordionDetails, AccordionSummary, IconButton, Tooltip } from '@mui/material';
 
 

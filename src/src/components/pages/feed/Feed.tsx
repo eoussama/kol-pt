@@ -4,11 +4,11 @@ import { useState } from 'react';
 import { usePosts } from '../../../hooks/posts.hook';
 import Error from '../../layout/generic/error/Error';
 import Empty from '../../layout/generic/empty/Empty';
-import PostCard from '../../layout/post-card/PostCard';
 import Search from '../../layout/generic/search/Search';
 import ViewListIcon from '@mui/icons-material/ViewList';
 import { Chip, IconButton, Tooltip } from '@mui/material';
 import ViewStreamIcon from '@mui/icons-material/ViewStream';
+import PostCard from '../../layout/post/post-card/PostCard';
 import { ViewMode } from '../../../core/enums/view-mode.enum';
 import RestartAltOutlinedIcon from '@mui/icons-material/RestartAltOutlined';
 

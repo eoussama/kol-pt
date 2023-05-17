@@ -1,7 +1,7 @@
-import ReactDOM from "react-dom";
-import { Post } from "../../models/post.model";
-import PostEmbed from "../../../components/layout/post-embed/PostEmbed";
-import PostLoader from "../../../components/layout/post-loader/PostLoader";
+import ReactDOM from 'react-dom';
+import { Post } from '../../models/post.model';
+import PostEmbed from '../../../components/layout/embed/post-embed/PostEmbed';
+import PostLoader from '../../../components/layout/embed/post-loader/PostLoader';
 
 
 
@@ -19,7 +19,7 @@ export class InjectHelper {
    * @param target The HTMLDivElement to inject the post's details into.
    */
   static postDetail(post: Post, target: HTMLDivElement) {
-    const postWrapper = document.createElement("div");
+    const postWrapper = document.createElement('div');
 
     ReactDOM.render(<PostEmbed post={post} />, postWrapper);
     target.after(postWrapper);

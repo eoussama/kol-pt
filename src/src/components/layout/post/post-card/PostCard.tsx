@@ -1,9 +1,9 @@
 import styles from './PostCard.module.scss';
 
-import { ViewMode } from '../../../core/enums/view-mode.enum';
-import { IPostCardProps } from '../../../core/types/props/post-card-props.type';
+import { ViewMode } from '../../../../core/enums/view-mode.enum';
+import { IPostCardProps } from '../../../../core/types/props/post-card-props.type';
+import { NavigationHelper } from '../../../../core/helpers/navigator/navigation.helper';
 import { Box, Card, CardContent, CardMedia, Chip, Tooltip, Typography } from '@mui/material';
-import { NavigationHelper } from '../../../core/helpers/navigator/navigation.helper';
 
 
 

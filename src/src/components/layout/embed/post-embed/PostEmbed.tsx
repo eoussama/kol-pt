@@ -1,9 +1,9 @@
-import './../../../styles/index.scss';
+import './../../../../styles/index.scss';
 
-import PostReactions from "../post-reactions/PostReactions";
-import { PostProvider } from "../../../context/PostContext";
-import { ReactionMenuProvider } from "../../../context/ReactionMenuContext";
-import { IPostEmbedProps } from "../../../core/types/props/post-embed-props.type";
+import PostReactions from '../post-reactions/PostReactions';
+import { PostProvider } from '../../../../context/PostContext';
+import { ReactionMenuProvider } from '../../../../context/ReactionMenuContext';
+import { IPostEmbedProps } from '../../../../core/types/props/post-embed-props.type';
 
 
 
