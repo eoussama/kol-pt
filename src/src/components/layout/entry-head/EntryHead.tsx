@@ -12,6 +12,7 @@ import { EntryType } from '../../../core/enums/entry-type.enum';
 import { JikanHelper } from '../../../core/helpers/api/jikan.helper';
 import { YouTubeHelper } from '../../../core/helpers/api/youtube.helper';
 import { IEntryPageSectionProps } from '../../../core/types/props/entry-section.props';
+import Loader from '../loader/Loader';
 
 
 
@@ -82,6 +83,7 @@ function EntryHead(props: IEntryPageSectionProps): JSX.Element {
       </div>
 
       <div className={styles['head__hero']}>
+        <Loader height='250px' flat={true} overlay={true} />
         <div
           className={styles['head__photo']}
           style={{ backgroundImage: `url(${photo})` }}
@@ -101,15 +103,18 @@ function EntryHead(props: IEntryPageSectionProps): JSX.Element {
       </div>
 
       <div className={styles['head__description-wrapper']}>
-        <p className={styles['head__description']}>
+        <div className={styles['head__description']}>
+          <Loader height='100px' />
+
           {description}
+
           {fullDescription.length > 200 &&
             <span
               onClick={onMoreToggle}
               className={styles['head__more']}
             >read {more ? 'less' : 'more'}</span>
           }
-        </p>
+        </div>
       </div>
 
       {genres.length > 0 &&

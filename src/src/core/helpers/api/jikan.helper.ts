@@ -21,7 +21,6 @@ export class JikanHelper {
         .then(e => e.json())
         .then(e => e.data)
         .then((e: IJikanResponse) => {
-          console.log(e)
           resolve({
             description: e.synopsis,
             genres: e.genres.map(e => e.name),

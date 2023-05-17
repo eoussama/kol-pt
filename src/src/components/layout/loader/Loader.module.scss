@@ -1,0 +1,51 @@
+.loader {
+  position: relative;
+
+  width: 100%;
+  height: 100%;
+
+  overflow: hidden;
+
+  border-radius: 10px;
+  background-color: #cecece;
+
+  &--overlay {
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+
+  &--flat {
+    border-radius: 0;
+  }
+
+  &::after {
+    content: '';
+
+    position: absolute;
+    left: 0;
+    top: 0;
+
+    width: 100%;
+    height: 100%;
+
+    background-repeat: no-repeat;
+    background-image: linear-gradient(to right, transparent, #e9e9e9, transparent);
+
+    animation-duration: 2s;
+    animation-fill-mode: forwards;
+    animation-name: loader-scroll;
+    animation-iteration-count: infinite;
+    animation-timing-function: ease-in-out;
+  }
+}
+
+@keyframes loader-scroll {
+  from {
+    transform: translateX(-100%);
+  }
+
+  to {
+    transform: translateX(100%);
+  }
+}
