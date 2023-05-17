@@ -8,7 +8,7 @@ import { EntriesHelper } from "../core/helpers/firebase/entries.helper";
  * @description
  * State management for entries.
  */
-export const useEntryStore = create<IEntriesState>(set => ({
+export const useEntriesStore = create<IEntriesState>(set => ({
 
   /**
    * @description

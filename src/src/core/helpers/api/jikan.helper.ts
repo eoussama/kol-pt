@@ -24,12 +24,18 @@ export class JikanHelper {
           resolve({
             description: e.synopsis,
             genres: e.genres.map(e => e.name),
-            photo: e.images.webp.large_image_url
+            photo: e.images.webp.large_image_url,
+            altTitles: [
+              { title: e.title, official: true },
+              { title: e.title_english, official: true },
+              { title: e.title_english, official: true }
+            ]
           });
         })
         .catch(() => {
           resolve({
             genres: [],
+            altTitles: [],
             description: '',
             photo: './images/graphs/placeholder.jpg',
           });

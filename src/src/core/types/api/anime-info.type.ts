@@ -21,4 +21,10 @@ export interface IAnimeInfo {
    * The list of genres
    */
   genres: Array<string>;
+
+  /**
+   * @description
+   * The list of titles
+   */
+  altTitles: Array<{ title: string, official: boolean }>;
 }

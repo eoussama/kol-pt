@@ -1,13 +1,13 @@
 import styles from './Entry.module.scss';
 
+import { useMemo } from 'react';
 import Error from '../../layout/error/Error';
 import { useParams } from 'react-router-dom';
-import { useEffect, useMemo, useState } from 'react';
+import { useEntry } from '../../../hooks/entry.hook';
+import EntryAka from '../../layout/entry-aka/EntryAka';
 import EntryHead from '../../layout/entry-head/EntryHead';
 import EntryLinks from '../../layout/entry-links/EntryLinks';
-import { Nullable } from '../../../core/types/nullable.type';
 import { Entry as EntryModel } from '../../../core/models/entry.model';
-import { EntriesHelper } from '../../../core/helpers/firebase/entries.helper';
 
 
 
@@ -18,21 +18,27 @@ import { EntriesHelper } from '../../../core/helpers/firebase/entries.helper';
 function Entry(): JSX.Element {
   const params = useParams();
   const entryId = useMemo(() => params.entryId, [params]);
-  const [entry, setEntry] = useState<Nullable<EntryModel>>(null);
-
-  useEffect(() => {
-    if (entryId?.length) {
-      EntriesHelper.get(entryId).then(e => {
-        setEntry(e);
-      });
-    }
-  }, [entryId]);
+  const { loading, entry, description, photo, viewCount, altTitles, genres } = useEntry(entryId ?? '');
 
   return (
     <Error error={!entry} message='Could not retrieve entry'>
       <div className={styles['root']}>
-        <EntryHead entry={entry as EntryModel} />
-        <EntryLinks entry={entry as EntryModel} />
+        <EntryHead
+          photo={photo}
+          genres={genres}
+          loading={loading}
+          viewCount={viewCount}
+          description={description}
+          entry={entry as EntryModel}
+        />
+
+        <EntryAka
+          altTitles={altTitles}
+        />
+
+        <EntryLinks
+          entry={entry as EntryModel}
+        />
       </div>
     </Error >
   );

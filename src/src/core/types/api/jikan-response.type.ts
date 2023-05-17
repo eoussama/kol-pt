@@ -22,4 +22,22 @@ export interface IJikanResponse {
    * The list of genres
    */
   genres: Array<{ name: string }>;
+
+  /**
+   * @description
+   * The title of the Anime
+   */
+  title: string;
+
+  /**
+   * @description
+   * The title of the Anime in English
+   */
+  title_english: string;
+
+  /**
+   * @description
+   * The title of the Anime in Japanese
+   */
+  title_japanese: string;
 }

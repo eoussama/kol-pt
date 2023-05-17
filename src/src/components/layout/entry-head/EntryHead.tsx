@@ -5,11 +5,10 @@ import { Chip } from '@mui/material';
 import Loader from '../loader/Loader';
 import { useNavigate } from 'react-router-dom';
 import TextExpand from '../text-expand/TextExpand';
-import { useEntry } from '../../../hooks/entry.hook';
 import { Page } from '../../../core/enums/page.enum';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { EntryType } from '../../../core/enums/entry-type.enum';
-import { IEntryPageSectionProps } from '../../../core/types/props/entry-section.props.type';
+import { IEntryPageHeadSectionProps } from '../../../core/types/props/entry-head.props.type';
 
 
 
@@ -17,10 +16,9 @@ import { IEntryPageSectionProps } from '../../../core/types/props/entry-section.
  * @description
  * The entry head component.
  */
-function EntryHead(props: IEntryPageSectionProps): JSX.Element {
-  const { entry } = props;
+function EntryHead(props: IEntryPageHeadSectionProps): JSX.Element {
+  const { entry, loading, photo, viewCount, description, genres } = props;
   const navigate = useNavigate();
-  const {loading, photo, description, genres, viewCount} = useEntry(entry);
 
   /**
    * @description

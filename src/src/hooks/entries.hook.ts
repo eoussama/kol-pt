@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useEntryStore } from "../state/entries.state";
+import { useEntriesStore } from "../state/entries.state";
 
 
 
@@ -13,7 +13,7 @@ import { useEntryStore } from "../state/entries.state";
  */
 export function useEntries() {
   const [search, setSearch] = useState('');
-  const { entries, error, loading, loadEntries } = useEntryStore();
+  const { entries, error, loading, loadEntries } = useEntriesStore();
   const filteredEntries = useMemo(() => entries.filter(entrie => entrie.match(search)), [search, entries]);
 
   useEffect(() => {
