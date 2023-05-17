@@ -14,23 +14,26 @@ function EntryAka(props: IEntryPageAkaSectionProps): JSX.Element {
   const { altTitles } = props;
 
   return (
-    <div className={styles['entry-aka']}>
-      <div className={styles['title']}>Aliases</div>
+    <>
+      {altTitles.length > 0 &&
+        <div className={styles['entry-aka']}>
+          <div className={styles['title']}>Aliases</div>
 
-      <ul className={styles['aliases']}>
-        {altTitles.map((alt, i) => <li
-          key={i}
-          className={styles['alias']}
-        >
-          <Tooltip title={alt.official ? 'Official title that the Anime is refered to by.' : 'Unofficial title, used by KOL.'}>
-            <span className={styles['alias__type']}>
-              <>{alt.official ? 'official' : 'kol'}</>
-            </span>
-          </Tooltip>
-          {alt.title}
-        </li>)}
-      </ul>
-    </div>
+          <ul className={styles['aliases']}>
+            {altTitles.map((alt, i) => <li
+              key={i}
+              className={styles['alias']}
+            >
+              <Tooltip title={alt.official ? 'Official title that the Anime is refered to by.' : 'Unofficial title, used by KOL.'}>
+                <span className={styles['alias__type']}>
+                  <>{alt.official ? 'official' : 'kol'}</>
+                </span>
+              </Tooltip>
+              {alt.title}
+            </li>)}
+          </ul>
+        </div>}
+    </>
   );
 }
 

@@ -7,9 +7,9 @@ import { YouTube } from '../core/models/youtube.model';
 import { IReaction } from '../core/types/reaction.type';
 import { EntryType } from '../core/enums/entry-type.enum';
 import { JikanHelper } from '../core/helpers/api/jikan.helper';
+import { IAnimeInfo } from '../core/types/api/anime-info.type';
 import { YouTubeHelper } from '../core/helpers/api/youtube.helper';
 import { EntriesHelper } from '../core/helpers/firebase/entries.helper';
-import { IAnimeInfo } from '../core/types/api/anime-info.type';
 
 
 
@@ -73,13 +73,15 @@ export function useEntry(entryId: string) {
                 EntriesHelper.getReactions(entryId).then(setReactions);
               })
               .finally(() => setLoading(false));
-          } else if (entry?.type === EntryType.YouTube) {
-            YouTubeHelper
+            } else if (entry?.type === EntryType.YouTube) {
+              YouTubeHelper
               .getVideoInfo((entry as YouTube).videoId)
               .then(e => {
+                setAltTitles([]);
                 setPhoto(e.thumbnail);
                 setViewCount(e.totlaViews);
                 setDescription(e.description);
+                EntriesHelper.getReactions(entryId).then(setReactions);
               })
               .finally(() => setLoading(false));
           } else {
