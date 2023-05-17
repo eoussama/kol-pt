@@ -1,1 +1,4 @@
-.root {}
+.root {
+  --page-background-color: rgba(var(--color-background-rgb), 0.9);
+  --page-background-background: blur(5px);
+}

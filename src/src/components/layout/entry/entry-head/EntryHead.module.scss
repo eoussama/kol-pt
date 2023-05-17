@@ -7,7 +7,7 @@
       cursor: pointer;
 
       padding: 6px;
-      opacity: 0.5;
+      opacity: 0.9;
       transform: scale(0.8);
 
       position: absolute;
@@ -37,9 +37,9 @@
         z-index: 0;
 
         width: 100%;
-        height: 100%;
+        height: 100vh;
 
-        background-repeat: no-repeat;
+        background-repeat: repeat-y;
         background-attachment: fixed;
         background-position: -5px -5px;
         background-size: var(--max-width);
@@ -51,7 +51,7 @@
       z-index: 1;
 
       backdrop-filter: blur(3px);
-      background-image: linear-gradient(to top, var(--color-background), transparent);
+      background-image: linear-gradient(to top, var(--page-background-color), transparent);
 
       margin-top: -60px;
       padding: 20px 25px 0 25px;
@@ -66,36 +66,41 @@
 
         color: var(--color-text);
       }
-      
+
       .head__type {
         display: inline-block;
 
         margin: 0;
         padding: 0 5px;
         transform: translateY(2px);
-        
+
         font-size: 12px;
         font-weight: 400;
         font-family: 'Open Sans';
         color: var(--color-text);
-        
+
         border-radius: 10px;
         background-color: #ffffff49;
       }
     }
 
     &__description-wrapper {
-      padding: 0 25px;
-      margin: 10px 0;
+      margin: 0;
+      padding: 10px 25px;
 
       font-size: 14px;
       font-weight: 400;
       font-family: 'Open Sans';
       color: var(--color-text);
-    }
 
+      background-color: var(--page-background-color);
+      backdrop-filter: var(--page-background-background);
+    }
+    
     &__genres {
       padding: 0 25px;
+      background-color: var(--page-background-color);
+      backdrop-filter: var(--page-background-background);
 
       .head__genre:not(:last-of-type) {
         margin-right: 8px;

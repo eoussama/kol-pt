@@ -1,9 +1,13 @@
 .links {
+  position: relative;
+
   font-size: 16px;
   font-weight: 400;
   font-style: normal;
 
   padding: 15px;
+  background-color: var(--page-background-color);
+  backdrop-filter: var(--page-background-background);
 
   .link {
     cursor: pointer;
