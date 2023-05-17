@@ -8,6 +8,7 @@ import EntryAka from '../../layout/entry/entry-aka/EntryAka';
 import EntryHead from '../../layout/entry/entry-head/EntryHead';
 import EntryLinks from '../../layout/entry/entry-links/EntryLinks';
 import { Entry as EntryModel } from '../../../core/models/entry.model';
+import EntryReactions from '../../layout/entry/entry-reactions/EntryReactions';
 
 
 
@@ -39,6 +40,8 @@ function EntryPage(): JSX.Element {
         <EntryLinks
           entry={entry as EntryModel}
         />
+
+        <EntryReactions />
       </div>
     </Error >
   );

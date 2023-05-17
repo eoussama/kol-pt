@@ -5,15 +5,15 @@
   font-weight: 400;
   font-style: normal;
 
-  padding: 15px;
+  padding: 25px;
   background-color: var(--page-background-color);
   backdrop-filter: var(--page-background-background);
 
   .link {
     cursor: pointer;
 
-    margin: 5px;
     padding: 8px;
+    margin: 5px 0;
     border-radius: 8px;
 
     display: flex;

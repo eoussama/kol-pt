@@ -1,0 +1,12 @@
+.entry-reactions {
+  padding: 0 25px 25px 25px;
+  background-color: var(--page-background-color);
+  backdrop-filter: var(--page-background-background);
+
+  .title {
+    font-size: 16px;
+    font-weight: 600;
+
+    color: var(--color-text);
+  }
+}
