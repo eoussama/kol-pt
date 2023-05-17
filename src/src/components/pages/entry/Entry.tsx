@@ -4,9 +4,9 @@ import { useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { useEntry } from '../../../hooks/entry.hook';
 import Error from '../../layout/generic/error/Error';
-import EntryAka from '../../layout/entry-aka/EntryAka';
-import EntryHead from '../../layout/entry-head/EntryHead';
-import EntryLinks from '../../layout/entry-links/EntryLinks';
+import EntryAka from '../../layout/entry/entry-aka/EntryAka';
+import EntryHead from '../../layout/entry/entry-head/EntryHead';
+import EntryLinks from '../../layout/entry/entry-links/EntryLinks';
 import { Entry as EntryModel } from '../../../core/models/entry.model';
 
 

@@ -2,7 +2,7 @@ import styles from './EntryLinks.module.scss';
 
 import { useMemo } from 'react';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
-import { IEntryPageLinksSectionProps } from '../../../core/types/props/entry-links.props.type';
+import { IEntryPageLinksSectionProps } from '../../../../core/types/props/entry-links.props.type';
 
 
 

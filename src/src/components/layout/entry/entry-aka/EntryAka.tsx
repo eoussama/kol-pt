@@ -1,6 +1,6 @@
 import styles from './EntryAka.module.scss';
 
-import { IEntryPageAkaSectionProps } from '../../../core/types/props/entry-aka.props.type';
+import { IEntryPageAkaSectionProps } from '../../../../core/types/props/entry-aka.props.type';
 import { Tooltip } from '@mui/material';
 
 
