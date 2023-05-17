@@ -1,6 +1,6 @@
 import styles from './Loader.module.scss';
 
-import { ILoaderProps } from '../../../core/types/props/loader-props.type';
+import { ILoaderProps } from '../../../../core/types/props/loader-props.type';
 
 
 

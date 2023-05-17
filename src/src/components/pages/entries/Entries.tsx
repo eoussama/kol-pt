@@ -1,10 +1,10 @@
 import styles from './Entries.module.scss';
 
-import Empty from '../../layout/empty/Empty';
-import Error from '../../layout/error/Error';
-import Search from '../../layout/search/Search';
 import { useNavigate } from 'react-router-dom';
 import { Page } from '../../../core/enums/page.enum';
+import Empty from '../../layout/generic/empty/Empty';
+import Error from '../../layout/generic/error/Error';
+import Search from '../../layout/generic/search/Search';
 import { ListItemText } from '../../styled/ListItemText';
 import { useEntries } from '../../../hooks/entries.hook';
 import RestartAltOutlinedIcon from '@mui/icons-material/RestartAltOutlined';

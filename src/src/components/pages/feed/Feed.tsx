@@ -1,12 +1,12 @@
 import styles from './Feed.module.scss';
 
 import { useState } from 'react';
-import Empty from '../../layout/empty/Empty';
-import Search from '../../layout/search/Search';
 import { usePosts } from '../../../hooks/posts.hook';
+import Error from '../../layout/generic/error/Error';
+import Empty from '../../layout/generic/empty/Empty';
 import PostCard from '../../layout/post-card/PostCard';
+import Search from '../../layout/generic/search/Search';
 import ViewListIcon from '@mui/icons-material/ViewList';
-import Error from '../../layout/error/Error';
 import { Chip, IconButton, Tooltip } from '@mui/material';
 import ViewStreamIcon from '@mui/icons-material/ViewStream';
 import { ViewMode } from '../../../core/enums/view-mode.enum';

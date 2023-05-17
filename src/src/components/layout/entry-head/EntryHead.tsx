@@ -2,11 +2,11 @@ import styles from './EntryHead.module.scss';
 
 import millify from 'millify';
 import { Chip } from '@mui/material';
-import Loader from '../loader/Loader';
+import Loader from '../generic/loader/Loader';
 import { useNavigate } from 'react-router-dom';
-import TextExpand from '../text-expand/TextExpand';
 import { Page } from '../../../core/enums/page.enum';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import TextExpand from '../generic/text-expand/TextExpand';
 import { EntryType } from '../../../core/enums/entry-type.enum';
 import { IEntryPageHeadSectionProps } from '../../../core/types/props/entry-head.props.type';
 

@@ -1,7 +1,7 @@
 import styles from './TextExpand.module.scss';
 
 import { useEffect, useState } from 'react';
-import { ITextExpandProps } from '../../../core/types/props/text-expand-props.type';
+import { ITextExpandProps } from '../../../../core/types/props/text-expand-props.type';
 
 
 

@@ -1,9 +1,9 @@
 import styles from './Entry.module.scss';
 
 import { useMemo } from 'react';
-import Error from '../../layout/error/Error';
 import { useParams } from 'react-router-dom';
 import { useEntry } from '../../../hooks/entry.hook';
+import Error from '../../layout/generic/error/Error';
 import EntryAka from '../../layout/entry-aka/EntryAka';
 import EntryHead from '../../layout/entry-head/EntryHead';
 import EntryLinks from '../../layout/entry-links/EntryLinks';

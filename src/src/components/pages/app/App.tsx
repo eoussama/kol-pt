@@ -1,7 +1,7 @@
 import styles from './App.module.scss';
 
-import Header from '../../layout/header/Header';
 import { Outlet } from 'react-router-dom';
+import Header from '../../layout/generic/header/Header';
 
 
 

@@ -2,7 +2,7 @@ import styles from './Error.module.scss';
 
 import { Fragment } from 'react';
 import WarningIcon from '@mui/icons-material/Warning';
-import { IPostErrorProps } from '../../../core/types/props/post-error.type';
+import { IPostErrorProps } from '../../../../core/types/props/post-error.type';
 
 
 
