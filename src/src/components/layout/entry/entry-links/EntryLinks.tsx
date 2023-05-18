@@ -13,11 +13,14 @@ import { IEntryPageLinksSectionProps } from '../../../../core/types/props/entry-
  * @param props The component's properties
  */
 function EntryLinks(props: IEntryPageLinksSectionProps): JSX.Element {
-  const { entry } = props;
+  const { entry, isDialog } = props;
   const links = useMemo(() => entry.getOptions().filter(option => option.canShow()), [entry.id]);
 
+  const dialogClass = isDialog ? styles['entry-links--dialog'] : '';
+  const classes = `${styles['entry-links']} ${dialogClass}`;
+
   return (
-    <div className={styles['entry-links']}>
+    <div className={classes}>
       <div className={styles['links']}>
         {links.map((link, i) =>
           <div

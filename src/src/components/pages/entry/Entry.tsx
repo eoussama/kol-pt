@@ -48,6 +48,7 @@ function EntryPage(props?: IEntryPageProps): JSX.Element {
 
         <EntryLinks
           entry={entry as Entry}
+          isDialog={Boolean(props?.entryId)}
         />
 
         <EntryReactions

@@ -1,69 +1,84 @@
-.links {
-  position: relative;
+.entry-links {
+  .links {
+    position: relative;
 
-  font-size: 16px;
-  font-weight: 400;
-  font-style: normal;
+    font-size: 16px;
+    font-weight: 400;
+    font-style: normal;
 
-  padding: 25px;
-  background-color: var(--page-background-color);
-  backdrop-filter: var(--page-background-background);
+    padding: 25px;
+    background-color: var(--page-background-color);
+    backdrop-filter: var(--page-background-background);
 
-  .link {
-    cursor: pointer;
+    .link {
+      cursor: pointer;
 
-    padding: 8px;
-    margin: 5px 0;
-    border-radius: 8px;
+      padding: 8px;
+      margin: 5px 0;
+      border-radius: 8px;
 
-    display: flex;
-    align-items: center;
+      display: flex;
+      align-items: center;
 
-    background-color: #ffffff;
-    border: 1px solid #ececec;
+      background-color: #ffffff;
+      border: 1px solid #ececec;
 
-    transition-duration: 0.2s;
-    transition-property: border-color;
+      transition-duration: 0.2s;
+      transition-property: border-color;
 
-    &__icon {
-      display: block;
+      &__icon {
+        display: block;
 
-      width: 30px;
-      height: 30px;
-      min-width: fit-content;
+        width: 30px;
+        height: 30px;
+        min-width: fit-content;
 
-      overflow: hidden;
-      border-radius: 5px;
+        overflow: hidden;
+        border-radius: 5px;
 
-      img {
-        width: 100%;
-        height: 100%;
+        img {
+          width: 100%;
+          height: 100%;
+        }
+      }
+
+      &__label {
+        margin-left: 10px;
+
+        font-size: 14px;
+        font-family: 'Open Sans';
+      }
+
+      &__nav {
+        opacity: 0;
+        font-size: 18px;
+        color: #b8b8b8;
+
+        margin-left: auto;
+
+        transition-duration: 0.2s;
+        transition-property: opacity;
+      }
+
+      &:hover {
+        border-color: rgba(var(--color-primary-rgb), 0.4);
+
+        .link__nav {
+          opacity: 0.5;
+        }
       }
     }
 
-    &__label {
-      margin-left: 10px;
+  }
 
-      font-size: 14px;
-      font-family: 'Open Sans';
-    }
+  &--dialog {
+    .links {
+      gap: 5px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
 
-    &__nav {
-      opacity: 0;
-      font-size: 18px;
-      color: #b8b8b8;
-
-      margin-left: auto;
-
-      transition-duration: 0.2s;
-      transition-property: opacity;
-    }
-
-    &:hover {
-      border-color: rgba(var(--color-primary-rgb), 0.4);
-
-      .link__nav {
-        opacity: 0.5;
+      .link {
+        margin: 0 !important;
       }
     }
   }

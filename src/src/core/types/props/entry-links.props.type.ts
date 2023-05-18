@@ -10,6 +10,12 @@ export interface IEntryPageLinksSectionProps {
 
   /**
    * @description
+   * If the dialog page is loaded as a dialog.
+   */
+  isDialog: boolean;
+
+  /**
+   * @description
    * The target entry
    */
   entry: Entry;
