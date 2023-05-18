@@ -29,14 +29,18 @@
 
       &__title {
         font-size: 14px;
-        color: var(--color-text);
         font-weight: 400;
+        font-family: 'Open Sans', Roboto, sans-serif;
+
+        color: var(--color-text);
       }
 
       &__date {
         color: rgba(var(--color-text-rgb), 0.6);
+
         font-size: 12px;
         font-weight: 300;
+        font-family: 'Open Sans', Roboto, sans-serif;
       }
 
       &__right {
