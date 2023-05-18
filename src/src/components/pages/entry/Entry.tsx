@@ -10,6 +10,7 @@ import EntryHead from '../../layout/entry/entry-head/EntryHead';
 import EntryLinks from '../../layout/entry/entry-links/EntryLinks';
 import EntryReactions from '../../layout/entry/entry-reactions/EntryReactions';
 import { IEntryPageProps } from '../../../core/types/props/entry-page-props.type';
+import { IconHelper } from '../../../core/helpers/asset/icon.helper';
 
 
 
@@ -29,7 +30,7 @@ function EntryPage(props?: IEntryPageProps): JSX.Element {
     <Error error={!entry} message='Could not retrieve entry'>
       <div
         className={classes}
-        style={{ backgroundImage: `url(${photo}), url(./images/graphs/placeholder.jpg)` }}
+        style={{ backgroundImage: `url(${photo}), url(${IconHelper.getIcon('placeholder', 'graphs')}` }}
       >
         <EntryHead
           photo={photo}

@@ -4,6 +4,7 @@
 
   background-repeat: repeat-y;
   background-attachment: fixed;
+  background-size: var(--max-width);
 
   &--dialog {
     background-size: 40%;
