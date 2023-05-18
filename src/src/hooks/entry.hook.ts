@@ -42,13 +42,13 @@ export function useEntry(entryId: string) {
     const officialAltTitles = animeInfo.altTitles
       .map(e => ({ ...e, title: e.title?.toString()?.trim() ?? '' }))
       .filter(e => e.title?.length > 0)
-      .filter(e => e.title !== entry.title);
 
     // Mapping KOL's own alt titles
     const kolAltTitles = entry.altTitles.map(e => ({ title: e, official: false }));
 
     // Merging alt titles and removing duplicates
     const mergedAltTitles = [...officialAltTitles, ...kolAltTitles]
+      .filter(e => e.title !== entry.title)
       .filter((altTitle, i, tmp) => tmp.findIndex(e => e.title === altTitle.title) === i);
 
     return mergedAltTitles;
@@ -73,8 +73,8 @@ export function useEntry(entryId: string) {
                 EntriesHelper.getReactions(entryId).then(setReactions);
               })
               .finally(() => setLoading(false));
-            } else if (entry?.type === EntryType.YouTube) {
-              YouTubeHelper
+          } else if (entry?.type === EntryType.YouTube) {
+            YouTubeHelper
               .getVideoInfo((entry as YouTube).videoId)
               .then(e => {
                 setAltTitles([]);
