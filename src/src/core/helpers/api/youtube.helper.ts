@@ -1,4 +1,5 @@
 import { config } from '../../../config/env';
+import { IconHelper } from '../asset/icon.helper';
 import { IYouTubeInfo } from '../../types/api/youtube-info.type';
 import { IYouTubeResponse } from '../../types/api/youtube-response.type';
 
@@ -32,7 +33,7 @@ export class YouTubeHelper {
           resolve({
             totlaViews: 0,
             description: '',
-            thumbnail: './images/graphs/placeholder.jpg'
+            thumbnail: IconHelper.getIcon('placeholder', 'graphs')
           });
         });
     });

@@ -1,3 +1,4 @@
+import { IconHelper } from '../asset/icon.helper';
 import { IAnimeInfo } from '../../types/api/anime-info.type';
 import { IJikanResponse } from '../../types/api/jikan-response.type';
 
@@ -37,7 +38,7 @@ export class JikanHelper {
             genres: [],
             altTitles: [],
             description: '',
-            photo: './images/graphs/placeholder.jpg',
+            photo: IconHelper.getIcon('placeholder', 'graphs'),
           });
         });
     });

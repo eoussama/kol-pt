@@ -8,6 +8,7 @@ import { IReaction } from '../core/types/reaction.type';
 import { EntryType } from '../core/enums/entry-type.enum';
 import { JikanHelper } from '../core/helpers/api/jikan.helper';
 import { IAnimeInfo } from '../core/types/api/anime-info.type';
+import { IconHelper } from '../core/helpers/asset/icon.helper';
 import { YouTubeHelper } from '../core/helpers/api/youtube.helper';
 import { EntriesHelper } from '../core/helpers/firebase/entries.helper';
 
@@ -26,7 +27,7 @@ export function useEntry(entryId: string) {
   const [genres, setGenres] = useState<Array<string>>([]);
   const [entry, setEntry] = useState<Nullable<Entry>>(null);
   const [reactions, setReactions] = useState<Array<IReaction>>([]);
-  const [photo, setPhoto] = useState('./images/graphs/placeholder.jpg');
+  const [photo, setPhoto] = useState(IconHelper.getIcon('placeholder', 'graphs'));
   const [altTitles, setAltTitles] = useState<Array<{ title: string, official: boolean }>>([]);
 
   /**
