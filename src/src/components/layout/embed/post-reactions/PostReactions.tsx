@@ -12,7 +12,7 @@ import PostReactionMenu from '../post-reaction-menu/PostReactionMenu';
 import { IconHelper } from '../../../../core/helpers/asset/icon.helper';
 import { ReactionOverlayContext } from '../../../../context/ReactionOverlayContext';
 import { NavigationHelper } from '../../../../core/helpers/navigator/navigation.helper';
-import { AccordionDetails, AccordionSummary, Dialog, DialogTitle, IconButton, Tooltip } from '@mui/material';
+import { AccordionDetails, AccordionSummary, Dialog, DialogContent, DialogTitle, IconButton, Tooltip } from '@mui/material';
 
 
 
@@ -110,6 +110,7 @@ function PostReactions(): JSX.Element {
     <PostReactionMenu />
 
     <Dialog
+      scroll='paper'
       open={dialogOpened}
       className={styles['post__dialog']}
     >
@@ -130,7 +131,9 @@ function PostReactions(): JSX.Element {
         </IconButton>
       </DialogTitle>
 
-      <EntryPage entryId={tag?.entry.id ?? ''} />
+      <DialogContent className={styles['post__dialog-content']}>
+        <EntryPage entryId={tag?.entry.id ?? ''} />
+      </DialogContent>
     </Dialog>
   </>
 }

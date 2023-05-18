@@ -39,7 +39,13 @@
     }
   }
 
-  &__dialog [role="dialog"] {
-    width: 450px !important;
+  &__dialog {
+    [role="dialog"] {
+      width: 450px !important;
+
+      .post__dialog-content {
+        padding: 0 !important;
+      }
+    }
   }
 }
