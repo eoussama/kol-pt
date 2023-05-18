@@ -1,6 +1,7 @@
 import styles from './Header.module.scss';
 
 import { useMemo, useState } from 'react';
+import { GoogleAuthProvider, getAuth, signInWithPopup } from 'firebase/auth';
 import { Page } from '../../../../core/enums/page.enum';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { usePostStore } from '../../../../state/posts.state';
@@ -21,6 +22,8 @@ function Header(): JSX.Element {
   const navigate = useNavigate();
   const { loadPosts } = usePostStore();
   const [value, setValue] = useState(0);
+  const [email, setEmail] = useState('');
+  const [photo, setPhoto] = useState('./icons/icon128x128.png');
 
   /**
    * @description
@@ -45,6 +48,16 @@ function Header(): JSX.Element {
    * Handles the click event of the logo image to refresh the post list.
    */
   const onRefresh = () => {
+    const provider = new GoogleAuthProvider();
+    const auth = getAuth();
+
+    signInWithPopup(auth, provider).then(e => {
+      setEmail(e.user.email ?? '');
+      setPhoto(e.user.photoURL ?? '');
+
+      console.log({ e });
+    });
+
     loadPosts(false);
   }
 
@@ -75,12 +88,12 @@ function Header(): JSX.Element {
       <header className={styles['header']}>
         <div className={styles['header__branding']}>
           <div className={styles['header__logo-wrapper']}>
-            <img className={styles['header__logo']} src="./icons/icon128x128.png" alt="KOL PT Logo" onClick={onRefresh} />
+            <img className={styles['header__logo']} src={photo} alt="KOL PT Logo" onClick={onRefresh} />
           </div>
 
           <div className={styles['header__info']}>
-            <h2 className={styles['header__subtitle']}>test@gmail.com</h2>
             <h1 className={styles['header__title']}>KOL PT</h1>
+            <h2 className={styles['header__subtitle']}>{email}</h2>
           </div>
         </div>
 
