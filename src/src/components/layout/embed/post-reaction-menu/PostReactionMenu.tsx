@@ -4,7 +4,7 @@ import { useContext } from 'react';
 import { Divider, Menu, MenuItem } from '@mui/material';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { IOption } from '../../../../core/types/option.type';
-import { ReactionMenuContext } from '../../../../context/ReactionMenuContext';
+import { ReactionOverlayContext } from '../../../../context/ReactionOverlayContext';
 
 
 
@@ -15,7 +15,7 @@ import { ReactionMenuContext } from '../../../../context/ReactionMenuContext';
  * @param props The component props.
  */
 function PostReactionMenu(): JSX.Element {
-  const { tag, anchorEl, anchorOpened, setAnchorOpened } = useContext(ReactionMenuContext);
+  const { tag, anchorEl, anchorOpened, setAnchorOpened } = useContext(ReactionOverlayContext);
 
   /**
    * @description

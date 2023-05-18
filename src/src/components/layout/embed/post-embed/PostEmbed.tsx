@@ -2,7 +2,7 @@ import './../../../../styles/index.scss';
 
 import PostReactions from '../post-reactions/PostReactions';
 import { PostProvider } from '../../../../context/PostContext';
-import { ReactionMenuProvider } from '../../../../context/ReactionMenuContext';
+import { ReactionOverlayProvider } from '../../../../context/ReactionOverlayContext';
 import { IPostEmbedProps } from '../../../../core/types/props/post-embed-props.type';
 
 
@@ -16,9 +16,9 @@ import { IPostEmbedProps } from '../../../../core/types/props/post-embed-props.t
 function PostEmbed(props: IPostEmbedProps): JSX.Element {
   return <>
     <PostProvider post={props.post}>
-      <ReactionMenuProvider>
+      <ReactionOverlayProvider>
         <PostReactions />
-      </ReactionMenuProvider>
+      </ReactionOverlayProvider>
     </PostProvider>
   </>
 }

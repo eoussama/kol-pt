@@ -1,8 +1,8 @@
 /**
  * @description
- * Props of the ReactionMenuProvider component.
+ * Props of the ReactionOverlayProvider component.
  */
-export interface IReactionMenuProviderProps {
+export interface IReactionOverlayProviderProps {
 
   /**
    * @description
