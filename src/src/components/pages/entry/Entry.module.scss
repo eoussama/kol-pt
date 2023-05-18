@@ -1,4 +1,14 @@
 .root {
   --page-background-color: rgba(var(--color-background-rgb), 0.9);
   --page-background-background: blur(5px);
+
+  background-repeat: repeat-y;
+  background-attachment: fixed;
+
+  &--dialog {
+    background-size: 40%;
+    background-position-x: 50%;
+
+    --page-background-background: blur(10px);
+  }
 }

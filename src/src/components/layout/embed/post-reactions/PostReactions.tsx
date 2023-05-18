@@ -1,5 +1,6 @@
 import styles from './PostReactions.module.scss';
 
+import CloseIcon from '@mui/icons-material/Close';
 import EntryPage from '../../../pages/entry/Entry';
 import { useContext, useEffect, useState } from 'react';
 import PostReaction from '../post-reaction/PostReaction';
@@ -7,11 +8,11 @@ import { usePlayer } from '../../../../hooks/player.hook';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { PostContext } from '../../../../context/PostContext';
 import { PostAccordion } from '../post-accordion/PostAccordion';
-import { IconHelper } from "../../../../core/helpers/asset/icon.helper";
 import PostReactionMenu from '../post-reaction-menu/PostReactionMenu';
+import { IconHelper } from '../../../../core/helpers/asset/icon.helper';
 import { ReactionOverlayContext } from '../../../../context/ReactionOverlayContext';
 import { NavigationHelper } from '../../../../core/helpers/navigator/navigation.helper';
-import { AccordionDetails, AccordionSummary, Dialog, DialogContent, DialogTitle, IconButton, Tooltip } from '@mui/material';
+import { AccordionDetails, AccordionSummary, Dialog, DialogTitle, IconButton, Tooltip } from '@mui/material';
 
 
 
@@ -23,7 +24,41 @@ function PostReactions(): JSX.Element {
   const { post } = useContext(PostContext);
   const { player } = usePlayer(post.id);
   const [expanded, setExpanded] = useState<boolean>(true);
-  const { dialogOpened, tag } = useContext(ReactionOverlayContext);
+  const { tag, dialogOpened, setDialogOpened } = useContext(ReactionOverlayContext);
+
+  /**
+   * @description
+   * Generates proper title for the accordion
+   *
+   * @param post The target post
+   */
+  const getReactionsTitle = () => {
+    const reactionCount = post.tags.length;
+    const reactionText = reactionCount > 1 ? 'reactions' : 'reaction';
+
+    return `${reactionCount} ${reactionText}`;
+  }
+
+  /**
+   * @description
+   * Closes the dialog
+   */
+  const onClose = () => {
+    setDialogOpened(false);
+  };
+
+  /**
+   * @description
+   * Opens the Passione channel
+   *
+   * @param e The mouse click event object
+   */
+  const onPassioneOpen = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    e.stopPropagation();
+    e.preventDefault();
+
+    NavigationHelper.openPassione();
+  }
 
   useEffect(() => {
 
@@ -43,32 +78,6 @@ function PostReactions(): JSX.Element {
     }
   }, []);
 
-  /**
-   * @description
-   * Generates proper title for the accordion
-   *
-   * @param post The target post
-   */
-  const getReactionsTitle = () => {
-    const reactionCount = post.tags.length;
-    const reactionText = reactionCount > 1 ? 'reactions' : 'reaction';
-
-    return `${reactionCount} ${reactionText}`;
-  }
-
-  /**
-   * @description
-   * Opens the Passione channel
-   *
-   * @param e The mouse click event object
-   */
-  const OnPassioneOpen = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    e.stopPropagation();
-    e.preventDefault();
-
-    NavigationHelper.openPassione();
-  }
-
   return <>
     <PostAccordion
       expanded={expanded}
@@ -82,7 +91,7 @@ function PostReactions(): JSX.Element {
           <Tooltip title="Open Passione Club Channel">
             <IconButton
               aria-label="Opens KOl's Discord server"
-              onClick={OnPassioneOpen}
+              onClick={onPassioneOpen}
               className={`${styles['post__action']} ${styles['post__action--discord']}`}
             >
               <img src={IconHelper.getIcon('discord', 'platforms')} alt="Discord icon" />
@@ -100,8 +109,27 @@ function PostReactions(): JSX.Element {
 
     <PostReactionMenu />
 
-    <Dialog open={dialogOpened}>
-      <DialogTitle>Reaction Info</DialogTitle>
+    <Dialog
+      open={dialogOpened}
+      className={styles['post__dialog']}
+    >
+      <DialogTitle>
+        Reaction Info
+
+        <IconButton
+          aria-label="close"
+          onClick={onClose}
+          sx={{
+            position: 'absolute',
+            right: 8,
+            top: 8,
+            color: (theme) => theme.palette.grey[500],
+          }}
+        >
+          <CloseIcon />
+        </IconButton>
+      </DialogTitle>
+
       <EntryPage entryId={tag?.entry.id ?? ''} />
     </Dialog>
   </>

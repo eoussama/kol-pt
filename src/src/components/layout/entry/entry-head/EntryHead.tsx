@@ -17,7 +17,7 @@ import { IEntryPageHeadSectionProps } from '../../../../core/types/props/entry-h
  * The entry head component.
  */
 function EntryHead(props: IEntryPageHeadSectionProps): JSX.Element {
-  const { entry, loading, photo, viewCount, description, genres, isDialog } = props;
+  const { entry, loading, viewCount, description, genres, isDialog } = props;
 
   /* eslint-disable react-hooks/rules-of-hooks */
   const navigate = isDialog ? () => { } : useNavigate();
@@ -41,16 +41,7 @@ function EntryHead(props: IEntryPageHeadSectionProps): JSX.Element {
       }
 
       <div className={styles['head__hero']}>
-        {loading
-          ? <Loader height='250px' flat={true} overlay={true} />
-          : <>
-            <div
-              className={styles['head__photo']}
-              style={{ backgroundImage: `url(${photo}), url(./images/graphs/placeholder.jpg)` }}
-            >
-            </div>
-          </>
-        }
+        {loading ? <Loader height='250px' flat={true} overlay={true} /> : ''}
       </div>
 
       <div className={styles['head__content']}>

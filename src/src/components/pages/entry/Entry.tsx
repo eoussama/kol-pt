@@ -22,9 +22,15 @@ function EntryPage(props?: IEntryPageProps): JSX.Element {
   const entryId = useMemo(() => params.entryId ?? props?.entryId, [params, props?.entryId]);
   const { loading, entry, description, photo, viewCount, altTitles, genres, reactions } = useEntry(entryId ?? '');
 
+  const dialogClass = Boolean(props?.entryId) ? styles['root--dialog'] : '';
+  const classes = `${styles['root']} ${dialogClass}`;
+
   return (
     <Error error={!entry} message='Could not retrieve entry'>
-      <div className={styles['root']}>
+      <div
+        className={classes}
+        style={{ backgroundImage: `url(${photo}), url(./images/graphs/placeholder.jpg)` }}
+      >
         <EntryHead
           photo={photo}
           genres={genres}

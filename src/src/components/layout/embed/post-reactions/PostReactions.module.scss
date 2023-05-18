@@ -11,7 +11,7 @@
 
   &__head-wrapper {
     width: 100%;
-    
+
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -37,5 +37,9 @@
       list-style-type: none;
       border-top: 1px solid #e1e1e1;
     }
+  }
+
+  &__dialog [role="dialog"] {
+    width: 450px !important;
   }
 }
