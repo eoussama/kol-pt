@@ -8,7 +8,8 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { Chip, IconButton, Tooltip } from '@mui/material';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import { PostContext } from '../../../../context/PostContext';
-import { ReactionMenuContext } from '../../../../context/ReactionMenuContext';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import { ReactionOverlayContext } from '../../../../context/ReactionOverlayContext';
 import { IPostReactionProps } from '../../../../core/types/props/post-reaction-props.type';
 
 
@@ -23,7 +24,7 @@ function PostReaction(props: IPostReactionProps): JSX.Element {
   const { tag } = props;
   const { post } = useContext(PostContext);
   const { playing, playback, onSkip } = usePlayer(post.id);
-  const { setAnchorOpened, setAnchorEl, setTag } = useContext(ReactionMenuContext);
+  const { setAnchorOpened, setAnchorEl, setTag, setDialogOpened } = useContext(ReactionOverlayContext);
 
   /**
    * @description
@@ -31,6 +32,17 @@ function PostReaction(props: IPostReactionProps): JSX.Element {
    */
   const isPlaying = () => {
     return tag.startTime <= playback && playback <= tag.endTime;
+  }
+
+  /**
+   * @description
+   * Opens detail page as a modal about the selected tag.
+   *
+   * @param tag The target tag to show the detail of.
+   */
+  const onDetail = (tag: Tag) => {
+    setTag(tag);
+    setDialogOpened(true);
   }
 
   /**
@@ -97,6 +109,16 @@ function PostReaction(props: IPostReactionProps): JSX.Element {
             <ReplayIcon />
           </IconButton>
         </Tooltip>}
+
+        <Tooltip title="Detail">
+          <IconButton
+            size='small'
+            aria-label='detail'
+            onClick={() => onDetail(tag)}
+          >
+            <InfoOutlinedIcon />
+          </IconButton>
+        </Tooltip>
 
         <Tooltip title="More">
           <IconButton

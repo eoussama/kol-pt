@@ -9,6 +9,7 @@ import EntryAka from '../../layout/entry/entry-aka/EntryAka';
 import EntryHead from '../../layout/entry/entry-head/EntryHead';
 import EntryLinks from '../../layout/entry/entry-links/EntryLinks';
 import EntryReactions from '../../layout/entry/entry-reactions/EntryReactions';
+import { IEntryPageProps } from '../../../core/types/props/entry-page-props.type';
 
 
 
@@ -16,9 +17,9 @@ import EntryReactions from '../../layout/entry/entry-reactions/EntryReactions';
  * @description
  * The entry detail page
  */
-function EntryPage(): JSX.Element {
+function EntryPage(props?: IEntryPageProps): JSX.Element {
   const params = useParams();
-  const entryId = useMemo(() => params.entryId, [params]);
+  const entryId = useMemo(() => params.entryId ?? props?.entryId, [params, props?.entryId]);
   const { loading, entry, description, photo, viewCount, altTitles, genres, reactions } = useEntry(entryId ?? '');
 
   return (
@@ -29,8 +30,9 @@ function EntryPage(): JSX.Element {
           genres={genres}
           loading={loading}
           viewCount={viewCount}
-          description={description}
           entry={entry as Entry}
+          description={description}
+          isDialog={Boolean(props?.entryId)}
         />
 
         <EntryAka

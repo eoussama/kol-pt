@@ -17,22 +17,28 @@ import { IEntryPageHeadSectionProps } from '../../../../core/types/props/entry-h
  * The entry head component.
  */
 function EntryHead(props: IEntryPageHeadSectionProps): JSX.Element {
-  const { entry, loading, photo, viewCount, description, genres } = props;
-  const navigate = useNavigate();
+  const { entry, loading, photo, viewCount, description, genres, isDialog } = props;
+
+  /* eslint-disable react-hooks/rules-of-hooks */
+  const navigate = isDialog ? () => { } : useNavigate();
 
   /**
    * @description
    * Navigates back to the entries list.
    */
   const onBack = () => {
-    navigate(`${Page.Index}${Page.Entries}`);
+    if (!isDialog) {
+      navigate(`${Page.Index}${Page.Entries}`);
+    }
   }
 
   return (
     <div className={styles['entry-head']}>
-      <div className={styles['head__back']} onClick={onBack}>
-        <ArrowBackIcon />
-      </div>
+      {!isDialog &&
+        <div className={styles['head__back']} onClick={onBack}>
+          <ArrowBackIcon />
+        </div>
+      }
 
       <div className={styles['head__hero']}>
         {loading

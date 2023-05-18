@@ -1,15 +1,17 @@
 import styles from './PostReactions.module.scss';
 
-import { usePlayer } from '../../../../hooks/player.hook';
+import EntryPage from '../../../pages/entry/Entry';
 import { useContext, useEffect, useState } from 'react';
 import PostReaction from '../post-reaction/PostReaction';
-import { PostContext } from '../../../../context/PostContext';
+import { usePlayer } from '../../../../hooks/player.hook';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { PostContext } from '../../../../context/PostContext';
 import { PostAccordion } from '../post-accordion/PostAccordion';
 import { IconHelper } from "../../../../core/helpers/asset/icon.helper";
 import PostReactionMenu from '../post-reaction-menu/PostReactionMenu';
+import { ReactionOverlayContext } from '../../../../context/ReactionOverlayContext';
 import { NavigationHelper } from '../../../../core/helpers/navigator/navigation.helper';
-import { AccordionDetails, AccordionSummary, IconButton, Tooltip } from '@mui/material';
+import { AccordionDetails, AccordionSummary, Dialog, DialogContent, DialogTitle, IconButton, Tooltip } from '@mui/material';
 
 
 
@@ -21,6 +23,7 @@ function PostReactions(): JSX.Element {
   const { post } = useContext(PostContext);
   const { player } = usePlayer(post.id);
   const [expanded, setExpanded] = useState<boolean>(true);
+  const { dialogOpened, tag } = useContext(ReactionOverlayContext);
 
   useEffect(() => {
 
@@ -96,6 +99,11 @@ function PostReactions(): JSX.Element {
     </PostAccordion>
 
     <PostReactionMenu />
+
+    <Dialog open={dialogOpened}>
+      <DialogTitle>Reaction Info</DialogTitle>
+      <EntryPage entryId={tag?.entry.id ?? ''} />
+    </Dialog>
   </>
 }
 
