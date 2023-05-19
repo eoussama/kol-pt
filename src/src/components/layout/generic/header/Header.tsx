@@ -23,7 +23,7 @@ function Header(): JSX.Element {
   const navigate = useNavigate();
   const [tab, setTag] = useState(0);
   const { loadPosts } = usePostStore();
-  const { onLogin, onLogout } = useAuth();
+  const { photo, email, onLogin, onLogout, isLoggedIn } = useAuth();
 
   /**
    * @description
@@ -75,40 +75,40 @@ function Header(): JSX.Element {
 
   return (
     <>
-      <header className={styles['flair']}>
+      <header
+        className={styles['flair']}
+        onClick={NavigationHelper.openProject}
+      >
         KOL PT - v0.1.0
       </header>
 
       <header className={styles['header']}>
         <div className={styles['header__branding']}>
-          <Button
-            size="small"
-            onClick={onLogin}
-            variant="outlined"
-            className={styles['header__login']}
-          >Login</Button>
+          {!isLoggedIn() &&
+            <Button
+              size="small"
+              onClick={onLogin}
+              variant="outlined"
+              className={styles['header__login']}
+            >Login</Button>
+          }
 
-          {/* <div className={styles['header__logo-wrapper']}>
-            <img className={styles['header__logo']} src={photo} alt="KOL PT Logo" onClick={onRefresh} />
-          </div>
+          {isLoggedIn() && <>
+            <div className={styles['header__logo-wrapper']}>
+              <img className={styles['header__logo']} src={photo} alt="KOL PT Logo" onClick={onRefresh} />
+            </div>
 
-          <div className={styles['header__info']}>
-            <h1 className={styles['header__title']}>KOL PT</h1>
-            <h2 className={styles['header__subtitle']}>{email}</h2>
-          </div> */}
+            <div className={styles['header__info']}>
+              <h1 className={styles['header__title']}>KOL PT</h1>
+              <Tooltip title={email}>
+                <h2 className={styles['header__subtitle']}>{email}</h2>
+              </Tooltip>
+            </div>
+          </>
+          }
         </div>
 
         <div className={styles['header__actions']}>
-          <Tooltip title="Project Page">
-            <IconButton
-              aria-label="Opens project's Github page"
-              onClick={NavigationHelper.openProject}
-              className={`${styles['header__button']} ${styles['header__button--project']}`}
-            >
-              <img src="./images/platforms/github.png" alt="Github icon" />
-            </IconButton>
-          </Tooltip>
-
           <Tooltip title="Open Discord">
             <IconButton
               aria-label="Opens KOl's Discord server"
@@ -129,14 +129,17 @@ function Header(): JSX.Element {
             </IconButton>
           </Tooltip>
 
-          <Tooltip title="Logout">
-            <IconButton
-              onClick={onLogout}
-              aria-label="logout"
-            >
-              <LogoutIcon />
-            </IconButton>
-          </Tooltip>
+          {isLoggedIn() &&
+            <Tooltip title="Logout">
+              <IconButton
+                size='small'
+                onClick={onLogout}
+                aria-label="logout"
+                className={styles['header__logout']}
+              >
+                <LogoutIcon />
+              </IconButton>
+            </Tooltip>}
         </div>
       </header>
 

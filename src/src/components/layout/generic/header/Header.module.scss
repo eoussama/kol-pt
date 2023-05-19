@@ -1,16 +1,27 @@
 .flair {
+  cursor: pointer;
   padding: 2px 15px;
+
   font-size: 12px;
   font-weight: 100;
   text-align: center;
   font-family: 'Open Sans', Roboto;
 
+  opacity: 1;
   color: #ffffff;
   background-color: rgba(var(--color-primary-rgb), 0.9);
+
+  transition-duration: 0.2s;
+  transition-property: opacity;
+
+  &:hover {
+    opacity: 0.95;
+  }
 }
 
 .header {
   position: sticky;
+  height: 40px;
   z-index: 10;
   top: 0;
 
@@ -39,6 +50,11 @@
     background-color: #ffffff !important;
   }
 
+  &__logout {
+    transform: scale(0.9);
+    color: #000000 !important;
+  }
+
   &__title,
   &__subtitle {
     margin: 0;
@@ -57,25 +73,26 @@
     font-size: 12px;
     font-weight: 400;
     font-family: 'Open Sans';
+
+    max-width: 160px;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   &__actions {
     margin-left: auto;
-
-    button {
-      color: #ffffff;
-    }
+    filter: invert(1);
   }
 
   &__logo {
     width: 100%;
     height: 100%;
 
-    border-radius: 8px;
+    border-radius: 5px;
 
     &-wrapper {
-      width: 40px;
-      height: 40px;
+      width: 35px;
+      height: 35px;
     }
   }
 
@@ -83,20 +100,12 @@
     color: #ffffff !important;
 
     img {
-      width: 20px;
+      width: 18px;
       border-radius: 4px;
     }
 
     &--bug {
       color: #000000 !important;
-    }
-
-    &--project {
-      filter: brightness(0);
-
-      img {
-        width: 18px;
-      }
     }
 
     &--discord {

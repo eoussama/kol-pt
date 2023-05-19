@@ -5,7 +5,7 @@ import { IPlayerState } from "../core/types/state/player-state.type";
 
 /**
  * @description
- * State management store for 
+ * State management store for player (Vimeo).
  */
 export const usePlayerStore = create<IPlayerState>(set => ({
 

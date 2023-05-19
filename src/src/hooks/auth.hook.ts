@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { AuthHelper } from '../core/helpers/firebase/auth.helper';
+import { useAuthStore } from '../state/auth.state';
 
 
 
@@ -10,18 +11,16 @@ import { AuthHelper } from '../core/helpers/firebase/auth.helper';
 export function useAuth() {
   const [email, setEmail] = useState('');
   const [photo, setPhoto] = useState('./icons/icon128x128.png');
+  const { user, login, logout } = useAuthStore();
+
+  const isLoggedIn = () => Boolean(user);
 
   /**
    * @description
    * Logs user in
    */
   const onLogin = () => {
-    AuthHelper
-      .login()
-      .then(e => {
-        setEmail(e.user.email ?? '');
-        setPhoto(e.user.photoURL ?? './icons/icon128x128.png');
-      });
+    AuthHelper.login();
   }
 
   /**
@@ -33,10 +32,19 @@ export function useAuth() {
   }
 
   useEffect(() => {
+    setEmail(user?.email ?? '');
+    setPhoto(user?.photoURL ?? './icons/icon128x128.png');
+  }, [user?.uid]);
+
+  useEffect(() => {
     AuthHelper.onChange(user => {
-      console.log('ddd');
+      if (user) {
+        login(user);
+      } else {
+        logout();
+      }
     });
   }, []);
 
-  return { email, photo, onLogin, onLogout };
+  return { email, photo, onLogin, onLogout, isLoggedIn };
 }
