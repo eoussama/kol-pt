@@ -1,10 +1,15 @@
-import { config } from "../../../config/env";
-import { CacheHelper } from "./cache.helper";
-import { FirebaseApp, initializeApp } from "firebase/app";
-import { Database, get, getDatabase, ref } from "firebase/database";
+import { config } from '../../../config/env';
+import { CacheHelper } from './cache.helper';
+import { FirebaseApp, initializeApp } from 'firebase/app';
+import { Auth, GoogleAuthProvider, getAuth } from 'firebase/auth';
+import { Database, get, getDatabase, ref } from 'firebase/database';
 
 
 
+/**
+ * @description
+ * Helps with all things Firebase
+ */
 export class FirebaseHelper {
 
   /**
@@ -21,11 +26,25 @@ export class FirebaseHelper {
 
   /**
    * @description
+   * Firebase realtime authentication instance
+   */
+  public static auth: Auth;
+
+  /**
+   * @description
+   * Google auth provider
+   */
+  public static provider: GoogleAuthProvider;
+
+  /**
+   * @description
    * Initializes the firebase app
    */
   static init(): void {
     this.app = initializeApp(config);
     this.db = getDatabase(this.app);
+    this.auth = getAuth(this.app);
+    this.provider = new GoogleAuthProvider();
   }
 
   /**

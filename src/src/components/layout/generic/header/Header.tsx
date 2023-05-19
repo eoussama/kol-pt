@@ -1,11 +1,11 @@
 import styles from './Header.module.scss';
 
 import { useMemo, useState } from 'react';
-import { GoogleAuthProvider, getAuth, signInWithPopup } from 'firebase/auth';
 import { Page } from '../../../../core/enums/page.enum';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { usePostStore } from '../../../../state/posts.state';
-import { IconButton, Tab, Tabs, Tooltip } from '@mui/material';
+import { Button, IconButton, Tab, Tabs, Tooltip } from '@mui/material';
+import { AuthHelper } from '../../../../core/helpers/firebase/auth.helper';
 import { NavigationHelper } from '../../../../core/helpers/navigator/navigation.helper';
 
 
@@ -48,17 +48,32 @@ function Header(): JSX.Element {
    * Handles the click event of the logo image to refresh the post list.
    */
   const onRefresh = () => {
-    const provider = new GoogleAuthProvider();
-    const auth = getAuth();
+    // const provider = new GoogleAuthProvider();
+    // const auth = getAuth();
 
-    signInWithPopup(auth, provider).then(e => {
-      setEmail(e.user.email ?? '');
-      setPhoto(e.user.photoURL ?? '');
+    // signInWithPopup(auth, provider).then(e => {
+    //   setEmail(e.user.email ?? '');
+    //   setPhoto(e.user.photoURL ?? '');
 
-      console.log({ e });
-    });
-
+    //   console.log({ e });
+    // });
     loadPosts(false);
+  }
+
+  /**
+   * @description
+   * Logs user in
+   */
+  const onLogin = () => {
+    AuthHelper.login().then(console.log);
+  }
+
+  /**
+   * @description
+   * Logs user out
+   */
+  const onLogout = () => {
+    AuthHelper.logout();
   }
 
   /**
@@ -91,14 +106,21 @@ function Header(): JSX.Element {
 
       <header className={styles['header']}>
         <div className={styles['header__branding']}>
-          <div className={styles['header__logo-wrapper']}>
+          <Button
+            size="small"
+            onClick={onLogin}
+            variant="outlined"
+            className={styles['header__login']}
+          >Login</Button>
+
+          {/* <div className={styles['header__logo-wrapper']}>
             <img className={styles['header__logo']} src={photo} alt="KOL PT Logo" onClick={onRefresh} />
           </div>
 
           <div className={styles['header__info']}>
             <h1 className={styles['header__title']}>KOL PT</h1>
             <h2 className={styles['header__subtitle']}>{email}</h2>
-          </div>
+          </div> */}
         </div>
 
         <div className={styles['header__actions']}>
