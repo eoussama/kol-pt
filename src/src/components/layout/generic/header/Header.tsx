@@ -1,11 +1,12 @@
 import styles from './Header.module.scss';
 
 import { useMemo, useState } from 'react';
+import LogoutIcon from '@mui/icons-material/Logout';
+import { useAuth } from '../../../../hooks/auth.hook';
 import { Page } from '../../../../core/enums/page.enum';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { usePostStore } from '../../../../state/posts.state';
 import { Button, IconButton, Tab, Tabs, Tooltip } from '@mui/material';
-import { AuthHelper } from '../../../../core/helpers/firebase/auth.helper';
 import { NavigationHelper } from '../../../../core/helpers/navigator/navigation.helper';
 
 
@@ -20,10 +21,9 @@ import { NavigationHelper } from '../../../../core/helpers/navigator/navigation.
 function Header(): JSX.Element {
   const location = useLocation();
   const navigate = useNavigate();
+  const [tab, setTag] = useState(0);
   const { loadPosts } = usePostStore();
-  const [value, setValue] = useState(0);
-  const [email, setEmail] = useState('');
-  const [photo, setPhoto] = useState('./icons/icon128x128.png');
+  const { onLogin, onLogout } = useAuth();
 
   /**
    * @description
@@ -48,32 +48,7 @@ function Header(): JSX.Element {
    * Handles the click event of the logo image to refresh the post list.
    */
   const onRefresh = () => {
-    // const provider = new GoogleAuthProvider();
-    // const auth = getAuth();
-
-    // signInWithPopup(auth, provider).then(e => {
-    //   setEmail(e.user.email ?? '');
-    //   setPhoto(e.user.photoURL ?? '');
-
-    //   console.log({ e });
-    // });
     loadPosts(false);
-  }
-
-  /**
-   * @description
-   * Logs user in
-   */
-  const onLogin = () => {
-    AuthHelper.login().then(console.log);
-  }
-
-  /**
-   * @description
-   * Logs user out
-   */
-  const onLogout = () => {
-    AuthHelper.logout();
   }
 
   /**
@@ -83,7 +58,7 @@ function Header(): JSX.Element {
    * @param tab The new tab index
    */
   const onNavigate = (_: React.SyntheticEvent, tab: number) => {
-    setValue(tab);
+    setTag(tab);
   };
 
   /**
@@ -153,12 +128,21 @@ function Header(): JSX.Element {
               <img src="./images/platforms/patreon.png" alt="Patreon icon" />
             </IconButton>
           </Tooltip>
+
+          <Tooltip title="Logout">
+            <IconButton
+              onClick={onLogout}
+              aria-label="logout"
+            >
+              <LogoutIcon />
+            </IconButton>
+          </Tooltip>
         </div>
       </header>
 
       {canShowTabs && <nav>
         <Tabs
-          value={value}
+          value={tab}
           variant='fullWidth'
           onChange={onNavigate}
           aria-label="Main navigation tabs"

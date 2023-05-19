@@ -1,5 +1,5 @@
 import { FirebaseHelper } from './firebase.helper';
-import { UserCredential, signInWithPopup, signOut } from 'firebase/auth';
+import { NextOrObserver, User, UserCredential, onAuthStateChanged, signInWithPopup, signOut } from 'firebase/auth';
 
 
 
@@ -23,5 +23,13 @@ export class AuthHelper {
    */
   static logout(): Promise<void> {
     return signOut(FirebaseHelper.auth);
+  }
+
+  /**
+   * @description
+   * Authentication state change
+   */
+  static onChange(callback: NextOrObserver<User>) {
+    return onAuthStateChanged(FirebaseHelper.auth, callback);
   }
 }

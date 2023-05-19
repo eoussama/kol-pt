@@ -7,7 +7,6 @@ import { useEntriesStore } from "../state/entries.state";
  * @description
  * A custom hook to manage entries and filtering
  *
- *
  * @returns An object containing a function for serching and meta
  * vars about the entries
  */
