@@ -1,6 +1,8 @@
 import { create } from 'zustand';
+import { useAuthStore } from './auth.state';
 import { ViewMode } from '../core/enums/view-mode.enum';
 import { ISettingsState } from '../core/types/state/settings-state.type';
+import { SettingsHelper } from '../core/helpers/firebase/settings.helper';
 
 
 
@@ -23,8 +25,16 @@ export const useSettingsStore = create<ISettingsState>((set) => ({
    * @param viewMode The new view mode.
    */
   setViewMode(viewMode: ViewMode) {
+
+    // Fetching logged in user
+    const user = useAuthStore.getState().user;
+
+    // Update view mode
     set({ viewMode });
 
-    // https://kol-patreon-tracker-default-rtdb.firebaseio.com/users/X2dyrjIAf2TfJB5YQavwbZMRo6n1/viewMode
+    // If the user is logged in, update the view mode remotely.
+    if (user) {
+      SettingsHelper.set<ViewMode>(user.uid, 'viewMode', viewMode);
+    }
   }
 }));

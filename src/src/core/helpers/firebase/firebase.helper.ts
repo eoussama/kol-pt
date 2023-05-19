@@ -2,7 +2,7 @@ import { config } from '../../../config/env';
 import { CacheHelper } from './cache.helper';
 import { FirebaseApp, initializeApp } from 'firebase/app';
 import { Auth, GoogleAuthProvider, getAuth } from 'firebase/auth';
-import { Database, get, getDatabase, ref } from 'firebase/database';
+import { Database, get, getDatabase, ref, set } from 'firebase/database';
 
 
 
@@ -75,6 +75,27 @@ export class FirebaseHelper {
 
       // Returning fetched data
       resolve(data);
+    });
+  }
+
+  /**
+   * @description
+   * Updates an element in the database
+   *
+   * @param key The key of the targeted value
+   * @param value The value to update
+   */
+  static set(key: string, value: any): Promise<void> {
+    return new Promise(async resolve => {
+
+      // Preparing the target reference
+      const snapRef = ref(FirebaseHelper.db, key);
+
+      // Updating the valie
+      await set(snapRef, value);
+
+      // Reporting back
+      resolve();
     });
   }
 }
