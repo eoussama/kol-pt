@@ -8,7 +8,7 @@ import { IAuthState } from '../core/types/state/auth-state.type';
  * @description
  * State management store for authentication.
  */
-export const useAuthStore = create<IAuthState>((set, get) => ({
+export const useAuthStore = create<IAuthState>(set => ({
 
   /**
    * @description

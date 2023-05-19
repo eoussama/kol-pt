@@ -16,7 +16,7 @@ function PostCard(props: IPostCardProps): JSX.Element {
   const { viewMode } = props;
 
   const viewModeClasses = viewMode === ViewMode.Compact ? styles['card--compact'] : styles['card--expanded'];
-  const cardClasses = `${styles['card']} ${viewModeClasses}`
+  const cardClasses = `${styles['card']} ${viewModeClasses}`;
 
   /**
    * @description

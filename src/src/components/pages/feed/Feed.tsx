@@ -9,6 +9,7 @@ import ViewListIcon from '@mui/icons-material/ViewList';
 import { Chip, IconButton, Tooltip } from '@mui/material';
 import ViewStreamIcon from '@mui/icons-material/ViewStream';
 import PostCard from '../../layout/post/post-card/PostCard';
+import { useViewMode } from '../../../hooks/view-mode.hook';
 import { ViewMode } from '../../../core/enums/view-mode.enum';
 import RestartAltOutlinedIcon from '@mui/icons-material/RestartAltOutlined';
 
@@ -23,11 +24,8 @@ import RestartAltOutlinedIcon from '@mui/icons-material/RestartAltOutlined';
  * @returns JSX.Element
 */
 function FeedPage(): JSX.Element {
-  const [viewMode, setViewMode] = useState(ViewMode.Expanded);
   const { posts, error, loading, search, postsCount, onSearch } = usePosts();
-
-  const compactViewColor = viewMode === ViewMode.Compact ? 'primary' : 'default';
-  const expandedViewColor = viewMode === ViewMode.Expanded ? 'primary' : 'default';
+  const { viewMode, setViewMode, expandedViewColor, compactViewColor } = useViewMode();
   const emptyMessage = postsCount > 0 ? <>No posts match <b>{search}</b></> : 'No posts found';
 
   return (

@@ -1,3 +1,7 @@
+/**
+ * @description
+ * Time helper
+ */
 export class TimeHelper {
 
   /**

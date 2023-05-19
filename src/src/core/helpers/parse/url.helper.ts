@@ -1,7 +1,11 @@
-import { config } from "../../../config/env";
+import { config } from '../../../config/env';
 
 
 
+/**
+ * @description
+ * Helps with URLs
+ */
 export class URLHelper {
 
   /**
