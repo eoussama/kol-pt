@@ -85,6 +85,10 @@ function Header(): JSX.Element {
 
   return (
     <>
+      <header className={styles['flair']}>
+        KOL PT - v0.1.0
+      </header>
+
       <header className={styles['header']}>
         <div className={styles['header__branding']}>
           <div className={styles['header__logo-wrapper']}>
