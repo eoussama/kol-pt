@@ -19,7 +19,9 @@ export class AuthHelper {
   static login(): Promise<UserCredential> {
     return new Promise(resolve => {
       const subscription = (e: MessageEvent) => {
-        if (e.isTrusted && e.origin === config.authUrl) {
+        const origin = new URL(e.origin).host;
+        
+        if (e.isTrusted && config.authUrl.includes(origin)) {
           if (e.data.type === MessageType.Login) {
             const token = e.data.payload.token ?? '';
             const credential = GoogleAuthProvider.credential(token);

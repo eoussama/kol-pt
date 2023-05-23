@@ -43,7 +43,8 @@ function App(): JSX.Element {
         </div>
 
         <div className={styles['content__message']}>
-          Google Authentication for <b>KOL PT (Patreon Tracker)</b>
+          <p>Google Authentication for <b>KOL PT (Patreon Tracker)</b></p>
+          <p className={styles['content__note']}>Make sure you're not blocking popups on this page so that the Google OAuth window is not blocked.</p>
         </div>
       </div>
     </>
