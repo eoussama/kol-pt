@@ -13,7 +13,7 @@ import { IEntryPageReactionsSectionProps } from '../../../../core/types/props/en
  * Renders the entry related reactions.
  */
 function EntryReactions(props: IEntryPageReactionsSectionProps): JSX.Element {
-  const { entry, reactions } = props;
+  const { reactions } = props;
 
   /**
    * @description

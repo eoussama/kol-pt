@@ -60,6 +60,7 @@ function PostReactions(): JSX.Element {
     NavigationHelper.openPassione();
   }
 
+  /* eslint-disable react-hooks/exhaustive-deps */
   useEffect(() => {
 
     // Adding cue points

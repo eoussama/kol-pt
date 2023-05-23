@@ -59,6 +59,7 @@
     "@types/serviceworker": "^0.0.67",
     "@types/utf8": "^3.0.1",
     "@types/vimeo__player": "^2.18.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
     "mini-css-extract-plugin": "^2.7.5"
   }
 }

@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "KOL Patreon Tracker is a Chromium extension and Edge addon that helps you track KingOfLightning (KOL) reactions on Patreon. KOL is an Anime/Manga YouTuber who mostly does One Piece content and other reactions and theories.",
   "scripts": {
-    "postinstall": "npm run install:ext && npm run install:auth; npm run env",
+    "postinstall": "npm run install:ext && npm run install:auth && npm run env",
     "install:ext": "cd ./kol-pt-ext && npm i",
     "install:auth": "cd ./kol-pt-auth && npm i",
     "env:ext": "cp .env ./kol-pt-ext/.env",
@@ -12,11 +12,11 @@
     "clean:ext": "cd ./kol-pt-ext && rm -rf build",
     "clean:auth": "cd ./kol-pt-auth && rm -rf build",
     "clean": " rm -rf build && npm run clean:ext && npm run clean:auth",
-    "start:ext": "npm run env:ext; cd ./kol-pt-ext && npm start",
-    "start:auth": "npm run env:auth; cd ./kol-pt-auth && npm start",
+    "start:ext": "npm run env:ext && cd ./kol-pt-ext && npm start",
+    "start:auth": "npm run env:auth && cd ./kol-pt-auth && npm start",
     "start": "npm run start:ext && npm run start:auth",
-    "build:ext": "npm run env:ext; cd ./kol-pt-ext && npm run build && mkdir -p ../build && mv build ../build/ext",
-    "build:auth": "npm run env:auth; cd ./kol-pt-auth && npm run build && mkdir -p ../build && mv build ../build/auth",
+    "build:ext": "npm run env:ext && cd ./kol-pt-ext && npm run build && mkdir -p ../build && mv build ../build/ext",
+    "build:auth": "npm run env:auth && cd ./kol-pt-auth && npm run build && mkdir -p ../build && mv build ../build/auth",
     "build": "npm run clean && npm run build:ext && npm run build:auth"
   },
   "repository": {

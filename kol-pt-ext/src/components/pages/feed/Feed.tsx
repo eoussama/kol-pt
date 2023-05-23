@@ -1,6 +1,5 @@
 import styles from './Feed.module.scss';
 
-import { useState } from 'react';
 import { usePosts } from '../../../hooks/posts.hook';
 import Error from '../../layout/generic/error/Error';
 import Empty from '../../layout/generic/empty/Empty';

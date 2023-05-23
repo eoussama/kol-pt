@@ -30,7 +30,7 @@ function TextExpand(props: ITextExpandProps): JSX.Element {
       : `${content.slice(0, minLength)}...`;
 
     setText(newText);
-  }, [more, content]);
+  }, [more, content, minLength]);
 
   return (
     <>
