@@ -1,3 +1,5 @@
+// import '../../kol-pt-ext/src/styles';
+
 import React from 'react';
 import App from './components/app/App';
 import ReactDOM from 'react-dom/client';
@@ -5,10 +7,8 @@ import reportWebVitals from './reportWebVitals';
 
 
 
-const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement
-);
-
+// Attaching react
+const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 root.render(
   <React.StrictMode>
     <App />

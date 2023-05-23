@@ -1,8 +1,37 @@
 import styles from './App.module.scss';
 
+import { useEffect } from 'react';
+import { config } from '../../config/env';
+import { initializeApp } from 'firebase/app';
+import { getAuth, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 
 
-function App() {
+
+/**
+ * @description
+ * Renders the auth component
+ */
+function App(): JSX.Element {
+
+  useEffect(() => {
+    if (window.opener) {
+      const app = initializeApp(config);
+      const auth = getAuth(app);
+      const provider = new GoogleAuthProvider();
+
+      signInWithPopup(auth, provider)
+        .then(async (e: any) => {
+          const token = e._tokenResponse.oauthIdToken ?? '';
+          
+          const payload = { token };
+          const message = { type: 3, payload };
+
+          window.opener.postMessage(message, '*');
+          window.close();
+        });
+    }
+  }, []);
+
   return (
     <>
       <div className={styles['content']}>

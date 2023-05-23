@@ -1,3 +1,4 @@
+import { config } from '../../../config/env';
 import { FirebaseHelper } from './firebase.helper';
 import { MessageType } from '../../enums/message-type.enum';
 import { NavigationHelper } from '../navigator/navigation.helper';
@@ -18,7 +19,7 @@ export class AuthHelper {
   static login(): Promise<UserCredential> {
     return new Promise(resolve => {
       const subscription = (e: MessageEvent) => {
-        if (e.isTrusted && e.origin === 'http://127.0.0.1:8080') {
+        if (e.isTrusted && e.origin === config.authUrl) {
           if (e.data.type === MessageType.Login) {
             const token = e.data.payload.token ?? '';
             const credential = GoogleAuthProvider.credential(token);

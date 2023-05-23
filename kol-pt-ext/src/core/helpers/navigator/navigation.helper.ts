@@ -23,7 +23,7 @@ export class NavigationHelper {
 
     const conf = `width=${width},height=${height},left=${left},top=${top}`;
 
-    return window.open('http://127.0.0.1:8080/auth.html', '_blank', conf);
+    return window.open(config.authUrl, '_blank', conf);
   }
 
   //#endregion
