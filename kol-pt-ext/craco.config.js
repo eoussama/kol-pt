@@ -1,4 +1,4 @@
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 
 
@@ -21,8 +21,8 @@ module.exports = {
         ...webpackConfig,
         entry: {
           main: [env === 'development' && require.resolve('react-dev-utils/webpackHotDevClient'), paths.appIndexJs].filter(Boolean),
-          content: './src/services/content.service.ts',
           background: './src/services/background.service.ts',
+          content: './src/services/content.service.ts'
         },
         output: {
           ...webpackConfig.output,

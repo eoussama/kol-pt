@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { Tag } from '../core/models/tag.model';
 import { Entry } from '../core/models/entry.model';
 import { Anime } from '../core/models/anime.model';
 import { Nullable } from '../core/types/nullable.type';
