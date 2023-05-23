@@ -1,4 +1,5 @@
 import { config } from '../../../config/env';
+import { Nullable } from '../../types/nullable.type';
 
 
 
@@ -7,6 +8,25 @@ import { config } from '../../../config/env';
  * Helps with navigation
  */
 export class NavigationHelper {
+
+  //#region Auth
+
+  /**
+   * @description
+   * Opens the authentication window
+   */
+  static openAuth(): Nullable<Window> {
+    const width = 420;
+    const height = 200;
+    const top = 100;
+    const left = window.screen.width / 2 - width / 2;
+
+    const conf = `width=${width},height=${height},left=${left},top=${top}`;
+
+    return window.open('http://127.0.0.1:8080/auth.html', '_blank', conf);
+  }
+
+  //#endregion
 
   //#region Github
 

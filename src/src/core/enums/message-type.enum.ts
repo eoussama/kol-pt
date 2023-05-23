@@ -22,5 +22,11 @@ export enum MessageType {
    * Tells the service worker to load the posts
    * and forward them to the content script
    */
-  Load
+  Load,
+
+  /**
+   * @description
+   * Notifies the extension that user is logging in
+   */
+  Login
 }
