@@ -3,10 +3,18 @@
   "version": "0.1.0",
   "description": "KOL Patreon Tracker is a Chromium extension and Edge addon that helps you track KingOfLightning (KOL) reactions on Patreon. KOL is an Anime/Manga YouTuber who mostly does One Piece content and other reactions and theories.",
   "scripts": {
-    "postinstall": "cd src && npm i",
-    "clean": " rm -rf build",
-    "start": "cd src && npm start",
-    "build": "npm run clean && cd src && npm run build && mv build ../build"
+    "postinstall": "npm run install:ext && npm run install:auth",
+    "install:ext": "cd ./kol-pt-ext && npm i",
+    "install:auth": "cd ./kol-pt-auth && npm i",
+    "clean:ext": "cd ./kol-pt-ext && rm -rf build",
+    "clean:auth": "cd ./kol-pt-auth && rm -rf build",
+    "clean": " rm -rf build && npm run clean:ext && npm run clean:auth",
+    "start:ext": "cd ./kol-pt-ext && npm start",
+    "start:auth": "cd ./kol-pt-ext && npm start",
+    "start": "npm run start:ext && npm run start:auth",
+    "build:ext": "npm run clean && cd ./kol-pt-ext && npm run build && mkdir ../build && mv build ../build/ext",
+    "build:auth": "npm run clean && cd ./kol-pt-auth && npm run build && mkdir ../build && mv build ../build/auth",
+    "build": "npm run build:ext && npm run build:auth"
   },
   "repository": {
     "type": "git",
@@ -21,8 +29,5 @@
   "homepage": "https://github.com/EOussama/kol-pt#readme",
   "devDependencies": {
     "create-react-app": "^5.0.1"
-  },
-  "dependencies": {
-    "millify": "^6.1.0"
   }
 }
