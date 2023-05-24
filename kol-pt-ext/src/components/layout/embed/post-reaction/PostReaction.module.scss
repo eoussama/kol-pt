@@ -4,7 +4,7 @@
 
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
 
   &__playing {
     margin-left: 5px;
@@ -44,8 +44,16 @@
     transition-property: opacity;
   }
 
-  &__right button {
-    color: #b9b9b9;
+  &__right {
+    margin-left: auto;
+
+    button {
+      color: #b9b9b9;
+    }
+  }
+
+  &__tracking {
+    margin-right: 15px;
   }
 
   &__highlight {
@@ -60,6 +68,10 @@
     &:hover {
       opacity: 1;
     }
+  }
+
+  &__checkbox {
+    padding: 0 !important;
   }
 
   &:not(:last-of-type) {
