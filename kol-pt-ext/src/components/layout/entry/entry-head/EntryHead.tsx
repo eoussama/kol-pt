@@ -48,7 +48,7 @@ function EntryHead(props: IEntryPageHeadSectionProps): JSX.Element {
         <h5 className={styles['head__type']}>
           {entry.getTypeName()}
           {entry.type === EntryType.YouTube &&
-            <> - {millify(viewCount)} views</>
+            <> - {millify(viewCount)} subscribers</>
           }
         </h5>
 

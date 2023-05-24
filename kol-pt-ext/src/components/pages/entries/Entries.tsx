@@ -7,6 +7,9 @@ import Error from '../../layout/generic/error/Error';
 import Search from '../../layout/generic/search/Search';
 import { ListItemText } from '../../styled/ListItemText';
 import { useEntries } from '../../../hooks/entries.hook';
+import { Entry } from '../../../core/models/entry.model';
+import { YouTube } from '../../../core/models/youtube.model';
+import { EntryType } from '../../../core/enums/entry-type.enum';
 import RestartAltOutlinedIcon from '@mui/icons-material/RestartAltOutlined';
 import { Avatar, Chip, Divider, List, ListItem, ListItemAvatar, Tooltip } from '@mui/material';
 
@@ -30,6 +33,19 @@ function EntriesPage(): JSX.Element {
    */
   const onEntryClick = (entryId: string) => {
     navigate(`/${Page.Entry}/${entryId}`);
+  }
+
+  /**
+   * @description
+   * Returns the proper entry subtitle.
+   *
+   * @param entry The target entry.
+   */
+  const getSubtitle = (entry: Entry) => {
+    switch (entry.type) {
+      case EntryType.YouTube: return `@${(entry as YouTube).handle}`;
+      default: return entry.altTitles.join(', ');
+    }
   }
 
   return (
@@ -62,7 +78,7 @@ function EntriesPage(): JSX.Element {
                     <ListItemText
                       primary={entry.title}
                       className={styles['entry__detail']}
-                      secondary={<span className={styles['entry__alt']}>{entry.altTitles.join(', ')}</span>}
+                      secondary={<span className={styles['entry__alt']}>{getSubtitle(entry)}</span>}
                     />
                   </ListItem>
                   <Divider variant="inset" component="li" />

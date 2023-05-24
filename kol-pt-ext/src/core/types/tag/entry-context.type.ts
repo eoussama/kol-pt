@@ -1,4 +1,5 @@
-import { IAnimeContext } from "./anime-context.type";
+import { IAnimeContext } from './anime-context.type';
+import { IYouTubeContext } from './youtube-context.type';
 
 
 
@@ -7,4 +8,4 @@ import { IAnimeContext } from "./anime-context.type";
  * Generic entry context which resembles
  * extra data passed from the tag to the entry model.
  */
-export type IEntryContext = IAnimeContext;
+export type IEntryContext = IAnimeContext | IYouTubeContext;

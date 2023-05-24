@@ -20,5 +20,11 @@ export interface IYouTubeInfo {
    * @description
    * The view count of the video.
    */
-  totlaViews: number;
+  totlaViews?: number;
+
+  /**
+   * @description
+   * The view count of the video.
+   */
+  subscribers?: number;
 }

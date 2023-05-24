@@ -1,8 +1,10 @@
-import { Entry } from "./entry.model";
-import { ITag } from "../types/tag/tag.type";
-import { EntryType } from "../enums/entry-type.enum";
-import { TimeHelper } from "../helpers/parse/time.helper";
-import { EntriesHelper } from "../helpers/firebase/entries.helper";
+import { Entry } from './entry.model';
+import { ITag } from '../types/tag/tag.type';
+import { EntryType } from '../enums/entry-type.enum';
+import { TimeHelper } from '../helpers/parse/time.helper';
+import { ArrayHelper } from '../helpers/parse/array.helper';
+import { EntriesHelper } from '../helpers/firebase/entries.helper';
+import { IYouTubeContext } from '../types/tag/youtube-context.type';
 
 
 
@@ -80,7 +82,11 @@ export class Tag {
    * @returns A string representing the entry's title and the tag's label
    */
   getShortTitle(): string {
-    return `${this.entry?.shortTitle} - ${this.label}`;
+    switch (this.entry.type) {
+      case EntryType.Anime: return `${this.entry?.shortTitle} - ${this.label}`;
+      case EntryType.YouTube: return ArrayHelper.getShortest((this.context as IYouTubeContext).altTitles ?? [], this.label);
+      default: return this.label;
+    }
   }
 
   /**

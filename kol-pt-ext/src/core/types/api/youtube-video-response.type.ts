@@ -1,8 +1,8 @@
 /**
  * @description
- * The HTTP reponse from the YouTube Data API.
+ * The video HTTP reponse from the YouTube Data API.
  */
-export interface IYouTubeResponse {
+export interface IYouTubeVideoResponse {
 
   /**
    * @description

@@ -21,7 +21,7 @@ import { IconHelper } from '../../../core/helpers/asset/icon.helper';
 function EntryPage(props?: IEntryPageProps): JSX.Element {
   const params = useParams();
   const entryId = useMemo(() => params.entryId ?? props?.entryId, [params, props?.entryId]);
-  const { loading, entry, description, photo, viewCount, altTitles, genres, reactions } = useEntry(entryId ?? '');
+  const { loading, entry, description, photo, subscribers, altTitles, genres, reactions } = useEntry(entryId ?? '');
 
   const dialogClass = Boolean(props?.entryId) ? styles['root--dialog'] : '';
   const classes = `${styles['root']} ${dialogClass}`;
@@ -36,8 +36,8 @@ function EntryPage(props?: IEntryPageProps): JSX.Element {
           photo={photo}
           genres={genres}
           loading={loading}
-          viewCount={viewCount}
           entry={entry as Entry}
+          viewCount={subscribers}
           description={description}
           isDialog={Boolean(props?.entryId)}
         />

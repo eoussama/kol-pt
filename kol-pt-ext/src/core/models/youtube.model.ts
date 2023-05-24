@@ -1,9 +1,10 @@
-import { Entry } from "./entry.model";
-import { IOption } from "../types/option.type";
-import { EntryType } from "../enums/entry-type.enum";
-import { IconHelper } from "../helpers/asset/icon.helper";
-import { IYouTubeEntry } from "../types/entry/youtube-entry.type";
-import { NavigationHelper } from "../helpers/navigator/navigation.helper";
+import { Entry } from './entry.model';
+import { IOption } from '../types/option.type';
+import { EntryType } from '../enums/entry-type.enum';
+import { IconHelper } from '../helpers/asset/icon.helper';
+import { IYouTubeEntry } from '../types/entry/youtube-entry.type';
+import { IYouTubeContext } from '../types/tag/youtube-context.type';
+import { NavigationHelper } from '../helpers/navigator/navigation.helper';
 
 
 
@@ -15,21 +16,15 @@ export class YouTube extends Entry {
 
   /**
    * @description
-   * The ID of the YouTube video.
-   */
-  videoId: string;
-
-  /**
-   * @description
-   * The YouTube channel handle id.
+   * The YouTube channel ID.
    */
   channelId: string;
 
   /**
    * @description
-   * The name of the YouTube channel that uploaded the video.
+   * The YouTube channel handle.
    */
-  channelName: string;
+  handle: string;
 
   /**
    * @constructor
@@ -39,17 +34,18 @@ export class YouTube extends Entry {
     super(model);
 
     this.type = EntryType.YouTube;
-    this.videoId = model?.videoId ?? '';
+    this.handle = model?.handle ?? '';
     this.channelId = model?.channelId ?? '';
-    this.channelName = model?.channelName ?? '';
   }
 
   /**
    * @description
    * Opens the YouTube video.
+   *
+   * @param videoId The ID of the YouTube video to watch.
    */
-  watchVideo(): void {
-    NavigationHelper.openYoutubeVideo(this.videoId);
+  watchVideo(videoId: string): void {
+    NavigationHelper.openYoutubeVideo(videoId);
   }
 
   /**
@@ -57,7 +53,7 @@ export class YouTube extends Entry {
    * Opens the YouTube video.
    */
   openChannel(): void {
-    NavigationHelper.openYoutubeChannel(this.channelId);
+    NavigationHelper.openYoutubeChannel(this.handle);
   }
 
   /**
@@ -66,22 +62,22 @@ export class YouTube extends Entry {
  *
  * @param context The parent tag's context, passed for extra context
  */
-  getOptions(): Array<IOption> {
+  getOptions(context?: IYouTubeContext): Array<IOption> {
     const options = super.getOptions();
 
     return [
       {
         divider: true,
-        canShow: () => true,
         iconAlt: 'YouTube icon',
         label: 'Watch on YouTube',
-        action: this.watchVideo.bind(this),
-        icon: IconHelper.getIcon('youtube', 'platforms')
+        canShow: () => Boolean(context?.videoId),
+        icon: IconHelper.getIcon('youtube', 'platforms'),
+        action: () => this.watchVideo.call(this, context?.videoId ?? '')
       },
       {
         canShow: () => true,
-        label: `View ${this.channelName} Channel`,
         iconAlt: 'YouTube icon',
+        label: `View ${this.title} Channel`,
         action: this.openChannel.bind(this),
         icon: IconHelper.getIcon('youtube', 'platforms')
       },

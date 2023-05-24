@@ -1,4 +1,4 @@
-import { IEntry } from "./entry.type";
+import { IEntry } from './entry.type';
 
 
 
@@ -10,19 +10,13 @@ export interface IYouTubeEntry extends IEntry {
 
   /**
    * @description
-   * The ID of the YouTube video.
+   * The YouTube channel handle.
    */
-  videoId: string;
+  handle: string;
 
   /**
    * @description
-   * The YouTube channel handle id.
+   * The YouTube channel ID.
    */
   channelId: string;
-
-  /**
-   * @description
-   * The name of the YouTube channel that uploaded the video.
-   */
-  channelName: string;
 }

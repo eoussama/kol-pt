@@ -21,7 +21,7 @@ import { EntriesHelper } from '../core/helpers/firebase/entries.helper';
  */
 export function useEntry(entryId: string) {
   const [loading, setLoading] = useState(false);
-  const [viewCount, setViewCount] = useState(0);
+  const [subscribers, setSubscribers] = useState(0);
   const [description, setDescription] = useState('');
   const [genres, setGenres] = useState<Array<string>>([]);
   const [entry, setEntry] = useState<Nullable<Entry>>(null);
@@ -75,12 +75,12 @@ export function useEntry(entryId: string) {
               .finally(() => setLoading(false));
           } else if (entry?.type === EntryType.YouTube) {
             YouTubeHelper
-              .getVideoInfo((entry as YouTube).videoId)
-              .then(e => {
+            .getChannelInfo((entry as YouTube).channelId)
+            .then(e => {
                 setAltTitles([]);
                 setPhoto(e.thumbnail);
-                setViewCount(e.totlaViews);
                 setDescription(e.description);
+                setSubscribers(e.subscribers ?? 0);
                 EntriesHelper.getReactions(entryId).then(setReactions);
               })
               .finally(() => setLoading(false));
@@ -91,5 +91,5 @@ export function useEntry(entryId: string) {
     }
   }, [entryId]);
 
-  return { loading, entry, photo, description, viewCount, genres, altTitles, reactions };
+  return { loading, entry, photo, description, subscribers, genres, altTitles, reactions };
 }
