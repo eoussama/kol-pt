@@ -17,8 +17,8 @@ export class NavigationHelper {
    */
   static openAuth(): Nullable<Window> {
     const width = 450;
-    const height = 210;
-    const top = 100;
+    const height = 260;
+    const top = 50;
     const left = window.screen.width / 2 - width / 2;
 
     const conf = `width=${width},height=${height},left=${left},top=${top}`;

@@ -20,9 +20,9 @@ export function useViewMode() {
   useEffect(() => {
     if (user) {
       SettingsHelper
-        .get(user.uid)
-        .then(settings => {
-          setViewMode(settings.viewMode);
+        .get(user.uid, 'viewMode')
+        .then(userViewMode => {
+          setViewMode(userViewMode);
         });
     }
   }, [user?.uid]);
