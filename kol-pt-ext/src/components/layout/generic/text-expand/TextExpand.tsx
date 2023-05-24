@@ -14,23 +14,23 @@ function TextExpand(props: ITextExpandProps): JSX.Element {
   const minLength = props.minLength ?? 200;
 
   const [text, setText] = useState('');
-  const [more, setMore] = useState(false);
+  const [expanded, setExpanded] = useState(false);
 
   /**
    * @description
    * Toggles more/less description content
    */
   const onMoreToggle = () => {
-    setMore(!more)
+    setExpanded(!expanded)
   }
 
   useEffect(() => {
-    const newText = (more && content.length > minLength)
+    const newText = (expanded || content.length <= minLength)
       ? content
       : `${content.slice(0, minLength)}...`;
 
     setText(newText);
-  }, [more, content, minLength]);
+  }, [expanded, content, minLength]);
 
   return (
     <>
@@ -39,7 +39,7 @@ function TextExpand(props: ITextExpandProps): JSX.Element {
         <span
           onClick={onMoreToggle}
           className={styles['more']}
-        >read {more ? 'less' : 'more'}</span>
+        >read {expanded ? 'less' : 'more'}</span>
       }
     </>
   );

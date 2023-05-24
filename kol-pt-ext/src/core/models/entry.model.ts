@@ -4,6 +4,7 @@ import { IOption } from '../types/option.type';
 import { IEntry } from '../types/entry/entry.type';
 import { EntryType } from '../enums/entry-type.enum';
 import { IconHelper } from '../helpers/asset/icon.helper';
+import { ArrayHelper } from '../helpers/parse/array.helper';
 import { IEntryContext } from '../types/tag/entry-context.type';
 import { NavigationHelper } from '../helpers/navigator/navigation.helper';
 
@@ -67,7 +68,7 @@ export class Entry implements ISearch {
     this.imdbId = model?.imdbId ?? '';
     this.type = model?.type ?? EntryType.Anime;
     this.altTitles = model?.altTitles ?? [this.title];
-    this.shortTitle = this.altTitles.sort((a: string, b: string) => a.length - b.length)[0] ?? this.title ?? '';
+    this.shortTitle = ArrayHelper.getShortest(this.altTitles, this.title);
 
     if (model && 'reactions' in model) {
       this.reactions = (model?.reactions as Array<Post>) ?? [];
