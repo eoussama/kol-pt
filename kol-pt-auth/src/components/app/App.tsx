@@ -18,11 +18,12 @@ function App(): JSX.Element {
       const app = initializeApp(config);
       const auth = getAuth(app);
       const provider = new GoogleAuthProvider();
+      provider.setCustomParameters({ prompt: 'select_account' });
 
       signInWithPopup(auth, provider)
         .then(async (e: any) => {
           const token = e._tokenResponse.oauthIdToken ?? '';
-          
+
           const payload = { token };
           const message = { type: 3, payload };
 
