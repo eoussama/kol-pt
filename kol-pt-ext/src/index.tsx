@@ -5,12 +5,8 @@ import ReactDOM from 'react-dom/client';
 import reportWebVitals from './reportWebVitals';
 import { RouterProvider } from 'react-router-dom';
 import { router } from './core/const/router.const';
-import { FirebaseHelper } from './core/helpers/firebase/firebase.helper';
 
 
-
-// Initializing firebase
-FirebaseHelper.init();
 
 // Attaching react
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
