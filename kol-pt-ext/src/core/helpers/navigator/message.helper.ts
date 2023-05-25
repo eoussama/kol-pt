@@ -1,3 +1,4 @@
+import { Imessage } from '../../types/message.type';
 import { MessageType } from '../../enums/message-type.enum';
 
 
@@ -28,5 +29,24 @@ export class MessageHelper {
       window.postMessage(JSON.parse(JSON.stringify({ tabId, type, payload })), '*');
       return Promise.resolve(null as any);
     }
+  }
+
+  /**
+   * @description
+   * Listens to specific message and invokes user function.
+   *
+   * @param callback The fundtion to invoke on message.
+   * @param type The type of message to invoke the function for.
+   */
+  static listen<T = any>(callback: (e: Imessage<T>, sender: chrome.runtime.MessageSender, sendResponse: (response?: any) => void) => void, type?: MessageType): void {
+    console.log('listed');
+    chrome.runtime.onMessage.addListener(async (e: Imessage<T>, sender: chrome.runtime.MessageSender, sendResponse: (response?: any) => void) => {
+      console.log(e, type);
+      if (type && e.type === type) {
+        callback(e, sender, sendResponse);
+      } else {
+        callback(e, sender, sendResponse);
+      }
+    });
   }
 }

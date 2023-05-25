@@ -1,14 +1,11 @@
 import { Imessage } from '../core/types/message.type';
 import { URLHelper } from '../core/helpers/parse/url.helper';
 import { MessageType } from '../core/enums/message-type.enum';
+import { AuthHelper } from '../core/helpers/firebase/auth.helper';
 import { PostsHelper } from '../core/helpers/firebase/posts.helper';
 import { MessageHelper } from '../core/helpers/navigator/message.helper';
-import { FirebaseHelper } from '../core/helpers/firebase/firebase.helper';
 
 
-
-// Initializing firebase instance
-FirebaseHelper.init();
 
 // On update
 chrome.webNavigation.onCompleted.addListener(async ({ tabId, url }) => {
@@ -17,21 +14,37 @@ chrome.webNavigation.onCompleted.addListener(async ({ tabId, url }) => {
   if (URLHelper.isPatreon(url ?? '')) {
 
     // Sending initialization message to content
-    MessageHelper.send(tabId, MessageType.Init);
+    MessageHelper.send(MessageType.Init, null, tabId);
   }
 });
 
 // On load message received
-chrome.runtime.onMessage.addListener(async (e: Imessage, { tab }) => {
+MessageHelper.listen(async (e: Imessage, { tab }) => {
 
-  // If content script is requesting posts
-  if (tab?.id && e.type === MessageType.Load) {
+  switch (e.type) {
 
-    // Fetching the posts
-    const posts = await PostsHelper.load();
+    // If content script is requesting posts
+    case MessageType.Load: {
+      if (tab?.id) {
 
-    // Forwarding the fetched posts over to active page
-    MessageHelper.send(tab.id, MessageType.Attach, { posts });
+        // Fetching the posts
+        const posts = await PostsHelper.load();
+
+        // Forwarding the fetched posts over to active page
+        MessageHelper.send(MessageType.Attach, { posts }, tab.id);
+      }
+
+      break;
+    }
+
+    // If state request is due
+    case MessageType.SyncRequest: {
+      if (tab?.id) {
+        AuthHelper.onChange(user => MessageHelper.send(MessageType.SyncResponse, user, tab.id));
+      }
+
+      break;
+    }
   }
 });
 

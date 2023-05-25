@@ -29,7 +29,7 @@ import { MessageHelper } from '../core/helpers/navigator/message.helper';
   const timeout = 2000;
 
   // Listening for messages
-  chrome.runtime.onMessage.addListener((e: Imessage<{ posts: Array<Post> }>) => {
+  MessageHelper.listen((e: Imessage<{ posts: Array<Post> }>) => {
 
     if (TimeHelper.ellapsed(lastInit, timeout) || TimeHelper.ellapsed(lastAttach, timeout)) {
       switch (e.type) {
