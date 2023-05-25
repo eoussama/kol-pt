@@ -11,6 +11,7 @@ import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import { Checkbox, Chip, IconButton, Tooltip } from '@mui/material';
 import { ReactionOverlayContext } from '../../../../context/ReactionOverlayContext';
 import { IPostReactionProps } from '../../../../core/types/props/post-reaction-props.type';
+import { useAuthStore } from '../../../../state/auth.state';
 
 
 
@@ -22,10 +23,19 @@ import { IPostReactionProps } from '../../../../core/types/props/post-reaction-p
  */
 function PostReaction(props: IPostReactionProps): JSX.Element {
   const { tag } = props;
+  const user = useAuthStore(e => e.user);
   const { post } = useContext(PostContext);
   const [watched, setWatched] = useState(false);
   const { playing, playback, onSkip } = usePlayer(post.id);
   const { setAnchorOpened, setAnchorEl, setTag, setDialogOpened } = useContext(ReactionOverlayContext);
+
+  /**
+   * @description
+   * Checks if user is logged in
+   */
+  const isLoggedIn = () => {
+    return Boolean(user);
+  }
 
   /**
    * @description
@@ -61,14 +71,16 @@ function PostReaction(props: IPostReactionProps): JSX.Element {
 
   return <>
     <li key={tag.id} className={styles['reaction']}>
-      <div className={styles['reaction__tracking']}>
-        <Tooltip title={watched ? 'Mark as un-watched' : 'Mark as watched'}>
-          <Checkbox
-            className={styles['reaction__checkbox']}
-            onChange={e => setWatched(e.target.checked)}
-          />
-        </Tooltip>
-      </div>
+      {isLoggedIn() &&
+        <div className={styles['reaction__tracking']}>
+          <Tooltip title={watched ? 'Mark as un-watched' : 'Mark as watched'}>
+            <Checkbox
+              className={styles['reaction__checkbox']}
+              onChange={e => setWatched(e.target.checked)}
+            />
+          </Tooltip>
+        </div>
+      }
 
       <div className={styles['reaction__left']}>
         <div className={styles['reaction__title']}>
