@@ -39,9 +39,7 @@ export class MessageHelper {
    * @param type The type of message to invoke the function for.
    */
   static listen<T = any>(callback: (e: Imessage<T>, sender: chrome.runtime.MessageSender, sendResponse: (response?: any) => void) => void, type?: MessageType): void {
-    console.log('listed');
     chrome.runtime.onMessage.addListener(async (e: Imessage<T>, sender: chrome.runtime.MessageSender, sendResponse: (response?: any) => void) => {
-      console.log(e, type);
       if (type && e.type === type) {
         callback(e, sender, sendResponse);
       } else {
