@@ -1,10 +1,10 @@
-import { ListItemText as ListItemTextMui, styled } from "@mui/material";
+import { ListItemText as ListItemTextMui, styled } from '@mui/material';
 
 
 
 /**
  * @description
- * Overrides basi Mui UI list item text component's styles.
+ * Overrides basic Mui UI list item text component's styles.
  */
 export const ListItemText = styled(ListItemTextMui)<{ component?: React.ElementType }>({
   '.MuiListItemText-primary': {

@@ -2,16 +2,17 @@ import styles from './PostReaction.module.scss';
 
 import { useContext, useState } from 'react';
 import ReplayIcon from '@mui/icons-material/Replay';
+import { Checkbox } from '../../../styled/Checkbox';
 import { Tag } from '../../../../core/models/tag.model';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import { Chip, IconButton, Tooltip } from '@mui/material';
 import { usePlayer } from '../../../../hooks/player.hook';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import { useAuthStore } from '../../../../state/auth.state';
 import { PostContext } from '../../../../context/PostContext';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-import { Checkbox, Chip, IconButton, Tooltip } from '@mui/material';
 import { ReactionOverlayContext } from '../../../../context/ReactionOverlayContext';
 import { IPostReactionProps } from '../../../../core/types/props/post-reaction-props.type';
-import { useAuthStore } from '../../../../state/auth.state';
 
 
 

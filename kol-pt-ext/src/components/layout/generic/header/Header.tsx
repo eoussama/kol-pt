@@ -1,6 +1,7 @@
 import styles from './Header.module.scss';
 
 import { useMemo, useState } from 'react';
+import LoginIcon from '@mui/icons-material/Login';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { useAuth } from '../../../../hooks/auth.hook';
 import { Page } from '../../../../core/enums/page.enum';
@@ -89,8 +90,11 @@ function Header(): JSX.Element {
               size="small"
               onClick={onLogin}
               variant="outlined"
+              startIcon={<LoginIcon />}
               className={styles['header__login']}
-            >Login</Button>
+            >
+              <span>Login</span>
+            </Button>
           }
 
           {isLoggedIn() && <>
