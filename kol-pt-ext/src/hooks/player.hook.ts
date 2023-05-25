@@ -1,6 +1,6 @@
-import Vimeo from "@vimeo/player";
-import { usePlayerStore } from "../state/player.state";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import Vimeo from '@vimeo/player';
+import { usePlayerStore } from '../state/player.state';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 
 
@@ -14,9 +14,10 @@ import { useCallback, useEffect, useMemo, useState } from "react";
  * and the current time of the player
  */
 export function usePlayer(postId: string) {
+  const play = usePlayerStore(e => e.play);
   const [playback, setPlayback] = useState(0);
   const [playing, setPlaying] = useState(false);
-  const { playerPostId, play } = usePlayerStore();
+  const playerPostId = usePlayerStore(e => e.playerPostId);
 
   const video = useMemo<HTMLIFrameElement>(() => document.querySelector(`[data-kol_pt_id="${postId}"] iframe`)!, [postId]);
   const player = useMemo(() => new Vimeo(video), [video]);

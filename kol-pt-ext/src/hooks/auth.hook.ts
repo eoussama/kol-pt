@@ -10,12 +10,12 @@ import { AuthHelper } from '../core/helpers/firebase/auth.helper';
  */
 export function useAuth() {
   const [email, setEmail] = useState('');
-  const user = useAuthStore(e => e.user);
   const login = useAuthStore(e => e.login);
   const logout = useAuthStore(e => e.logout);
+  const connectedUser = useAuthStore(e => e.user);
   const [photo, setPhoto] = useState('./icons/icon128x128.png');
 
-  const isLoggedIn = () => Boolean(user);
+  const isLoggedIn = () => Boolean(connectedUser);
 
   /**
    * @description
@@ -34,9 +34,9 @@ export function useAuth() {
   }
 
   useEffect(() => {
-    setEmail(user?.email ?? '');
-    setPhoto(user?.photoURL ?? './icons/icon128x128.png');
-  }, [user?.uid]);
+    setEmail(connectedUser?.email ?? '');
+    setPhoto(connectedUser?.photoURL ?? './icons/icon128x128.png');
+  }, [connectedUser?.uid]);
 
   useEffect(() => {
     AuthHelper.onChange(user => {

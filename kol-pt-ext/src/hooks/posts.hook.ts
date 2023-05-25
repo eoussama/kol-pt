@@ -13,7 +13,10 @@ import { usePostStore } from "../state/posts.state";
  */
 export function usePosts() {
   const [search, setSearch] = useState('');
-  const { posts, error, loading, loadPosts } = usePostStore();
+  const posts = usePostStore(e => e.posts);
+  const error = usePostStore(e => e.error);
+  const loading = usePostStore(e => e.loading);
+  const loadPosts = usePostStore(e => e.loadPosts);
   const filteredPosts = useMemo(() => posts.filter(post => post.match(search)), [search, posts]);
 
   useEffect(() => {

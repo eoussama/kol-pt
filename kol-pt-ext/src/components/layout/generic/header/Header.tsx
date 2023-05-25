@@ -22,7 +22,7 @@ function Header(): JSX.Element {
   const location = useLocation();
   const navigate = useNavigate();
   const [tab, setTag] = useState(0);
-  const { loadPosts } = usePostStore();
+  const loadPosts = usePostStore(e => e.loadPosts);
   const { photo, email, onLogin, onLogout, isLoggedIn } = useAuth();
 
   /**

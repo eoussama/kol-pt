@@ -12,7 +12,10 @@ import { useEntriesStore } from "../state/entries.state";
  */
 export function useEntries() {
   const [search, setSearch] = useState('');
-  const { entries, error, loading, loadEntries } = useEntriesStore();
+  const error = useEntriesStore(e => e.error);
+  const entries = useEntriesStore(e => e.entries);
+  const loading = useEntriesStore(e => e.loading);
+  const loadEntries = useEntriesStore(e => e.loadEntries);
   const filteredEntries = useMemo(() => entries.filter(entrie => entrie.match(search)), [search, entries]);
 
   useEffect(() => {
