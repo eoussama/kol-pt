@@ -11,7 +11,7 @@ import { SettingsHelper } from '../core/helpers/firebase/settings.helper';
  * Manages view mode.
  */
 export function useViewMode() {
-  const { user } = useAuthStore();
+  const user = useAuthStore(e => e.user);
   const { viewMode, setViewMode } = useSettingsStore();
 
   const compactViewColor: 'primary' | 'default' = viewMode === ViewMode.Compact ? 'primary' : 'default';

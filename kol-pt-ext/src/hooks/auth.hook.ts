@@ -10,8 +10,10 @@ import { AuthHelper } from '../core/helpers/firebase/auth.helper';
  */
 export function useAuth() {
   const [email, setEmail] = useState('');
+  const user = useAuthStore(e => e.user);
+  const login = useAuthStore(e => e.login);
+  const logout = useAuthStore(e => e.logout);
   const [photo, setPhoto] = useState('./icons/icon128x128.png');
-  const { user, login, logout } = useAuthStore();
 
   const isLoggedIn = () => Boolean(user);
 
