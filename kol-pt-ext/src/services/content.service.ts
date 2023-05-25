@@ -3,8 +3,8 @@ import { Imessage } from '../core/types/message.type';
 import { MessageType } from '../core/enums/message-type.enum';
 import { PostsHelper } from '../core/helpers/dom/posts.helper';
 import { TimeHelper } from '../core/helpers/parse/time.helper';
-import { MessageHelper } from '../core/helpers/navigator/message.helper';
 import { ObserverHelper } from '../core/helpers/dom/observer.helper';
+import { MessageHelper } from '../core/helpers/navigator/message.helper';
 
 
 
@@ -39,13 +39,13 @@ import { ObserverHelper } from '../core/helpers/dom/observer.helper';
           PostsHelper.init().then(() => {
 
             // Triggering post load
-            MessageHelper.send(e.tabId, MessageType.Load)
+            MessageHelper.send(MessageType.Load, null, e.tabId);
 
             const target = '[data-tag="post-card"]';
             const parent = document.getElementById('renderPageContentWrapper') as HTMLDivElement;
 
             // Periodic post update as the DOM mutates
-            ObserverHelper.onAdded(parent, target, () => MessageHelper.send(e.tabId, MessageType.Load));
+            ObserverHelper.onAdded(parent, target, () => MessageHelper.send(MessageType.Load, null, e.tabId));
           });
 
           break;
@@ -56,7 +56,7 @@ import { ObserverHelper } from '../core/helpers/dom/observer.helper';
 
           PostsHelper.attach(e.payload?.posts ?? []);
           PostsHelper.clean();
-          
+
           break;
         }
       }
