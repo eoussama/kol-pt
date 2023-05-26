@@ -1,7 +1,7 @@
 import styles from './PostReactions.module.scss';
 
 import CloseIcon from '@mui/icons-material/Close';
-import EntryPage from '../../../pages/entry/Entry';
+import EntryPage from '../../../pages/entry/EntryPage';
 import { useContext, useEffect, useState } from 'react';
 import PostReaction from '../post-reaction/PostReaction';
 import { usePlayer } from '../../../../hooks/player.hook';

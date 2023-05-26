@@ -1,16 +1,15 @@
-import styles from './Feed.module.scss';
+import styles from './FeedPage.module.scss';
 
 import { usePosts } from '../../../hooks/posts.hook';
 import Error from '../../layout/generic/error/Error';
 import Empty from '../../layout/generic/empty/Empty';
 import Search from '../../layout/generic/search/Search';
 import ViewListIcon from '@mui/icons-material/ViewList';
-import { Chip, IconButton, Tooltip } from '@mui/material';
 import ViewStreamIcon from '@mui/icons-material/ViewStream';
 import PostCard from '../../layout/post/post-card/PostCard';
 import { useViewMode } from '../../../hooks/view-mode.hook';
 import { ViewMode } from '../../../core/enums/view-mode.enum';
-import RestartAltOutlinedIcon from '@mui/icons-material/RestartAltOutlined';
+import { Chip, CircularProgress, IconButton, Tooltip } from '@mui/material';
 
 
 
@@ -55,7 +54,7 @@ function FeedPage(): JSX.Element {
       <ul className={styles['cards']}>
         <Error error={error} message='Could not load data'>
           {loading
-            ? <div className={styles['cards__loader']}>{<RestartAltOutlinedIcon />}</div>
+            ? <div className={styles['cards__loader']}>{<CircularProgress />}</div>
             : <>
               <Empty message={emptyMessage}>
                 {posts.map(post => <li key={post.id} className={styles['cards-wrapper']}><PostCard post={post} viewMode={viewMode} /></li>)}

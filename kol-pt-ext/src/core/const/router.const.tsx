@@ -1,9 +1,9 @@
 import { Page } from '../enums/page.enum';
 import App from '../../components/pages/app/App';
-import FeedPage from '../../components/pages/feed/Feed';
-import EntryPage from '../../components/pages/entry/Entry';
-import EntriesPage from '../../components/pages/entries/Entries';
+import FeedPage from '../../components/pages/feed/FeedPage';
 import { Navigate, createHashRouter } from 'react-router-dom';
+import EntryPage from '../../components/pages/entry/EntryPage';
+import EntriesPage from '../../components/pages/entries/EntriesPage';
 
 
 

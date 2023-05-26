@@ -15,30 +15,12 @@
 
   &__loader {
     margin: 60px 10px;
+
     text-align: center;
     color: var(--color-primary);
-
-    animation-name: loading;
-    animation-duration: 2s;
-    animation-timing-function: linear;
-    animation-iteration-count: infinite;
-
-    svg {
-      transform: scale(1.75);
-    }
   }
 
   &-wrapper:not(:last-of-type) {
     margin-bottom: var(--gap);
-  }
-}
-
-@keyframes loading {
-  from {
-    transform: rotate(360deg);
-  }
-
-  to {
-    transform: rotate(0deg);
   }
 }

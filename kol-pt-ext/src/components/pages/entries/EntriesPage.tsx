@@ -1,4 +1,4 @@
-import styles from './Entries.module.scss';
+import styles from './EntriesPage.module.scss';
 
 import { useNavigate } from 'react-router-dom';
 import { Page } from '../../../core/enums/page.enum';
@@ -10,8 +10,7 @@ import { useEntries } from '../../../hooks/entries.hook';
 import { Entry } from '../../../core/models/entry.model';
 import { YouTube } from '../../../core/models/youtube.model';
 import { EntryType } from '../../../core/enums/entry-type.enum';
-import RestartAltOutlinedIcon from '@mui/icons-material/RestartAltOutlined';
-import { Avatar, Chip, Divider, List, ListItem, ListItemAvatar, Tooltip } from '@mui/material';
+import { Avatar, Chip, CircularProgress, Divider, List, ListItem, ListItemAvatar, Tooltip } from '@mui/material';
 
 
 
@@ -64,7 +63,7 @@ function EntriesPage(): JSX.Element {
       <List className={styles['entries']}>
         <Error error={error} message='Could not load data'>
           {loading
-            ? <div className={styles['entries__loader']}>{<RestartAltOutlinedIcon />}</div>
+            ? <div className={styles['entries__loader']}>{<CircularProgress />}</div>
             : <>
               <Empty message={emptyMessage}>
                 {entries.map(entry => <div key={entry.id}>

@@ -1,4 +1,4 @@
-import styles from './Entry.module.scss';
+import styles from './EntryPage.module.scss';
 
 import { useMemo } from 'react';
 import { useParams } from 'react-router-dom';
