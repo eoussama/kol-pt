@@ -5,6 +5,42 @@
   margin: 10px 0 18px 0 !important;
   background-color: #f8f8f8 !important;
 
+  &__auth {
+    margin-top: 22px !important;
+  }
+
+  &__login {
+    position: relative;
+    display: inline-block;
+
+    padding: 0;
+    margin-right: 5px;
+
+    cursor: help;
+    font-weight: 600;
+
+    &::before {
+      content: '';
+
+      position: absolute;
+      top: 0;
+      left: 0;
+
+      height: 100%;
+      width: 0;
+
+      border-radius: 3px;
+      background-color: rgba(var(--color-primary-rgb), 0.3);
+
+      transition-duration: 0.2s;
+      transition-property: width;
+    }
+
+    &:hover::before {
+      width: 100%;
+    }
+  }
+
   &__head {
     min-height: 55px !important;
   }

@@ -6,13 +6,14 @@ import { useContext, useEffect, useState } from 'react';
 import PostReaction from '../post-reaction/PostReaction';
 import { usePlayer } from '../../../../hooks/player.hook';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { useAuthStore } from '../../../../state/auth.state';
 import { PostContext } from '../../../../context/PostContext';
 import { PostAccordion } from '../post-accordion/PostAccordion';
 import PostReactionMenu from '../post-reaction-menu/PostReactionMenu';
 import { IconHelper } from '../../../../core/helpers/asset/icon.helper';
 import { ReactionOverlayContext } from '../../../../context/ReactionOverlayContext';
 import { NavigationHelper } from '../../../../core/helpers/navigator/navigation.helper';
-import { AccordionDetails, AccordionSummary, Dialog, DialogContent, DialogTitle, IconButton, Tooltip } from '@mui/material';
+import { AccordionDetails, AccordionSummary, Alert, Collapse, Dialog, DialogContent, DialogTitle, IconButton, Tooltip } from '@mui/material';
 
 
 
@@ -23,8 +24,18 @@ import { AccordionDetails, AccordionSummary, Dialog, DialogContent, DialogTitle,
 function PostReactions(): JSX.Element {
   const { post } = useContext(PostContext);
   const { player } = usePlayer(post.id);
+  const user = useAuthStore(e => e.user);
+  const [alertOpen, setAlertOpen] = useState(false);
   const [expanded, setExpanded] = useState<boolean>(true);
   const { tag, dialogOpened, setDialogOpened } = useContext(ReactionOverlayContext);
+
+  /**
+   * @description
+   * Checks if user is logged in
+   */
+  const isLoggedIn = () => {
+    return Boolean(user);
+  }
 
   /**
    * @description
@@ -79,7 +90,38 @@ function PostReactions(): JSX.Element {
     }
   }, []);
 
+  useEffect(() => {
+    setAlertOpen(!isLoggedIn());
+  }, [user?.uid]);
+
   return <>
+
+    <div className={styles['post__auth']}>
+      <Collapse in={alertOpen}>
+        <Alert
+          severity='info'
+          sx={{ mb: 2 }}
+          action={
+            <IconButton
+              size="small"
+              aria-label="Login in notice"
+              onClick={() => setAlertOpen(false)}
+            >
+              <CloseIcon />
+            </IconButton>
+          }
+        >
+          <Tooltip
+            style={{ textAlign: 'center' }}
+            title='Open the KOl PT extension popup and login to enable progress tracking'
+          >
+            <span className={styles['post__login']}>Login to KOL PT</span>
+          </Tooltip>
+          in order to track your progress.
+        </Alert>
+      </Collapse>
+    </div>
+
     <PostAccordion
       expanded={expanded}
       className={styles['post']}
