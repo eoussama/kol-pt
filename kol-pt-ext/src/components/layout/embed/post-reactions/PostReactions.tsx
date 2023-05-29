@@ -112,8 +112,7 @@ function PostReactions(): JSX.Element {
           }
         >
           <Tooltip
-            style={{ textAlign: 'center' }}
-            title='Open the KOl PT extension popup and login to enable progress tracking'
+            title='Open the KOL PT extension popup and login to enable progress tracking'
           >
             <span className={styles['post__login']}>Login to KOL PT</span>
           </Tooltip>
