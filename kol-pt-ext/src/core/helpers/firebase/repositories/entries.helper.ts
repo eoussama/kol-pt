@@ -1,7 +1,7 @@
 import { PostsHelper } from './posts.helper';
 import { Entry } from '../../../models/entry.model';
 import { Anime } from '../../../models/anime.model';
-import { FirebaseHelper } from '../firebase.helper';
+import { RepositoryHelper } from './repository.helper';
 import { Nullable } from '../../../types/nullable.type';
 import { YouTube } from '../../../models/youtube.model';
 import { IEntry } from '../../../types/entry/entry.type';
@@ -29,7 +29,7 @@ export class EntriesHelper {
    * @param cache Whether to use cache when needed
    */
   static async load(cache: boolean = true): Promise<Array<Entry>> {
-    const data = await FirebaseHelper.get(this.DB_KEY, cache);
+    const data = await RepositoryHelper.get(this.DB_KEY, cache);
     return data?.map((entry: IEntry) => this.initEntry(entry));
   }
 
@@ -44,7 +44,6 @@ export class EntriesHelper {
     const data = await this.load(cache);
     return data.find(entry => entry.id === id);
   }
-
 
   /**
    * @description

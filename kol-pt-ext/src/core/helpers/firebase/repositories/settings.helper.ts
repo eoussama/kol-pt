@@ -1,4 +1,4 @@
-import { FirebaseHelper } from '../firebase.helper';
+import { RepositoryHelper } from './repository.helper';
 import { ISettings } from '../../../types/settings.type';
 import { ViewMode } from '../../../enums/view-mode.enum';
 
@@ -10,7 +10,12 @@ import { ViewMode } from '../../../enums/view-mode.enum';
  */
 export class SettingsHelper {
 
-  private static readonly DB_KEY: string = 'settings'
+  /**
+   * @description
+   * The name of the key that stors the settings
+   * on the realtime database for the user
+   */
+  private static readonly DB_KEY: string = 'settings';
 
   /**
    * @description
@@ -21,12 +26,12 @@ export class SettingsHelper {
    */
   static get<T extends keyof ISettings>(userId: string, key: T): Promise<ISettings[T]> {
     return new Promise(async resolve => {
-      const settings = await this.getAll(userId);
+      const settings = await this.load(userId);
 
       // If users has no settings saved, initialize new ones
       if (!settings) {
         const newSettings = this.init();
-        this.setAll(userId, newSettings);
+        this.update(userId, newSettings);
         return resolve(newSettings[key]);
       }
 
@@ -43,7 +48,7 @@ export class SettingsHelper {
    * @param value The value to update
    */
   static set<T = any>(userId: string, key: keyof ISettings, value: T): Promise<void> {
-    return FirebaseHelper.set(`users/${userId}/${this.DB_KEY}/${key}`, value);
+    return RepositoryHelper.set(`users/${userId}/${this.DB_KEY}/${key}` as any, value);
   }
 
   /**
@@ -52,8 +57,8 @@ export class SettingsHelper {
    *
    * @param userId The ID of the target user
    */
-  static getAll(userId: string): Promise<ISettings> {
-    return FirebaseHelper.get(`users/${userId}/${this.DB_KEY}` as any, false);
+  static load(userId: string): Promise<ISettings> {
+    return RepositoryHelper.get(`users/${userId}/${this.DB_KEY}` as any, false);
   }
 
   /**
@@ -63,8 +68,8 @@ export class SettingsHelper {
    * @param userId The ID of the target user
    * @param settings The new settings
    */
-  static setAll(userId: string, settings: ISettings): Promise<void> {
-    return FirebaseHelper.set(`users/${userId}/${this.DB_KEY}`, settings);
+  static update(userId: string, settings: ISettings): Promise<void> {
+    return RepositoryHelper.set(`users/${userId}/${this.DB_KEY}` as any, settings);
   }
 
   /**
@@ -74,6 +79,6 @@ export class SettingsHelper {
   private static init(): ISettings {
     return {
       viewMode: ViewMode.Expanded
-    }; 
+    };
   }
 }

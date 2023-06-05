@@ -1,9 +1,13 @@
-import { ICache } from "../../types/cache.type";
-import { Nullable } from "../../types/nullable.type";
-import { StorageHelper } from "../chrome/storage.helper";
+import { ICache } from '../../types/cache.type';
+import { Nullable } from '../../types/nullable.type';
+import { StorageHelper } from '../chrome/storage.helper';
 
 
 
+/**
+ * @description
+ * Helps with managing cached data
+ */
 export class CacheHelper {
 
   /**
@@ -28,7 +32,7 @@ export class CacheHelper {
    * @param key Specific value key to check
    * if it exists in the cache or not.
    */
-  static isValid(key: 'posts' | 'entries'): Promise<boolean> {
+  static isValid(key: keyof ICache['db']): Promise<boolean> {
     return new Promise(async resolve => {
       try {
 
@@ -95,7 +99,7 @@ export class CacheHelper {
    *
    * @param key The key to fetch
    */
-  static get(key: 'posts' | 'entries') {
+  static get(key: keyof ICache['db']) {
     return new Promise(async resolve => {
       try {
 
@@ -151,6 +155,6 @@ export class CacheHelper {
    * fallback for null cache values.
    */
   private static compose(): ICache {
-    return { updateTime: 0, db: { posts: [], entries: [] } };
+    return { updateTime: 0, db: { posts: [], entries: [], users: [] } };
   }
 }

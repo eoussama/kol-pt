@@ -1,7 +1,7 @@
-import { IPost } from "../../../types/post.type";
-import { Post } from "../../../models/post.model";
-import { EntriesHelper } from "./entries.helper";
-import { FirebaseHelper } from "../firebase.helper";
+import { IPost } from '../../../types/post.type';
+import { Post } from '../../../models/post.model';
+import { EntriesHelper } from './entries.helper';
+import { RepositoryHelper } from './repository.helper';
 
 
 
@@ -21,7 +21,7 @@ export class PostsHelper {
    * @param cache Whether to use cache when needed
    */
   static async load(cache: boolean = true): Promise<Array<Post>> {
-    const data: Array<IPost> = await FirebaseHelper.get(this.DB_KEY, cache);
+    const data: Array<IPost> = await RepositoryHelper.get(this.DB_KEY, cache);
     const posts: Array<Post> = [];
 
     for (let i = 0; i < data.length; i++) {

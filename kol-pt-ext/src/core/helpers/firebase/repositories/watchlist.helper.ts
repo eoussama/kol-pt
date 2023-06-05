@@ -1,6 +1,4 @@
-import { FirebaseHelper } from '../firebase.helper';
-import { ISettings } from '../../../types/settings.type';
-import { ViewMode } from '../../../enums/view-mode.enum';
+import { RepositoryHelper } from './repository.helper';
 
 
 
@@ -12,7 +10,12 @@ import { ViewMode } from '../../../enums/view-mode.enum';
  */
 export class WatchHelper {
 
-  private static readonly DB_KEY: string = 'watchlist'
+  /**
+   * @description
+   * The name of the key that stors the watchlist
+   * on the realtime database for the user
+   */
+  private static readonly DB_KEY: string = 'watchlist';
 
   /**
    * @description
@@ -21,7 +24,18 @@ export class WatchHelper {
    * @param userId The ID of the target user
    */
   static get(userId: string): Promise<Array<string>> {
-    return FirebaseHelper.get(`users/${userId}/${this.DB_KEY}` as any, false);
+    return new Promise(async resolve => {
+      const watchlist = await RepositoryHelper.get(`users/${userId}/${this.DB_KEY}` as any, false);
+
+      // If users has no watchlist saved, initialize new ones
+      if (!watchlist) {
+        const newWatchlist: Array<string> = [];
+        this.set(userId, newWatchlist);
+        return resolve(newWatchlist);
+      }
+
+      return RepositoryHelper.get(`users/${userId}/${this.DB_KEY}` as any, false);
+    });
   }
 
   /**
@@ -29,14 +43,9 @@ export class WatchHelper {
    * Updates the watchlist for a specific user
    *
    * @param userId The ID of the target user
-   * @param reactionId The ID of the reaction to add
+   * @param reactions The array of reaction IDs
    */
-  static async add<T = any>(userId: string, reactionId: string): Promise<void> {
-    const watchlist = await this.get(userId);
-    const newWatchlist = watchlist.push(reactionId);
-
-    return FirebaseHelper.set(`users/${userId}/${this.DB_KEY}`, newWatchlist);
+  static async set<T = any>(userId: string, reactions: Array<string>): Promise<void> {
+    return RepositoryHelper.set(`users/${userId}/${this.DB_KEY}` as any, reactions);
   }
-
-  // TODO: add dynamic user data helper that other helpers can inherit
 }
