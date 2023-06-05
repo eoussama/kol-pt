@@ -3,8 +3,8 @@ import { ITag } from '../types/tag/tag.type';
 import { EntryType } from '../enums/entry-type.enum';
 import { TimeHelper } from '../helpers/parse/time.helper';
 import { ArrayHelper } from '../helpers/parse/array.helper';
-import { EntriesHelper } from '../helpers/firebase/entries.helper';
 import { IYouTubeContext } from '../types/tag/youtube-context.type';
+import { EntriesHelper } from '../helpers/firebase/repositories/entries.helper';
 
 
 

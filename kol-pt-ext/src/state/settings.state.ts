@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { useAuthStore } from './auth.state';
 import { ViewMode } from '../core/enums/view-mode.enum';
 import { ISettingsState } from '../core/types/state/settings-state.type';
-import { SettingsHelper } from '../core/helpers/firebase/settings.helper';
+import { SettingsHelper } from '../core/helpers/firebase/repositories/settings.helper';
 
 
 

@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useAuthStore } from '../state/auth.state';
 import { ViewMode } from '../core/enums/view-mode.enum';
 import { useSettingsStore } from '../state/settings.state';
-import { SettingsHelper } from '../core/helpers/firebase/settings.helper';
+import { SettingsHelper } from '../core/helpers/firebase/repositories/settings.helper';
 
 
 

@@ -2,8 +2,8 @@ import { Imessage } from '../core/types/message.type';
 import { URLHelper } from '../core/helpers/parse/url.helper';
 import { MessageType } from '../core/enums/message-type.enum';
 import { AuthHelper } from '../core/helpers/firebase/auth.helper';
-import { PostsHelper } from '../core/helpers/firebase/posts.helper';
 import { MessageHelper } from '../core/helpers/navigator/message.helper';
+import { PostsHelper } from '../core/helpers/firebase/repositories/posts.helper';
 
 
 

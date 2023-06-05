@@ -1,6 +1,6 @@
 import { FirebaseHelper } from './firebase.helper';
-import { ISettings } from '../../types/settings.type';
-import { ViewMode } from '../../enums/view-mode.enum';
+import { ISettings } from '../../../types/settings.type';
+import { ViewMode } from '../../../enums/view-mode.enum';
 
 
 

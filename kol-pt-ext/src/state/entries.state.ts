@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { IEntriesState } from "../core/types/state/entries-state.type";
-import { EntriesHelper } from "../core/helpers/firebase/entries.helper";
+import { EntriesHelper } from "../core/helpers/firebase/repositories/entries.helper";
 
 
 

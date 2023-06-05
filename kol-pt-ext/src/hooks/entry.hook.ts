@@ -9,7 +9,7 @@ import { JikanHelper } from '../core/helpers/api/jikan.helper';
 import { IAnimeInfo } from '../core/types/api/anime-info.type';
 import { IconHelper } from '../core/helpers/asset/icon.helper';
 import { YouTubeHelper } from '../core/helpers/api/youtube.helper';
-import { EntriesHelper } from '../core/helpers/firebase/entries.helper';
+import { EntriesHelper } from '../core/helpers/firebase/repositories/entries.helper';
 
 
 

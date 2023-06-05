@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { IPostsState } from "../core/types/state/posts-state.type";
-import { PostsHelper } from "../core/helpers/firebase/posts.helper";
+import { PostsHelper } from "../core/helpers/firebase/repositories/posts.helper";
 
 
 
