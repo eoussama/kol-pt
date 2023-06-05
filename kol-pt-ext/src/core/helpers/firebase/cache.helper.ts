@@ -45,7 +45,12 @@ export class CacheHelper {
           const expiryTime = cache.updateTime + CacheHelper.CACHE_LIFE;
 
           // Checking if the cache has expired
-          resolve(expiryTime > Date.now() && cache.db[key].length > 0);
+          resolve(expiryTime > Date.now() && (
+            Array.isArray(cache.db[key])
+              ? (cache.db[key] as Array<any>).length > 0
+              : Object.keys(cache.db[key]).length > 0
+          ));
+
           return true;
         }
 
@@ -155,6 +160,6 @@ export class CacheHelper {
    * fallback for null cache values.
    */
   private static compose(): ICache {
-    return { updateTime: 0, db: { posts: [], entries: [], users: [] } };
+    return { updateTime: 0, db: { posts: [], entries: [], users: {} } };
   }
 }
