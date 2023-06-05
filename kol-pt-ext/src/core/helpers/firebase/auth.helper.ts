@@ -1,6 +1,6 @@
 import { config } from '../../../config/env';
 import { MessageType } from '../../enums/message-type.enum';
-import { FirebaseHelper } from './repositories/firebase.helper';
+import { FirebaseHelper } from './firebase.helper';
 import { NavigationHelper } from '../navigator/navigation.helper';
 import { GoogleAuthProvider, NextOrObserver, User, UserCredential, onAuthStateChanged, signInWithCredential, signOut } from 'firebase/auth';
 

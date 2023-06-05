@@ -1,7 +1,7 @@
 import { PostsHelper } from './posts.helper';
 import { Entry } from '../../../models/entry.model';
 import { Anime } from '../../../models/anime.model';
-import { FirebaseHelper } from './firebase.helper';
+import { FirebaseHelper } from '../firebase.helper';
 import { Nullable } from '../../../types/nullable.type';
 import { YouTube } from '../../../models/youtube.model';
 import { IEntry } from '../../../types/entry/entry.type';
