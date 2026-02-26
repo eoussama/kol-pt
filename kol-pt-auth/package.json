@@ -44,5 +44,22 @@
   },
   "devDependencies": {
     "@types/chrome": "^0.0.236"
+  },
+  "overrides": {
+    "nth-check": ">=2.0.1",
+    "postcss": ">=8.4.31",
+    "webpack-dev-server": ">=5.2.1"
+  },
+  "resolutions": {
+    "nth-check": ">=2.0.1",
+    "postcss": ">=8.4.31",
+    "webpack-dev-server": ">=5.2.1"
+  },
+  "pnpm": {
+    "overrides": {
+      "nth-check": ">=2.0.1",
+      "postcss": ">=8.4.31",
+      "webpack-dev-server": ">=5.2.1"
+    }
   }
 }
