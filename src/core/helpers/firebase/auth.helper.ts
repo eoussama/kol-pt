@@ -18,6 +18,10 @@ export class AuthHelper {
    * @returns Promise resolving to the user credential
    */
   static login(): Promise<UserCredential> {
+    if (!config.fireguardUrl) {
+      return Promise.reject(new Error("REACT_APP_FIREGUARD_URL is not configured."));
+    }
+
     return FiremittHelper.auth({
       url: config.fireguardUrl,
       pos: {

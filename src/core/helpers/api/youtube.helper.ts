@@ -6,6 +6,8 @@ import { IconHelper } from "../asset/icon.helper";
 
 
 
+const YOUTUBE_API_BASE = "https://www.googleapis.com/youtube/v3";
+
 /**
  * @description
  * Helps with retrieving info from YouTube.
@@ -20,7 +22,7 @@ export class YouTubeHelper {
    */
   static getChannelInfo(channelId: string): Promise<IYouTubeInfo> {
     return new Promise((resolve) => {
-      fetch(`https://www.googleapis.com/youtube/v3/channels?part=snippet%2Cstatistics&id=${channelId}&key=${config.youtubeApiKey}`)
+      fetch(`${YOUTUBE_API_BASE}/channels?part=snippet%2Cstatistics&id=${channelId}&key=${config.youtubeApiKey}`)
         .then(e => e.json())
         .then(e => e.items[0])
         .then((e: IYouTubeChannelResponse) => {
@@ -49,19 +51,19 @@ export class YouTubeHelper {
    */
   static getVideoInfo(videoId: string): Promise<IYouTubeInfo> {
     return new Promise((resolve) => {
-      fetch(`https://www.googleapis.com/youtube/v3/videos?part=snippet%2Cstatistics&id=${videoId}&key=${config.youtubeApiKey}`)
+      fetch(`${YOUTUBE_API_BASE}/videos?part=snippet%2Cstatistics&id=${videoId}&key=${config.youtubeApiKey}`)
         .then(e => e.json())
         .then(e => e.items[0])
         .then((e: IYouTubeVideoResponse) => {
           resolve({
             description: e.snippet.description,
             thumbnail: e.snippet.thumbnails.standard.url,
-            totlaViews: Number.parseInt(e.statistics.viewCount),
+            totalViews: Number.parseInt(e.statistics.viewCount),
           });
         })
         .catch(() => {
           resolve({
-            totlaViews: 0,
+            totalViews: 0,
             description: "",
             thumbnail: IconHelper.getIcon("placeholder", "graphs"),
           });

@@ -29,7 +29,7 @@ export class JikanHelper {
             altTitles: [
               { title: e.title, official: true },
               { title: e.title_english, official: true },
-              { title: e.title_english, official: true },
+              { title: e.title_japanese, official: true },
             ],
           });
         })

@@ -56,7 +56,7 @@ export class NavigationHelper {
    * @param postId The post's ID
    */
   static openPost(postId: string): void {
-    window.open(`https://www.patreon.com/posts/${postId}`, "_blank");
+    window.open(`${config.patreonUrl}/posts/${postId}`, "_blank");
   }
 
   /**
@@ -67,7 +67,7 @@ export class NavigationHelper {
    * @param reactionId The reaction's ID
    */
   static openReaction(postId: string, reactionId: string): void {
-    window.open(`https://www.patreon.com/posts/${postId}?reactionId=${reactionId}`, "_blank");
+    window.open(`${config.patreonUrl}/posts/${postId}?reactionId=${reactionId}`, "_blank");
   }
 
   // #endregion
