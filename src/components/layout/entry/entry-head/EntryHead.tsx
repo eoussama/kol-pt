@@ -4,8 +4,8 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { Chip } from "@mui/material";
 import millify from "millify";
 import { useNavigate } from "react-router-dom";
-import { EntryType } from "../../../../core/enums/entry-type.enum";
-import { Page } from "../../../../core/enums/page.enum";
+import { EEntryType } from "../../../../core/enums/entry-type.enum";
+import { EPage } from "../../../../core/enums/page.enum";
 import Loader from "../../generic/loader/Loader";
 import TextExpand from "../../generic/text-expand/TextExpand";
 import styles from "./EntryHead.module.scss";
@@ -30,7 +30,7 @@ function EntryHead(props: IEntryPageHeadSectionProps): JSX.Element {
    */
   const onBack = () => {
     if (!isDialog) {
-      navigate(`${Page.Index}${Page.Entries}`);
+      navigate(`${EPage.INDEX}${EPage.ENTRIES}`);
     }
   };
 
@@ -50,7 +50,7 @@ function EntryHead(props: IEntryPageHeadSectionProps): JSX.Element {
       <div className={styles.head__content}>
         <h5 className={styles.head__type}>
           {entry.getTypeName()}
-          {entry.type === EntryType.YouTube
+          {entry.type === EEntryType.YOUTUBE
             && (
               <>
                 {" "}

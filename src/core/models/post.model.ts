@@ -75,7 +75,7 @@ export class Post implements ISearch {
       .concat(this.creationDate.toLocaleString())
       .toLowerCase();
 
-    return searchTarget.includes(query) || this.tags.some(tag => tag.entry.match(query));
+    return searchTarget.includes(query) || this.tags.some(tag => tag.entry?.match(query));
   }
 
   /**

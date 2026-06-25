@@ -2,7 +2,7 @@ import ViewListIcon from "@mui/icons-material/ViewList";
 
 import ViewStreamIcon from "@mui/icons-material/ViewStream";
 import { Chip, CircularProgress, IconButton, Tooltip } from "@mui/material";
-import { ViewMode } from "../../../core/enums/view-mode.enum";
+import { EViewMode } from "../../../core/enums/view-mode.enum";
 import { usePosts } from "../../../hooks/posts.hook";
 import { useViewMode } from "../../../hooks/view-mode.hook";
 import Empty from "../../layout/generic/empty/Empty";
@@ -40,13 +40,13 @@ function FeedPage(): JSX.Element {
         actions={(
           <>
             <Tooltip title="Expanded">
-              <IconButton color={expandedViewColor} size="small" aria-label="expanded" onClick={() => setViewMode(ViewMode.Expanded)}>
+              <IconButton color={expandedViewColor} size="small" aria-label="expanded" onClick={() => setViewMode(EViewMode.EXPANDED)}>
                 <ViewStreamIcon />
               </IconButton>
             </Tooltip>
 
             <Tooltip title="Compact">
-              <IconButton color={compactViewColor} size="small" aria-label="compact" onClick={() => setViewMode(ViewMode.Compact)}>
+              <IconButton color={compactViewColor} size="small" aria-label="compact" onClick={() => setViewMode(EViewMode.COMPACT)}>
                 <ViewListIcon />
               </IconButton>
             </Tooltip>

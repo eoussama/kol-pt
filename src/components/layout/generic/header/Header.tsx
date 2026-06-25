@@ -1,10 +1,11 @@
-import LoginIcon from "@mui/icons-material/Login";
+import type { TPage } from "../../../../core/enums/page.enum";
 
+import LoginIcon from "@mui/icons-material/Login";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { Button, IconButton, Tab, Tabs, Tooltip } from "@mui/material";
 import { useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Page } from "../../../../core/enums/page.enum";
+import { EPage } from "../../../../core/enums/page.enum";
 import { NavigationHelper } from "../../../../core/helpers/navigator/navigation.helper";
 import { useAuth } from "../../../../hooks/auth.hook";
 import { usePostStore } from "../../../../state/posts.state";
@@ -42,7 +43,7 @@ function Header(): JSX.Element {
    * @description
    * Condition to show/hide the tabs
    */
-  const canShowTabs = useMemo(() => [Page.Feed, Page.Entries].includes(route as Page), [route]);
+  const canShowTabs = useMemo(() => ([EPage.FEED, EPage.ENTRIES] as Array<string>).includes(route), [route]);
 
   /**
    * @description
@@ -70,7 +71,7 @@ function Header(): JSX.Element {
    * @param event The mouse clock event object
    * @param page The target page
    */
-  const onTabClick = (event: React.MouseEvent, page: Page) => {
+  const onTabClick = (event: React.MouseEvent, page: TPage) => {
     event.preventDefault();
     navigate(page);
   };
@@ -160,8 +161,8 @@ function Header(): JSX.Element {
             onChange={onNavigate}
             aria-label="Main navigation tabs"
           >
-            <Tab label="Feed" onClick={e => onTabClick(e, Page.Feed)} />
-            <Tab label="Entries" onClick={e => onTabClick(e, Page.Entries)} />
+            <Tab label="Feed" onClick={e => onTabClick(e, EPage.FEED)} />
+            <Tab label="Entries" onClick={e => onTabClick(e, EPage.ENTRIES)} />
           </Tabs>
         </nav>
       )}

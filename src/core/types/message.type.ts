@@ -1,4 +1,4 @@
-import type { MessageType } from "../enums/message-type.enum";
+import type { TMessageType } from "../enums/message-type.enum";
 
 
 
@@ -6,8 +6,8 @@ import type { MessageType } from "../enums/message-type.enum";
  * @description
  * The definition of a message.
  * Messages are objects sent by the message helper
- * intended to exchange data between differet parts
- * of the extenssion, like content scripts and service workers.
+ * intended to exchange data between different parts
+ * of the extension, like content scripts and service workers.
  *
  * @typedef T Generic type for the payload of the message.
  */
@@ -15,7 +15,7 @@ export interface Imessage<T = unknown> {
 
   /**
    * @description
-   * The ID of the tagret tab
+   * The ID of the target tab
    */
   tabId: number;
 
@@ -23,7 +23,7 @@ export interface Imessage<T = unknown> {
    * @description
    * The type of message to send
    */
-  type: MessageType;
+  type: TMessageType;
 
   /**
    * @description

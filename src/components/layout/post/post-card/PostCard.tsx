@@ -1,7 +1,7 @@
 import type { IPostCardProps } from "../../../../core/types/props/post-card-props.type";
 
 import { Box, Card, CardContent, CardMedia, Chip, Tooltip, Typography } from "@mui/material";
-import { ViewMode } from "../../../../core/enums/view-mode.enum";
+import { EViewMode } from "../../../../core/enums/view-mode.enum";
 import { NavigationHelper } from "../../../../core/helpers/navigator/navigation.helper";
 import styles from "./PostCard.module.scss";
 
@@ -18,7 +18,7 @@ function PostCard(props: IPostCardProps): JSX.Element {
   const { post } = props;
   const { viewMode } = props;
 
-  const viewModeClasses = viewMode === ViewMode.Compact ? styles["card--compact"] : styles["card--expanded"];
+  const viewModeClasses = viewMode === EViewMode.COMPACT ? styles["card--compact"] : styles["card--expanded"];
   const cardClasses = `${styles.card} ${viewModeClasses}`;
 
   /**

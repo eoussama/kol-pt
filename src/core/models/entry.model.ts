@@ -1,14 +1,22 @@
+import type { TEntryType } from "../enums/entry-type.enum";
 import type { IEntry } from "../types/entry/entry.type";
 import type { IOption } from "../types/option.type";
 import type { ISearch } from "../types/search.type";
 import type { IEntryContext } from "../types/tag/entry-context.type";
 import type { Post } from "./post.model";
-import { EntryType } from "../enums/entry-type.enum";
+import { EEntryType } from "../enums/entry-type.enum";
 import { IconHelper } from "../helpers/asset/icon.helper";
 import { NavigationHelper } from "../helpers/navigator/navigation.helper";
 import { ArrayHelper } from "../helpers/parse/array.helper";
 
 
+
+const ENTRY_TYPE_NAMES: Record<TEntryType, string> = {
+  [EEntryType.ANIME]: "Anime",
+  [EEntryType.MOVIE]: "Movie",
+  [EEntryType.CARTOON]: "Cartoon",
+  [EEntryType.YOUTUBE]: "YouTube",
+};
 
 /**
  * @description
@@ -49,7 +57,7 @@ export class Entry implements ISearch {
    * @description
    * The type of the entry (Anime, Movie, Cartoon, YouTube).
    */
-  type: EntryType;
+  type: TEntryType;
 
   /**
    * @description
@@ -67,7 +75,7 @@ export class Entry implements ISearch {
     this.id = model?.id ?? "";
     this.title = model?.title ?? "";
     this.imdbId = model?.imdbId ?? "";
-    this.type = model?.type ?? EntryType.Anime;
+    this.type = model?.type ?? EEntryType.ANIME;
     this.altTitles = model?.altTitles ?? [this.title];
     this.shortTitle = ArrayHelper.getShortest(this.altTitles, this.title);
 
@@ -94,9 +102,7 @@ export class Entry implements ISearch {
    * @returns The human-readable type name
    */
   getTypeName(): string {
-    const types = Object.keys(EntryType).filter(key => Number.isNaN(Number.parseInt(key)));
-
-    return types[this.type];
+    return ENTRY_TYPE_NAMES[this.type] ?? "";
   }
 
   /**

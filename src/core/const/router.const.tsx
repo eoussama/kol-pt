@@ -3,7 +3,7 @@ import App from "../../components/pages/app/App";
 import EntriesPage from "../../components/pages/entries/EntriesPage";
 import EntryPage from "../../components/pages/entry/EntryPage";
 import FeedPage from "../../components/pages/feed/FeedPage";
-import { Page } from "../enums/page.enum";
+import { EPage } from "../enums/page.enum";
 
 
 
@@ -13,24 +13,24 @@ import { Page } from "../enums/page.enum";
  */
 export const router = createHashRouter([
   {
-    path: Page.Index,
+    path: EPage.INDEX,
     element: <App />,
     children: [
       {
-        path: Page.Feed,
+        path: EPage.FEED,
         element: <FeedPage />,
       },
       {
-        path: Page.Entries,
+        path: EPage.ENTRIES,
         element: <EntriesPage />,
       },
       {
-        path: `${Page.Entry}/:entryId`,
+        path: `${EPage.ENTRY}/:entryId`,
         element: <EntryPage />,
       },
       {
         index: true,
-        element: <Navigate to={Page.Feed} />,
+        element: <Navigate to={EPage.FEED} />,
       },
     ],
   },

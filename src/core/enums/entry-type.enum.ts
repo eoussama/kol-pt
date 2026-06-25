@@ -1,10 +1,12 @@
 /**
  * @description
- * Enum representing different types of entries.
+ * Represents different types of entries.
  */
-export enum EntryType {
-  Anime = 0,
-  Movie = 1,
-  Cartoon = 2,
-  YouTube = 3,
-}
+export const EEntryType = {
+  ANIME: 0,
+  MOVIE: 1,
+  CARTOON: 2,
+  YOUTUBE: 3,
+} as const;
+
+export type TEntryType = (typeof EEntryType)[keyof typeof EEntryType];

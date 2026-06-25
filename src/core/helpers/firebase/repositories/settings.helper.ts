@@ -1,5 +1,5 @@
 import type { ISettings } from "../../../types/settings.type";
-import { ViewMode } from "../../../enums/view-mode.enum";
+import { EViewMode } from "../../../enums/view-mode.enum";
 import { RepositoryHelper } from "./repository.helper";
 
 
@@ -82,7 +82,7 @@ export class SettingsHelper {
    */
   private static init(): ISettings {
     return {
-      viewMode: ViewMode.Expanded,
+      viewMode: EViewMode.EXPANDED,
     };
   }
 }

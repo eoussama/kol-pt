@@ -1,38 +1,37 @@
 /**
  * @description
- * Inter-tab notification types
+ * Inter-tab notification types.
  */
-export enum MessageType {
+export const EMessageType = {
+  /**
+   * @description
+   * Signifies page initialization.
+   */
+  INIT: 0,
 
   /**
    * @description
-   * Signifies page initialization
+   * Dictate that the page needs to attach embeds to posts.
    */
-  Init,
+  ATTACH: 1,
 
   /**
    * @description
-   * Dictate that the page needs to attach
-   * embeds to posts
+   * Tells the service worker to load the posts and forward them to the content script.
    */
-  Attach,
+  LOAD: 2,
 
   /**
    * @description
-   * Tells the service worker to load the posts
-   * and forward them to the content script
+   * Sent by the content to request state syncing.
    */
-  Load,
+  SYNC_REQUEST: 3,
 
   /**
    * @description
-   * Sent by the content to request state syncing
+   * Sent by the background as a response for state syncing.
    */
-  SyncRequest,
+  SYNC_RESPONSE: 4,
+} as const;
 
-  /**
-   * @description
-   * Sent by the background as a response for state syncing
-   */
-  SyncResponse,
-}
+export type TMessageType = (typeof EMessageType)[keyof typeof EMessageType];

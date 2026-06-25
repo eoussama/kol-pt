@@ -1,8 +1,10 @@
 /**
  * @description
- * Represents two possible view modes
+ * Represents two possible view modes.
  */
-export enum ViewMode {
-  Compact,
-  Expanded,
-}
+export const EViewMode = {
+  COMPACT: 0,
+  EXPANDED: 1,
+} as const;
+
+export type TViewMode = (typeof EViewMode)[keyof typeof EViewMode];

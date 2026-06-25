@@ -1,6 +1,7 @@
+import type { TViewMode } from "../core/enums/view-mode.enum";
 import type { ISettingsState } from "../core/types/state/settings-state.type";
 import { create } from "zustand";
-import { ViewMode } from "../core/enums/view-mode.enum";
+import { EViewMode } from "../core/enums/view-mode.enum";
 import { SettingsHelper } from "../core/helpers/firebase/repositories/settings.helper";
 import { useAuthStore } from "./auth.state";
 
@@ -16,7 +17,7 @@ export const useSettingsStore = create<ISettingsState>(set => ({
    * @description
    * The currently active view mode.
    */
-  viewMode: ViewMode.Expanded,
+  viewMode: EViewMode.EXPANDED,
 
   /**
    * @description
@@ -24,7 +25,7 @@ export const useSettingsStore = create<ISettingsState>(set => ({
    *
    * @param viewMode The new view mode.
    */
-  setViewMode(viewMode: ViewMode) {
+  setViewMode(viewMode: TViewMode) {
     // Fetching logged in user
     const user = useAuthStore.getState().user;
 
@@ -33,7 +34,7 @@ export const useSettingsStore = create<ISettingsState>(set => ({
 
     // If the user is logged in, update the view mode remotely.
     if (user) {
-      SettingsHelper.set<ViewMode>(user.uid, "viewMode", viewMode);
+      SettingsHelper.set<TViewMode>(user.uid, "viewMode", viewMode);
     }
   },
 }));

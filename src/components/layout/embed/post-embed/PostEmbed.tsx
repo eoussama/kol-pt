@@ -4,7 +4,7 @@ import type { IPostEmbedProps } from "../../../../core/types/props/post-embed-pr
 import { useEffect } from "react";
 import { PostProvider } from "../../../../context/PostContext";
 import { ReactionOverlayProvider } from "../../../../context/ReactionOverlayContext";
-import { MessageType } from "../../../../core/enums/message-type.enum";
+import { EMessageType } from "../../../../core/enums/message-type.enum";
 import { MessageHelper } from "../../../../core/helpers/navigator/message.helper";
 import { useAuthStore } from "../../../../state/auth.state";
 import PostReactions from "../post-reactions/PostReactions";
@@ -24,7 +24,7 @@ function PostEmbed(props: IPostEmbedProps): JSX.Element {
   const logout = useAuthStore(e => e.logout);
 
   useEffect(() => {
-    MessageHelper.send(MessageType.SyncRequest);
+    MessageHelper.send(EMessageType.SYNC_REQUEST);
     MessageHelper.listen<User>(async (e: Imessage<User>) => {
       if (e.payload) {
         login(e.payload);
@@ -32,7 +32,7 @@ function PostEmbed(props: IPostEmbedProps): JSX.Element {
       else {
         logout();
       }
-    }, MessageType.SyncResponse);
+    }, EMessageType.SYNC_RESPONSE);
   }, []);
 
   return (

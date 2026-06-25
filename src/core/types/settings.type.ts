@@ -1,4 +1,4 @@
-import type { ViewMode } from "../enums/view-mode.enum";
+import type { TViewMode } from "../enums/view-mode.enum";
 
 
 
@@ -12,5 +12,5 @@ export interface ISettings {
    * @description
    * The state of the view mode
    */
-  viewMode: ViewMode;
+  viewMode: TViewMode;
 }

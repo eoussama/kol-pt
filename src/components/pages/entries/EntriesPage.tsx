@@ -3,8 +3,8 @@ import type { Entry } from "../../../core/models/entry.model";
 import type { YouTube } from "../../../core/models/youtube.model";
 import { Avatar, Chip, CircularProgress, Divider, List, ListItem, ListItemAvatar, Tooltip } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { EntryType } from "../../../core/enums/entry-type.enum";
-import { Page } from "../../../core/enums/page.enum";
+import { EEntryType } from "../../../core/enums/entry-type.enum";
+import { EPage } from "../../../core/enums/page.enum";
 import { useEntries } from "../../../hooks/entries.hook";
 import Empty from "../../layout/generic/empty/Empty";
 import Error from "../../layout/generic/error/Error";
@@ -40,7 +40,7 @@ function EntriesPage(): JSX.Element {
    * @param entryId The entry ID to navigate to
    */
   const onEntryClick = (entryId: string) => {
-    navigate(`/${Page.Entry}/${entryId}`);
+    navigate(`/${EPage.ENTRY}/${entryId}`);
   };
 
   /**
@@ -52,7 +52,7 @@ function EntriesPage(): JSX.Element {
    */
   const getSubtitle = (entry: Entry) => {
     switch (entry.type) {
-      case EntryType.YouTube: return `@${(entry as YouTube).handle}`;
+      case EEntryType.YOUTUBE: return `@${(entry as YouTube).handle}`;
 
       default: return entry.altTitles.join(", ");
     }

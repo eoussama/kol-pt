@@ -1,4 +1,4 @@
-import type { ViewMode } from "../../enums/view-mode.enum";
+import type { TViewMode } from "../../enums/view-mode.enum";
 
 
 
@@ -12,11 +12,11 @@ export interface ISettingsState {
    * @description
    * The view mode of the posts page.
    */
-  viewMode: ViewMode;
+  viewMode: TViewMode;
 
   /**
    * @description
    * Updates the view mode.
    */
-  setViewMode: (viewMode: ViewMode) => void;
+  setViewMode: (viewMode: TViewMode) => void;
 }

@@ -1,4 +1,4 @@
-import type { ViewMode } from "../../enums/view-mode.enum";
+import type { TViewMode } from "../../enums/view-mode.enum";
 import type { Post } from "../../models/post.model";
 
 
@@ -19,5 +19,5 @@ export interface IPostCardProps {
    * @description
    * The view mode to display the card in.
    */
-  viewMode: ViewMode;
+  viewMode: TViewMode;
 }

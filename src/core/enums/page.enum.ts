@@ -1,30 +1,31 @@
 /**
  * @description
- * Defines application routes
+ * Defines application routes.
  */
-export enum Page {
+export const EPage = {
+  /**
+   * @description
+   * The index page of the app.
+   */
+  INDEX: "/",
 
   /**
    * @description
-   * The index page of the app
+   * The main feed page.
    */
-  Index = "/",
+  FEED: "feed",
 
   /**
    * @description
-   * The main feed page
+   * The entries page list.
    */
-  Feed = "feed",
+  ENTRIES: "entries",
 
   /**
    * @description
-   * The entries page list
+   * The entry detail page.
    */
-  Entries = "entries",
+  ENTRY: "entry",
+} as const;
 
-  /**
-   * @description
-   * The entry detail page
-   */
-  Entry = "entry",
-}
+export type TPage = (typeof EPage)[keyof typeof EPage];

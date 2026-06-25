@@ -3,7 +3,7 @@ import type { IAnimeEntry } from "../../../types/entry/anime-entry.type";
 import type { IEntry } from "../../../types/entry/entry.type";
 import type { IYouTubeEntry } from "../../../types/entry/youtube-entry.type";
 import type { IReaction } from "../../../types/reaction.type";
-import { EntryType } from "../../../enums/entry-type.enum";
+import { EEntryType } from "../../../enums/entry-type.enum";
 import { Anime } from "../../../models/anime.model";
 import { Entry } from "../../../models/entry.model";
 import { YouTube } from "../../../models/youtube.model";
@@ -47,8 +47,15 @@ export class EntriesHelper {
    */
   static async get(id: string, cache: boolean = true): Promise<TUnsafe<Entry>> {
     const data = await this.load(cache);
+    const found = data.find(entry => entry.id === id);
 
-    return data.find(entry => entry.id === id);
+    if (!found && cache) {
+      const fresh = await this.load(false);
+
+      return fresh.find(entry => entry.id === id);
+    }
+
+    return found;
   }
 
   /**
@@ -61,11 +68,11 @@ export class EntriesHelper {
    */
   static async getReactions(id: string, cache: boolean = true): Promise<Array<IReaction>> {
     const posts = await PostsHelper.load(cache);
-    const associatedPosts = posts.filter(post => post.tags.some(tag => tag.entry.id === id));
+    const associatedPosts = posts.filter(post => post.tags.some(tag => tag.entry?.id === id));
 
     return associatedPosts
       .flatMap(post => post.tags
-        .filter(tag => tag.entry.id === id)
+        .filter(tag => tag.entry?.id === id)
         .map(tag => ({
           tag,
           postId: post.id,
@@ -82,9 +89,9 @@ export class EntriesHelper {
    */
   static initEntry(entry: IEntry): Entry {
     switch (entry.type) {
-      case EntryType.Anime: return new Anime(entry as IAnimeEntry);
+      case EEntryType.ANIME: return new Anime(entry as IAnimeEntry);
 
-      case EntryType.YouTube: return new YouTube(entry as IYouTubeEntry);
+      case EEntryType.YOUTUBE: return new YouTube(entry as IYouTubeEntry);
 
       default: return new Entry(entry);
     }

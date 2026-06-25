@@ -1,4 +1,4 @@
-import type { EntryType } from "../../enums/entry-type.enum";
+import type { TEntryType } from "../../enums/entry-type.enum";
 
 
 
@@ -36,5 +36,5 @@ export interface IEntry {
    * @description
    * Type of the entry
    */
-  type: EntryType;
+  type: TEntryType;
 }

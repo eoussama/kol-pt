@@ -1,5 +1,6 @@
 import type { TUnsafe } from "@eoussama/core";
 import type { ICache } from "../../types/cache.type";
+import { CacheSchema } from "../../schemas/cache.schema";
 import { StorageHelper } from "../chrome/storage.helper";
 
 
@@ -110,15 +111,19 @@ export class CacheHelper {
    */
   private static async load(): Promise<TUnsafe<ICache>> {
     try {
-      const cache = await StorageHelper.get(CacheHelper.CACHE_KEY);
+      const raw = await StorageHelper.get(CacheHelper.CACHE_KEY);
 
-      if (!cache) {
+      if (!raw) {
         return this.compose();
       }
 
-      const parsedCache: ICache = JSON.parse(cache) ?? this.compose();
+      const parsed = CacheSchema.safeParse(JSON.parse(raw));
 
-      return parsedCache;
+      if (!parsed.success) {
+        return this.compose();
+      }
+
+      return parsed.data as ICache;
     }
     catch {
       return this.compose();

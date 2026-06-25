@@ -5,7 +5,7 @@ import type { YouTube } from "../core/models/youtube.model";
 import type { IAnimeInfo } from "../core/types/api/anime-info.type";
 import type { IReaction } from "../core/types/reaction.type";
 import { useEffect, useState } from "react";
-import { EntryType } from "../core/enums/entry-type.enum";
+import { EEntryType } from "../core/enums/entry-type.enum";
 import { JikanHelper } from "../core/helpers/api/jikan.helper";
 import { YouTubeHelper } from "../core/helpers/api/youtube.helper";
 import { IconHelper } from "../core/helpers/asset/icon.helper";
@@ -58,14 +58,30 @@ export function useEntry(entryId: string) {
   useEffect(() => {
     if (entryId) {
       setLoading(true);
+      setEntry(null);
+      setReactions([]);
+      setDescription("");
+      setGenres([]);
+      setAltTitles([]);
+      setSubscribers(0);
+      setPhoto(IconHelper.getIcon("placeholder", "graphs"));
 
       EntriesHelper.get(entryId)
         .then((entry) => {
           setEntry(entry);
 
-          if (entry?.type === EntryType.Anime) {
+          if (entry?.type === EEntryType.ANIME) {
+            const malId = (entry as Anime).malId;
+
+            if (malId <= 0) {
+              EntriesHelper.getReactions(entryId).then(setReactions);
+              setLoading(false);
+
+              return;
+            }
+
             JikanHelper
-              .getAnimeInfo((entry as Anime).malId)
+              .getAnimeInfo(malId)
               .then((e) => {
                 setPhoto(e.photo);
                 setGenres(e.genres);
@@ -75,7 +91,7 @@ export function useEntry(entryId: string) {
               })
               .finally(() => setLoading(false));
           }
-          else if (entry?.type === EntryType.YouTube) {
+          else if (entry?.type === EEntryType.YOUTUBE) {
             YouTubeHelper
               .getChannelInfo((entry as YouTube).channelId)
               .then((e) => {

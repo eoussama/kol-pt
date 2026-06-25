@@ -1,7 +1,7 @@
 import type { IYouTubeEntry } from "../types/entry/youtube-entry.type";
 import type { IOption } from "../types/option.type";
 import type { IYouTubeContext } from "../types/tag/youtube-context.type";
-import { EntryType } from "../enums/entry-type.enum";
+import { EEntryType } from "../enums/entry-type.enum";
 import { IconHelper } from "../helpers/asset/icon.helper";
 import { NavigationHelper } from "../helpers/navigator/navigation.helper";
 import { Entry } from "./entry.model";
@@ -34,7 +34,7 @@ export class YouTube extends Entry {
   constructor(model?: IYouTubeEntry) {
     super(model);
 
-    this.type = EntryType.YouTube;
+    this.type = EEntryType.YOUTUBE;
     this.handle = model?.handle ?? "";
     this.channelId = model?.channelId ?? "";
   }
