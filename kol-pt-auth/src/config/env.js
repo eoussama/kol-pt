@@ -16,16 +16,16 @@
  * @property authUrl - The URL for KOL PT Authenticator.
  */
 export const config = {
-  appId: process.env.REACT_APP_FIREBASE_APP_ID,
-  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
-  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
-  authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
-  databaseURL: process.env.REACT_APP_FIREBASE_DATABASE_URL,
-  measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID,
-  storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
-  youtubeApiKey: process.env.REACT_APP_YOUTUBE_DATA_API_KEY ?? '',
-  creatorName: process.env.REACT_APP_CREATOR_NAME ?? '',
-  patreonUrl: process.env.REACT_APP_PATREON_URL ?? '',
-  authUrl: process.env.REACT_APP_AUTH_URL ?? ''
+  appId: import.meta.env.REACT_APP_FIREBASE_APP_ID,
+  apiKey: import.meta.env.REACT_APP_FIREBASE_API_KEY,
+  projectId: import.meta.env.REACT_APP_FIREBASE_PROJECT_ID,
+  authDomain: import.meta.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
+  databaseURL: import.meta.env.REACT_APP_FIREBASE_DATABASE_URL,
+  measurementId: import.meta.env.REACT_APP_FIREBASE_MEASUREMENT_ID,
+  storageBucket: import.meta.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
+  youtubeApiKey: import.meta.env.REACT_APP_YOUTUBE_DATA_API_KEY ?? '',
+  creatorName: import.meta.env.REACT_APP_CREATOR_NAME ?? '',
+  patreonUrl: import.meta.env.REACT_APP_PATREON_URL ?? '',
+  authUrl: import.meta.env.REACT_APP_AUTH_URL ?? ''
 };

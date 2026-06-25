@@ -1,4 +1,4 @@
-/// <reference types="react-scripts" />
+/// <reference types="vite/client" />
 /// <reference types="@testing-library/jest-dom" />
 
 declare namespace JSX {
