@@ -1,5 +1,5 @@
+import type { TUnsafe } from "@eoussama/core";
 import type { Tag } from "../../models/tag.model";
-import type { Nullable } from "../nullable.type";
 
 
 
@@ -26,13 +26,13 @@ export interface IReactionOverlayContext {
    * @description
    * The element that serves as the anchor for the menu.
    */
-  anchorEl: Nullable<HTMLElement>;
+  anchorEl: TUnsafe<HTMLElement>;
 
   /**
    * @description
    * The selected tag to show
    */
-  tag: Nullable<Tag>;
+  tag: TUnsafe<Tag>;
 
   /**
    * @description
@@ -50,11 +50,11 @@ export interface IReactionOverlayContext {
    * @description
    * A function that updates the `anchorEl` state property.
    */
-  setAnchorEl: React.Dispatch<React.SetStateAction<Nullable<HTMLElement>>>;
+  setAnchorEl: React.Dispatch<React.SetStateAction<TUnsafe<HTMLElement>>>;
 
   /**
    * @description
    * A function that updates the `selectedTag` state property.
    */
-  setTag: React.Dispatch<React.SetStateAction<Nullable<Tag>>>;
+  setTag: React.Dispatch<React.SetStateAction<TUnsafe<Tag>>>;
 }

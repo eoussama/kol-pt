@@ -1,5 +1,5 @@
+import type { TUnsafe } from "@eoussama/core";
 import type { ICache } from "../../types/cache.type";
-import type { Nullable } from "../../types/nullable.type";
 import { StorageHelper } from "../chrome/storage.helper";
 
 
@@ -108,7 +108,7 @@ export class CacheHelper {
    *
    * @returns Promise resolving to the cache object or null
    */
-  private static async load(): Promise<Nullable<ICache>> {
+  private static async load(): Promise<TUnsafe<ICache>> {
     try {
       const cache = await StorageHelper.get(CacheHelper.CACHE_KEY);
 

@@ -1,5 +1,5 @@
+import type { TUnsafe } from "@eoussama/core";
 import type { User } from "firebase/auth";
-import type { Nullable } from "../nullable.type";
 
 
 
@@ -13,7 +13,7 @@ export interface IAuthState {
    * @description
    * The currently active user.
    */
-  user: Nullable<User>;
+  user: TUnsafe<User>;
 
   /**
    * @description

@@ -1,8 +1,8 @@
+import type { TUnsafe } from "@eoussama/core";
 import type { Anime } from "../core/models/anime.model";
 import type { Entry } from "../core/models/entry.model";
 import type { YouTube } from "../core/models/youtube.model";
 import type { IAnimeInfo } from "../core/types/api/anime-info.type";
-import type { Nullable } from "../core/types/nullable.type";
 import type { IReaction } from "../core/types/reaction.type";
 import { useEffect, useState } from "react";
 import { EntryType } from "../core/enums/entry-type.enum";
@@ -25,7 +25,7 @@ export function useEntry(entryId: string) {
   const [subscribers, setSubscribers] = useState(0);
   const [description, setDescription] = useState("");
   const [genres, setGenres] = useState<Array<string>>([]);
-  const [entry, setEntry] = useState<Nullable<Entry>>(null);
+  const [entry, setEntry] = useState<TUnsafe<Entry>>(null);
   const [reactions, setReactions] = useState<Array<IReaction>>([]);
   const [photo, setPhoto] = useState(IconHelper.getIcon("placeholder", "graphs"));
   const [altTitles, setAltTitles] = useState<Array<{ title: string; official: boolean }>>([]);

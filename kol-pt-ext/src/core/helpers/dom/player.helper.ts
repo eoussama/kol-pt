@@ -1,3 +1,4 @@
+import { wait } from "@eoussama/core";
 import { URLHelper } from "../parse/url.helper";
 
 
@@ -21,7 +22,7 @@ export class PlayerHelper {
     const mediaEl = (post.querySelector("[data-tag=\"media-container\"]")?.parentElement ?? post.querySelector(".sc-jefHZX")) as HTMLDataElement;
 
     if (mediaEl) {
-      await new Promise(rslv => setTimeout(() => rslv(0), 100));
+      await wait(100);
 
       // Getting the thumbnail's play button element
       const playButton = mediaEl.querySelector("button[title=\"Start playback\"]") as HTMLDivElement;

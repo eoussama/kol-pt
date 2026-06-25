@@ -25,6 +25,9 @@ importers:
       '@emotion/styled':
         specifier: ^11.14.1
         version: 11.14.1(@emotion/react@11.14.0(@types/react@19.2.17)(react@19.2.7))(@types/react@19.2.17)(react@19.2.7)
+      '@eoussama/core':
+        specifier: ^0.0.4
+        version: 0.0.4(@typescript-eslint/rule-tester@8.62.0(eslint@9.39.4)(typescript@5.9.3))(@typescript-eslint/typescript-estree@8.62.0(typescript@5.9.3))(@typescript-eslint/utils@8.62.0(eslint@9.39.4)(typescript@5.9.3))(@vue/compiler-sfc@3.5.38)(typescript@5.9.3)(vitest@3.2.6(@types/debug@4.1.13)(@types/node@22.20.0)(jsdom@26.1.0)(sass@1.101.0)(yaml@2.9.0))
       '@mui/icons-material':
         specifier: ^7.3.11
         version: 7.3.11(@mui/material@7.3.11(@emotion/react@11.14.0(@types/react@19.2.17)(react@19.2.7))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.17)(react@19.2.7))(@types/react@19.2.17)(react@19.2.7))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(@types/react@19.2.17)(react@19.2.7)
@@ -374,6 +377,9 @@ packages:
 
   '@emotion/weak-memoize@0.4.0':
     resolution: {integrity: sha512-snKqtPW01tN0ui7yu9rGv69aJXr/a/Ywvl11sUjNtEcRc+ng/mQriFL0wLXMef74iHa/EkftbDzU9F8iFbH+zg==}
+
+  '@eoussama/core@0.0.4':
+    resolution: {integrity: sha512-TT8JHi1GyEAgt/E/mZxg6lHeycTl+/BfhdLJj0EvYGBZMt1lINN57W6QqsiqzmGkxlAXzuViN6J5n7wANr+HUg==}
 
   '@eoussama/dx@0.0.4':
     resolution: {integrity: sha512-E8UNtitGI1MMw1nArpUgjEfWk2eMXP+tUeTVeXZ0jtvn0r9ofj4Hnb8e59mtBPaisQk9spfxSgWUy2VE8bt+gg==}
@@ -4033,6 +4039,35 @@ snapshots:
   '@emotion/utils@1.4.2': {}
 
   '@emotion/weak-memoize@0.4.0': {}
+
+  '@eoussama/core@0.0.4(@typescript-eslint/rule-tester@8.62.0(eslint@9.39.4)(typescript@5.9.3))(@typescript-eslint/typescript-estree@8.62.0(typescript@5.9.3))(@typescript-eslint/utils@8.62.0(eslint@9.39.4)(typescript@5.9.3))(@vue/compiler-sfc@3.5.38)(typescript@5.9.3)(vitest@3.2.6(@types/debug@4.1.13)(@types/node@22.20.0)(jsdom@26.1.0)(sass@1.101.0)(yaml@2.9.0))':
+    dependencies:
+      '@eoussama/dx': 0.0.4(@typescript-eslint/rule-tester@8.62.0(eslint@9.39.4)(typescript@5.9.3))(@typescript-eslint/typescript-estree@8.62.0(typescript@5.9.3))(@typescript-eslint/utils@8.62.0(eslint@9.39.4)(typescript@5.9.3))(@vue/compiler-sfc@3.5.38)(typescript@5.9.3)(vitest@3.2.6(@types/debug@4.1.13)(@types/node@22.20.0)(jsdom@26.1.0)(sass@1.101.0)(yaml@2.9.0))
+    transitivePeerDependencies:
+      - '@eslint-react/eslint-plugin'
+      - '@eslint/json'
+      - '@next/eslint-plugin-next'
+      - '@prettier/plugin-xml'
+      - '@typescript-eslint/rule-tester'
+      - '@typescript-eslint/typescript-estree'
+      - '@typescript-eslint/utils'
+      - '@unocss/eslint-plugin'
+      - '@vue/compiler-sfc'
+      - astro-eslint-parser
+      - eslint-plugin-astro
+      - eslint-plugin-format
+      - eslint-plugin-react-hooks
+      - eslint-plugin-react-refresh
+      - eslint-plugin-solid
+      - eslint-plugin-svelte
+      - eslint-plugin-vuejs-accessibility
+      - jiti
+      - prettier-plugin-astro
+      - prettier-plugin-slidev
+      - supports-color
+      - svelte-eslint-parser
+      - typescript
+      - vitest
 
   '@eoussama/dx@0.0.4(@typescript-eslint/rule-tester@8.62.0(eslint@9.39.4)(typescript@5.9.3))(@typescript-eslint/typescript-estree@8.62.0(typescript@5.9.3))(@typescript-eslint/utils@8.62.0(eslint@9.39.4)(typescript@5.9.3))(@vue/compiler-sfc@3.5.38)(typescript@5.9.3)(vitest@3.2.6(@types/debug@4.1.13)(@types/node@22.20.0)(jsdom@26.1.0)(sass@1.101.0)(yaml@2.9.0))':
     dependencies:

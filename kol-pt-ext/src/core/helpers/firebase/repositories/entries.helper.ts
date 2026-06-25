@@ -1,7 +1,7 @@
+import type { TUnsafe } from "@eoussama/core";
 import type { IAnimeEntry } from "../../../types/entry/anime-entry.type";
 import type { IEntry } from "../../../types/entry/entry.type";
 import type { IYouTubeEntry } from "../../../types/entry/youtube-entry.type";
-import type { Nullable } from "../../../types/nullable.type";
 import type { IReaction } from "../../../types/reaction.type";
 import { EntryType } from "../../../enums/entry-type.enum";
 import { Anime } from "../../../models/anime.model";
@@ -45,7 +45,7 @@ export class EntriesHelper {
    * @param cache - Whether to use cache when needed
    * @returns Promise resolving to the matching Entry or undefined
    */
-  static async get(id: string, cache: boolean = true): Promise<Nullable<Entry>> {
+  static async get(id: string, cache: boolean = true): Promise<TUnsafe<Entry>> {
     const data = await this.load(cache);
 
     return data.find(entry => entry.id === id);

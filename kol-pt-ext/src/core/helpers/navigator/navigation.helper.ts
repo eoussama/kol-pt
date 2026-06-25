@@ -1,4 +1,4 @@
-import type { Nullable } from "../../types/nullable.type";
+import type { TUnsafe } from "@eoussama/core";
 import { config } from "../../../config/env";
 
 
@@ -16,7 +16,7 @@ export class NavigationHelper {
    *
    * @returns The opened window reference, or null
    */
-  static openAuth(): Nullable<Window> {
+  static openAuth(): TUnsafe<Window> {
     const width = 450;
     const height = 260;
     const top = 50;

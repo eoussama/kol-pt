@@ -1,4 +1,4 @@
-import type { Nullable } from "../nullable.type";
+import type { TUnsafe } from "@eoussama/core";
 
 
 
@@ -12,7 +12,7 @@ export interface IPlayerState {
    * @description
    * The currently selected (video) player's post ID, or `null` if no player is currently selected.
    */
-  playerPostId: Nullable<string>;
+  playerPostId: TUnsafe<string>;
 
   /**
    * @description
