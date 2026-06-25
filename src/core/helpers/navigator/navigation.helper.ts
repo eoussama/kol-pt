@@ -1,4 +1,3 @@
-import type { TUnsafe } from "@eoussama/core";
 import { config } from "../../../config/env";
 
 
@@ -8,27 +7,6 @@ import { config } from "../../../config/env";
  * Helps with navigation
  */
 export class NavigationHelper {
-  // #region Auth
-
-  /**
-   * @description
-   * Opens the authentication window
-   *
-   * @returns The opened window reference, or null
-   */
-  static openAuth(): TUnsafe<Window> {
-    const width = 450;
-    const height = 260;
-    const top = 50;
-    const left = window.screen.width / 2 - width / 2;
-
-    const conf = `width=${width},height=${height},left=${left},top=${top}`;
-
-    return window.open(config.authUrl, "_blank", conf);
-  }
-
-  // #endregion
-
   // #region Github
 
   /**

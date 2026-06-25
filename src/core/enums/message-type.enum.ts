@@ -26,12 +26,6 @@ export enum MessageType {
 
   /**
    * @description
-   * Notifies the extension that user is logging in
-   */
-  Login,
-
-  /**
-   * @description
    * Sent by the content to request state syncing
    */
   SyncRequest,
