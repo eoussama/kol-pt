@@ -7,7 +7,7 @@ import { EEntryType } from "../../enums/entry-type.enum";
  * @description
  * Zod schema for a generic entry.
  */
-export const EntrySchema = z.object({
+export const EntrySchema = z.looseObject({
   id: z.string(),
   imdbId: z.string().optional(),
   altTitles: z.array(z.string()).optional(),
@@ -18,6 +18,6 @@ export const EntrySchema = z.object({
     z.literal(EEntryType.CARTOON),
     z.literal(EEntryType.YOUTUBE),
   ]),
-}).passthrough();
+});
 
 export type TEntry = z.infer<typeof EntrySchema>;
