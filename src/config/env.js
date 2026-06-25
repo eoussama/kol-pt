@@ -27,5 +27,5 @@ export const config = {
   youtubeApiKey: import.meta.env.REACT_APP_YOUTUBE_DATA_API_KEY ?? "",
   creatorName: import.meta.env.REACT_APP_CREATOR_NAME ?? "",
   patreonUrl: import.meta.env.REACT_APP_PATREON_URL ?? "",
-  fireguardUrl: import.meta.env.REACT_APP_AUTH_URL ?? "",
+  fireguardUrl: import.meta.env.REACT_APP_FIREGUARD_URL ?? "",
 };

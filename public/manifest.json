@@ -38,7 +38,7 @@
       "resources": [
         "icons/*.png",
         "images/*.png",
-        "static/media/*.ttf"
+        "fonts/opensans/*.ttf"
       ],
       "matches": [
         "https://www.patreon.com/*"
