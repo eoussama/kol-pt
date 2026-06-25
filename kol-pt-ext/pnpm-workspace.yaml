@@ -4,3 +4,34 @@ allowBuilds:
   core-js: true
   core-js-pure: true
   protobufjs: true
+
+overrides:
+  nth-check: ^2.1.1
+  postcss: ^8.5.10
+  webpack-dev-server: ^5.2.5
+  protobufjs: ^7.6.3
+  '@protobufjs/utf8': ^1.1.1
+  '@grpc/grpc-js': ^1.12.0
+  'ws@^7': ^7.5.11
+  'ws@^8': ^8.21.0
+  'brace-expansion@^1': ^1.1.13
+  'brace-expansion@^2': ^2.0.3
+  'picomatch@^2': ^2.3.2
+  'picomatch@^4': ^4.0.4
+  'yaml@^1': ^1.10.3
+  lodash: ^4.17.24
+  follow-redirects: ^1.15.12
+  serialize-javascript: ^7.0.5
+  uuid: ^11.1.1
+  qs: ^6.15.2
+  react-router: ^6.30.4
+  launch-editor: ^2.14.1
+  js-yaml: ^4.1.2
+  http-proxy-middleware: ^2.0.10
+  '@tootallnate/once': ^2.0.1
+  form-data: ^3.0.5
+  immutable: ^5.1.5
+  underscore: ^1.13.8
+  fast-uri: ^3.1.2
+  '@babel/plugin-transform-modules-systemjs': ^7.29.4
+  '@babel/core': ^7.29.1
