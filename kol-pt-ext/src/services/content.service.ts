@@ -1,15 +1,14 @@
-import { Post } from '../core/models/post.model';
-import { Imessage } from '../core/types/message.type';
-import { MessageType } from '../core/enums/message-type.enum';
-import { PostsHelper } from '../core/helpers/dom/posts.helper';
-import { TimeHelper } from '../core/helpers/parse/time.helper';
-import { ObserverHelper } from '../core/helpers/dom/observer.helper';
-import { MessageHelper } from '../core/helpers/navigator/message.helper';
+import type { Post } from "../core/models/post.model";
+import type { Imessage } from "../core/types/message.type";
+import { MessageType } from "../core/enums/message-type.enum";
+import { ObserverHelper } from "../core/helpers/dom/observer.helper";
+import { PostsHelper } from "../core/helpers/dom/posts.helper";
+import { MessageHelper } from "../core/helpers/navigator/message.helper";
+import { TimeHelper } from "../core/helpers/parse/time.helper";
 
 
 
 (() => {
-
   /**
    * @description
    * Last page initialization timestamp
@@ -30,19 +29,17 @@ import { MessageHelper } from '../core/helpers/navigator/message.helper';
 
   // Listening for messages
   MessageHelper.listen((e: Imessage<{ posts: Array<Post> }>) => {
-
     if (TimeHelper.ellapsed(lastInit, timeout) || TimeHelper.ellapsed(lastAttach, timeout)) {
       switch (e.type) {
         case MessageType.Init: {
           lastInit = Date.now();
 
           PostsHelper.init().then(() => {
-
             // Triggering post load
             MessageHelper.send(MessageType.Load, null, e.tabId);
 
-            const target = '[data-tag="post-card"]';
-            const parent = document.getElementById('renderPageContentWrapper') as HTMLDivElement;
+            const target = "[data-tag=\"post-card\"]";
+            const parent = document.getElementById("renderPageContentWrapper") as HTMLDivElement;
 
             // Periodic post update as the DOM mutates
             ObserverHelper.onAdded(parent, target, () => MessageHelper.send(MessageType.Load, null, e.tabId));
@@ -64,4 +61,4 @@ import { MessageHelper } from '../core/helpers/navigator/message.helper';
   });
 })();
 
-export { }
+export { };

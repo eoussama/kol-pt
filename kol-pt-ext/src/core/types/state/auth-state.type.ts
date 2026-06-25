@@ -1,5 +1,5 @@
-import { User } from 'firebase/auth';
-import { Nullable } from '../nullable.type';
+import type { User } from "firebase/auth";
+import type { Nullable } from "../nullable.type";
 
 
 
@@ -19,11 +19,11 @@ export interface IAuthState {
    * @description
    * The login action
    */
-  login(newUser: User): void;
-  
+  login: (newUser: User) => void;
+
   /**
    * @description
    * The logout action
    */
-  logout(): void;
+  logout: () => void;
 }

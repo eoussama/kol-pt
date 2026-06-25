@@ -1,5 +1,5 @@
+import type { IPlayerState } from "../core/types/state/player-state.type";
 import { create } from "zustand";
-import { IPlayerState } from "../core/types/state/player-state.type";
 
 
 
@@ -19,7 +19,7 @@ export const usePlayerStore = create<IPlayerState>(set => ({
    * @description
    * A function that pauses the currently playing post.
    */
-  pause(): void { set({ playerPostId: null }) },
+  pause(): void { set({ playerPostId: null }); },
 
   /**
    * @description
@@ -27,5 +27,5 @@ export const usePlayerStore = create<IPlayerState>(set => ({
    *
    * @param id The ID of the currently playing post
    */
-  play(id: string): void { set({ playerPostId: id }) }
+  play(id: string): void { set({ playerPostId: id }); },
 }));

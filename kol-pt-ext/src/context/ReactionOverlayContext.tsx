@@ -1,8 +1,8 @@
-import { Tag } from '../core/models/tag.model';
-import { Nullable } from '../core/types/nullable.type';
-import { createContext, useEffect, useState } from 'react';
-import { IReactionOverlayContext } from '../core/types/context/reaction-overlay-context.type';
-import { IReactionOverlayProviderProps } from '../core/types/providers/reaction-overlay-provider.props';
+import type { Tag } from "../core/models/tag.model";
+import type { IReactionOverlayContext } from "../core/types/context/reaction-overlay-context.type";
+import type { Nullable } from "../core/types/nullable.type";
+import type { IReactionOverlayProviderProps } from "../core/types/providers/reaction-overlay-provider.props";
+import { createContext, useEffect, useState } from "react";
 
 
 
@@ -10,13 +10,14 @@ import { IReactionOverlayProviderProps } from '../core/types/providers/reaction-
  * @description
  * Context for Reaction overlays (Menu, Dialog)
  */
-export const ReactionOverlayContext = createContext<IReactionOverlayContext>({} as any);
+export const ReactionOverlayContext = createContext<IReactionOverlayContext>({} as IReactionOverlayContext);
 
 /**
  * @description
  * Provides context for the Reaction overlays (Menu, Dialog)
  *
- * @param props The props passed down to the provider
+ * @param props - The props passed down to the provider
+ * @returns The reaction overlay context provider wrapping its children
  */
 export function ReactionOverlayProvider(props: IReactionOverlayProviderProps): JSX.Element {
   const [tag, setTag] = useState<Nullable<Tag>>(null);

@@ -1,4 +1,4 @@
-import { Entry } from "../../models/entry.model";
+import type { Entry } from "../../models/entry.model";
 
 
 
@@ -30,7 +30,7 @@ export interface IEntriesState {
    * @description
    * Function to load entries. If `cache` is true, attempts to load entries from cache.
    * Otherwise, loads entries from API.
-   * 
+   *
    * @param cache - Optional flag indicating whether to load entries from cache or API.
    * Default is false.
    */

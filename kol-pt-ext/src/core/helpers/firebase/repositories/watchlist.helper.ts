@@ -1,4 +1,4 @@
-import { RepositoryHelper } from './repository.helper';
+import { RepositoryHelper } from "./repository.helper";
 
 
 
@@ -9,43 +9,43 @@ import { RepositoryHelper } from './repository.helper';
  * reactions by the user.
  */
 export class WatchHelper {
-
   /**
    * @description
    * The name of the key that stors the watchlist
    * on the realtime database for the user
    */
-  private static readonly DB_KEY: string = 'watchlist';
+  private static readonly DB_KEY: string = "watchlist";
 
   /**
    * @description
    * Fetches the watchlist for a specific user
    *
-   * @param userId The ID of the target user
+   * @param userId - The ID of the target user
+   * @returns Promise resolving to the user's watchlist
    */
-  static get(userId: string): Promise<Array<string>> {
-    return new Promise(async resolve => {
-      const watchlist = await RepositoryHelper.get(`users/${userId}/${this.DB_KEY}` as any, false);
+  static async get(userId: string): Promise<Array<string>> {
+    const watchlist = await RepositoryHelper.get<Array<string>>(`users/${userId}/${this.DB_KEY}`, false);
 
-      // If users has no watchlist saved, initialize new ones
-      if (!watchlist) {
-        const newWatchlist: Array<string> = [];
-        this.set(userId, newWatchlist);
-        return resolve(newWatchlist);
-      }
+    if (!watchlist) {
+      const newWatchlist: Array<string> = [];
 
-      return RepositoryHelper.get(`users/${userId}/${this.DB_KEY}` as any, false);
-    });
+      await this.set(userId, newWatchlist);
+
+      return newWatchlist;
+    }
+
+    return watchlist;
   }
 
   /**
    * @description
    * Updates the watchlist for a specific user
    *
-   * @param userId The ID of the target user
-   * @param reactions The array of reaction IDs
+   * @param userId - The ID of the target user
+   * @param reactions - The array of reaction IDs
+   * @returns Promise that resolves when the watchlist is updated
    */
-  static async set<T = any>(userId: string, reactions: Array<string>): Promise<void> {
-    return RepositoryHelper.set(`users/${userId}/${this.DB_KEY}` as any, reactions);
+  static set(userId: string, reactions: Array<string>): Promise<void> {
+    return RepositoryHelper.set(`users/${userId}/${this.DB_KEY}`, reactions);
   }
 }

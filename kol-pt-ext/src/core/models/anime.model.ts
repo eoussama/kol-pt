@@ -1,19 +1,18 @@
-import { Entry } from "./entry.model";
-import { IOption } from "../types/option.type";
+import type { IAnimeEntry } from "../types/entry/anime-entry.type";
+import type { IOption } from "../types/option.type";
+import type { IAnimeContext } from "../types/tag/anime-context.type";
 import { EntryType } from "../enums/entry-type.enum";
 import { IconHelper } from "../helpers/asset/icon.helper";
-import { IAnimeEntry } from "../types/entry/anime-entry.type";
-import { IAnimeContext } from "../types/tag/anime-context.type";
 import { NavigationHelper } from "../helpers/navigator/navigation.helper";
+import { Entry } from "./entry.model";
 
 
 
 /**
  * @description
- * Represents an Anime Entry which extends the base class 
+ * Represents an Anime Entry which extends the base class
  */
 export class Anime extends Entry {
-
   /**
    * @description
    * The MyAnimeList ID of the anime.
@@ -39,16 +38,18 @@ export class Anime extends Entry {
   zoroId: string;
 
   /**
-   * @constructor
-   * @param model The anime entry model. 
+   * @description
+   * Creates a new Anime instance.
+   *
+   * @param model - The anime entry model
    */
   constructor(model?: IAnimeEntry) {
     super(model);
 
     this.type = EntryType.Anime;
     this.malId = model?.malId ?? -1;
-    this.zoroId = model?.zoroId ?? '';
-    this.kitsuId = model?.kitsuId ?? '';
+    this.zoroId = model?.zoroId ?? "";
+    this.kitsuId = model?.kitsuId ?? "";
     this.anilistId = model?.anilistId ?? -1;
   }
 
@@ -95,52 +96,53 @@ export class Anime extends Entry {
   }
 
   /**
- * @description
- * Gets the list of menu options
- *
- * @param context The parent tag's context, passed for extra context
- */
+   * @description
+   * Gets the list of menu options
+   *
+   * @param context - The parent tag's context, passed for extra context
+   * @returns Array of menu option objects
+   */
   getOptions(context?: IAnimeContext): Array<IOption> {
     const options = super.getOptions(context);
 
     return [
       {
         divider: true,
-        label: 'Watch on Zoro',
-        iconAlt: 'Zoro.to icon',
+        label: "Watch on Zoro",
+        iconAlt: "Zoro.to icon",
         canShow: () => Boolean(context?.zoroId),
-        icon: IconHelper.getIcon('zoro', 'platforms'),
-        action: () => this.watchZoro.call(this, context?.zoroId ?? -1)
+        icon: IconHelper.getIcon("zoro", "platforms"),
+        action: () => this.watchZoro(context?.zoroId ?? -1),
       },
       {
-        iconAlt: 'MAL icon',
-        label: 'View on MyAnimeList',
+        iconAlt: "MAL icon",
+        label: "View on MyAnimeList",
         action: this.viewMAL.bind(this),
         canShow: () => Boolean(this.malId),
-        icon: IconHelper.getIcon('mal', 'platforms')
+        icon: IconHelper.getIcon("mal", "platforms"),
       },
       {
-        iconAlt: 'AniList icon',
-        label: 'View on AniList',
+        iconAlt: "AniList icon",
+        label: "View on AniList",
         action: this.viewAniList.bind(this),
         canShow: () => Boolean(this.anilistId),
-        icon: IconHelper.getIcon('anilist', 'platforms')
+        icon: IconHelper.getIcon("anilist", "platforms"),
       },
       {
-        iconAlt: 'Kitsu icon',
-        label: 'View on Kitsu',
+        iconAlt: "Kitsu icon",
+        label: "View on Kitsu",
         action: this.viewKitsu.bind(this),
         canShow: () => (this.kitsuId?.length ?? 0) > 0,
-        icon: IconHelper.getIcon('kitsu', 'platforms')
+        icon: IconHelper.getIcon("kitsu", "platforms"),
       },
       {
-        label: 'View on Zoro',
-        iconAlt: 'Zoro.to icon',
+        label: "View on Zoro",
+        iconAlt: "Zoro.to icon",
         action: this.viewZoro.bind(this),
         canShow: () => Boolean(this.zoroId),
-        icon: IconHelper.getIcon('zoro', 'platforms'),
+        icon: IconHelper.getIcon("zoro", "platforms"),
       },
-      ...options
-    ]
+      ...options,
+    ];
   }
 }

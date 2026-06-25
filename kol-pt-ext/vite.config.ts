@@ -1,19 +1,21 @@
-import { defineConfig } from 'vitest/config';
-import react from '@vitejs/plugin-react';
-import webExtension from 'vite-plugin-web-extension';
+import react from "@vitejs/plugin-react";
+import webExtension from "vite-plugin-web-extension";
+import { defineConfig } from "vitest/config";
+
+
 
 export default defineConfig(({ mode }) => ({
   plugins: [
     react(),
-    ...(mode === 'production' ? [webExtension({ manifest: 'public/manifest.json' })] : []),
+    ...(mode === "production" ? [webExtension({ manifest: "public/manifest.json" })] : []),
   ],
-  envPrefix: 'REACT_APP_',
+  envPrefix: "REACT_APP_",
   build: {
-    outDir: 'build',
+    outDir: "build",
   },
   test: {
-    environment: 'jsdom',
-    setupFiles: ['./src/setupTests.ts'],
+    environment: "jsdom",
+    setupFiles: ["./src/setupTests.ts"],
     globals: true,
   },
 }));

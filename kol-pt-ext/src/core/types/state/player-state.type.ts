@@ -1,4 +1,4 @@
-import { Nullable } from "../nullable.type";
+import type { Nullable } from "../nullable.type";
 
 
 
@@ -23,7 +23,7 @@ export interface IPlayerState {
   /**
    * @description
    * Function to select and play a specific player with the given ID.
-   * 
+   *
    * @param id - The ID of the player to play.
    */
   play: (id: string) => void;

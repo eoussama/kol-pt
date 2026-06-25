@@ -1,14 +1,14 @@
 allowBuilds:
-  '@firebase/util': true
-  '@parcel/watcher': true
+  "@firebase/util": true
+  "@parcel/watcher": true
   core-js: true
   core-js-pure: true
   esbuild: true
   protobufjs: true
 
 overrides:
-  protobufjs: ^7.6.3
-  '@protobufjs/utf8': ^1.1.1
-  '@grpc/grpc-js': ^1.12.0
+  "@grpc/grpc-js": ^1.12.0
+  "@protobufjs/utf8": ^1.1.1
   fast-uri: ^3.1.2
   follow-redirects: ^1.15.12
+  protobufjs: ^7.6.3

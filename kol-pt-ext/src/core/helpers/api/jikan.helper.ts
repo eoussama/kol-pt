@@ -1,6 +1,6 @@
-import { IconHelper } from '../asset/icon.helper';
-import { IAnimeInfo } from '../../types/api/anime-info.type';
-import { IJikanResponse } from '../../types/api/jikan-response.type';
+import type { IAnimeInfo } from "../../types/api/anime-info.type";
+import type { IJikanResponse } from "../../types/api/jikan-response.type";
+import { IconHelper } from "../asset/icon.helper";
 
 
 
@@ -9,15 +9,15 @@ import { IJikanResponse } from '../../types/api/jikan-response.type';
  * Handles Jikan API calls
  */
 export class JikanHelper {
-
   /**
    * @description
    * Gets info about an Anime using MAL's Jikan API.
    *
-   * @param animeId The MAL ID of the target anime
+   * @param animeId - The MAL ID of the target anime
+   * @returns Promise resolving to the anime info
    */
   static getAnimeInfo(animeId: number): Promise<IAnimeInfo> {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       fetch(`https://api.jikan.moe/v4/anime/${animeId}`)
         .then(e => e.json())
         .then(e => e.data)
@@ -29,16 +29,16 @@ export class JikanHelper {
             altTitles: [
               { title: e.title, official: true },
               { title: e.title_english, official: true },
-              { title: e.title_english, official: true }
-            ]
+              { title: e.title_english, official: true },
+            ],
           });
         })
         .catch(() => {
           resolve({
             genres: [],
             altTitles: [],
-            description: '',
-            photo: IconHelper.getIcon('placeholder', 'graphs'),
+            description: "",
+            photo: IconHelper.getIcon("placeholder", "graphs"),
           });
         });
     });

@@ -1,5 +1,5 @@
-import { Nullable } from "../nullable.type";
-import { Tag } from "../../models/tag.model";
+import type { Tag } from "../../models/tag.model";
+import type { Nullable } from "../nullable.type";
 
 
 

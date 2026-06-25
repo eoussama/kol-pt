@@ -10,5 +10,5 @@ export interface ISearch {
    *
    * @param search The search query to check against
    */
-  match(search: string): boolean;
+  match: (search: string) => boolean;
 }

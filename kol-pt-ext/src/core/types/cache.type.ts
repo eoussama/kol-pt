@@ -1,6 +1,6 @@
-import { IPost } from "./post.type";
-import { IEntry } from "./entry/entry.type";
-import { ISettings } from "./settings.type";
+import type { IEntry } from "./entry/entry.type";
+import type { IPost } from "./post.type";
+import type { ISettings } from "./settings.type";
 
 
 
@@ -54,7 +54,7 @@ export interface ICache {
          * User's watched reactions (IDs)
          */
         watchlist: Array<string>;
-      }
+      };
     };
   };
 }

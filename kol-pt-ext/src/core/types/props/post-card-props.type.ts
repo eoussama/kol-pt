@@ -1,5 +1,5 @@
-import { Post } from "../../models/post.model";
-import { ViewMode } from "../../enums/view-mode.enum";
+import type { ViewMode } from "../../enums/view-mode.enum";
+import type { Post } from "../../models/post.model";
 
 
 

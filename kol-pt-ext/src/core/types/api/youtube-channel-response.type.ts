@@ -21,7 +21,7 @@ export interface IYouTubeChannelResponse {
      * The channel's thumbnails
      */
     thumbnails: { medium: { url: string } };
-  }
+  };
 
   /**
    * @description
@@ -34,5 +34,5 @@ export interface IYouTubeChannelResponse {
      * Total subscribers
      */
     subscriberCount: string;
-  }
+  };
 }

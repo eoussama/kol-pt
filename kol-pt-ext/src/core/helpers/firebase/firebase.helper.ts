@@ -1,7 +1,10 @@
-import { config } from '../../../config/env';
-import { Database, getDatabase } from 'firebase/database';
-import { FirebaseApp, initializeApp } from 'firebase/app';
-import { Auth, GoogleAuthProvider, getAuth } from 'firebase/auth';
+import type { FirebaseApp } from "firebase/app";
+import type { Auth } from "firebase/auth";
+import type { Database } from "firebase/database";
+import { initializeApp } from "firebase/app";
+import { getAuth, GoogleAuthProvider } from "firebase/auth";
+import { getDatabase } from "firebase/database";
+import { config } from "../../../config/env";
 
 
 
@@ -10,7 +13,6 @@ import { Auth, GoogleAuthProvider, getAuth } from 'firebase/auth';
  * Helps with all things Firebase
  */
 export class FirebaseHelper {
-
   /**
    * @description
    * Firebase realtime app instance
@@ -38,6 +40,8 @@ export class FirebaseHelper {
   /**
    * @description
    * Firebase realtime app instance
+   *
+   * @returns The initialized Firebase app instance
    */
   public static get app(): FirebaseApp {
     if (!this._app) {
@@ -50,6 +54,8 @@ export class FirebaseHelper {
   /**
    * @description
    * Firebase realtime database instance
+   *
+   * @returns The Firebase Realtime Database instance
    */
   public static get db(): Database {
     if (!this._db) {
@@ -62,6 +68,8 @@ export class FirebaseHelper {
   /**
    * @description
    * Firebase realtime authentication instance
+   *
+   * @returns The Firebase Auth instance
    */
   public static get auth(): Auth {
     if (!this._auth) {
@@ -74,6 +82,8 @@ export class FirebaseHelper {
   /**
    * @description
    * Google auth provider
+   *
+   * @returns The Google auth provider instance
    */
   public static get provider(): GoogleAuthProvider {
     if (!this._provider) {

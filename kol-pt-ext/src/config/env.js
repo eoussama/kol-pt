@@ -2,7 +2,7 @@
  * @description
  * Configuration object containing various environment variables
  * and constants required for the application.
- * 
+ *
  * @property appId - Firebase app ID.
  * @property apiKey - Firebase API key.
  * @property projectId - Firebase project ID.
@@ -24,8 +24,8 @@ export const config = {
   measurementId: import.meta.env.REACT_APP_FIREBASE_MEASUREMENT_ID,
   storageBucket: import.meta.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
   messagingSenderId: import.meta.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
-  youtubeApiKey: import.meta.env.REACT_APP_YOUTUBE_DATA_API_KEY ?? '',
-  creatorName: import.meta.env.REACT_APP_CREATOR_NAME ?? '',
-  patreonUrl: import.meta.env.REACT_APP_PATREON_URL ?? '',
-  authUrl: import.meta.env.REACT_APP_AUTH_URL ?? ''
+  youtubeApiKey: import.meta.env.REACT_APP_YOUTUBE_DATA_API_KEY ?? "",
+  creatorName: import.meta.env.REACT_APP_CREATOR_NAME ?? "",
+  patreonUrl: import.meta.env.REACT_APP_PATREON_URL ?? "",
+  authUrl: import.meta.env.REACT_APP_AUTH_URL ?? "",
 };

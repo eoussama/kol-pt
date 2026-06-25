@@ -1,4 +1,4 @@
-import { IEntry } from './entry.type';
+import type { IEntry } from "./entry.type";
 
 
 

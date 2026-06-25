@@ -1,28 +1,30 @@
-import { useEffect } from 'react';
-import { useAuthStore } from '../state/auth.state';
-import { ViewMode } from '../core/enums/view-mode.enum';
-import { useSettingsStore } from '../state/settings.state';
-import { SettingsHelper } from '../core/helpers/firebase/repositories/settings.helper';
+import { useEffect } from "react";
+import { ViewMode } from "../core/enums/view-mode.enum";
+import { SettingsHelper } from "../core/helpers/firebase/repositories/settings.helper";
+import { useAuthStore } from "../state/auth.state";
+import { useSettingsStore } from "../state/settings.state";
 
 
 
 /**
  * @description
  * Manages view mode.
+ *
+ * @returns View mode state and color indicators
  */
 export function useViewMode() {
   const user = useAuthStore(e => e.user);
   const viewMode = useSettingsStore(e => e.viewMode);
   const setViewMode = useSettingsStore(e => e.setViewMode);
 
-  const compactViewColor: 'primary' | 'default' = viewMode === ViewMode.Compact ? 'primary' : 'default';
-  const expandedViewColor: 'primary' | 'default' = viewMode === ViewMode.Expanded ? 'primary' : 'default';
+  const compactViewColor: "primary" | "default" = viewMode === ViewMode.Compact ? "primary" : "default";
+  const expandedViewColor: "primary" | "default" = viewMode === ViewMode.Expanded ? "primary" : "default";
 
   useEffect(() => {
     if (user) {
       SettingsHelper
-        .get(user.uid, 'viewMode')
-        .then(userViewMode => {
+        .get(user.uid, "viewMode")
+        .then((userViewMode) => {
           setViewMode(userViewMode);
         });
     }

@@ -1,4 +1,4 @@
-import { ViewMode } from '../../enums/view-mode.enum';
+import type { ViewMode } from "../../enums/view-mode.enum";
 
 
 
@@ -18,5 +18,5 @@ export interface ISettingsState {
    * @description
    * Updates the view mode.
    */
-  setViewMode(viewMode: ViewMode): void;
+  setViewMode: (viewMode: ViewMode) => void;
 }

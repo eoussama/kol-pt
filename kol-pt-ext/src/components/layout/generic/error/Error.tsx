@@ -1,8 +1,8 @@
-import styles from './Error.module.scss';
+import type { IPostErrorProps } from "../../../../core/types/props/post-error.type";
 
-import { Fragment } from 'react';
-import WarningIcon from '@mui/icons-material/Warning';
-import { IPostErrorProps } from '../../../../core/types/props/post-error.type';
+import WarningIcon from "@mui/icons-material/Warning";
+import { Fragment } from "react";
+import styles from "./Error.module.scss";
 
 
 
@@ -10,7 +10,8 @@ import { IPostErrorProps } from '../../../../core/types/props/post-error.type';
  * @description
  * The post error component, displays error messages
  *
- * @param props The error props
+ * @param props - The error props
+ * @returns The rendered error state or children
  */
 function Error(props: IPostErrorProps): JSX.Element {
   const { error, message, children } = props;
@@ -19,12 +20,14 @@ function Error(props: IPostErrorProps): JSX.Element {
     return children ?? <Fragment />;
   }
 
-  return <>
-    <div className={styles['error']}>
-      <WarningIcon className={styles['error__icon']} />
-      <span className={styles['error__message']}>{message}</span>
-    </div>
-  </>
+  return (
+    <>
+      <div className={styles.error}>
+        <WarningIcon className={styles.error__icon} />
+        <span className={styles.error__message}>{message}</span>
+      </div>
+    </>
+  );
 }
 
 export default Error;

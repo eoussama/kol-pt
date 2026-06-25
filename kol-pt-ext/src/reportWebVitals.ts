@@ -1,8 +1,16 @@
-import type { ReportCallback } from 'web-vitals';
+import type { ReportCallback } from "web-vitals";
 
-const reportWebVitals = (onPerfEntry?: ReportCallback) => {
-  if (onPerfEntry && onPerfEntry instanceof Function) {
-    import('web-vitals').then(({ onCLS, onINP, onFCP, onLCP, onTTFB }) => {
+
+
+/**
+ * @description
+ * Report web vitals metrics using the provided callback
+ *
+ * @param onPerfEntry - Callback to receive performance metrics
+ */
+function reportWebVitals(onPerfEntry?: ReportCallback) {
+  if (onPerfEntry && typeof onPerfEntry === "function") {
+    import("web-vitals").then(({ onCLS, onINP, onFCP, onLCP, onTTFB }) => {
       onCLS(onPerfEntry);
       onINP(onPerfEntry);
       onFCP(onPerfEntry);
@@ -10,6 +18,6 @@ const reportWebVitals = (onPerfEntry?: ReportCallback) => {
       onTTFB(onPerfEntry);
     });
   }
-};
+}
 
 export default reportWebVitals;

@@ -1,10 +1,10 @@
-import { Entry } from './entry.model';
-import { ITag } from '../types/tag/tag.type';
-import { EntryType } from '../enums/entry-type.enum';
-import { TimeHelper } from '../helpers/parse/time.helper';
-import { ArrayHelper } from '../helpers/parse/array.helper';
-import { IYouTubeContext } from '../types/tag/youtube-context.type';
-import { EntriesHelper } from '../helpers/firebase/repositories/entries.helper';
+import type { ITag } from "../types/tag/tag.type";
+import type { IYouTubeContext } from "../types/tag/youtube-context.type";
+import type { Entry } from "./entry.model";
+import { EntryType } from "../enums/entry-type.enum";
+import { EntriesHelper } from "../helpers/firebase/repositories/entries.helper";
+import { ArrayHelper } from "../helpers/parse/array.helper";
+import { TimeHelper } from "../helpers/parse/time.helper";
 
 
 
@@ -13,7 +13,6 @@ import { EntriesHelper } from '../helpers/firebase/repositories/entries.helper';
  * A class representing a tag applied to an entry in a reaction video
  */
 export class Tag {
-
   /**
    * @description
    * The unique identifier for the tag
@@ -24,7 +23,7 @@ export class Tag {
    * @description
    * The tag's context, extra data passed down to the entry
    */
-  context: any;
+  context: unknown;
 
   /**
    * @description
@@ -57,20 +56,22 @@ export class Tag {
   endTime: number;
 
   /**
-   * @constructor
-   * @param model The tag data to initialize the instance with
+   * @description
+   * Creates a new Tag instance.
+   *
+   * @param model - The tag data to initialize the instance with
    */
   constructor(model: ITag | Tag) {
-    this.id = model.id ?? '';
-    this.label = model.label ?? '';
-    this.description = model.description ?? '';
+    this.id = model.id ?? "";
+    this.label = model.label ?? "";
+    this.description = model.description ?? "";
 
     this.endTime = model.endTime ?? 0;
     this.startTime = model.startTime ?? 0;
 
     this.context = model.context ?? {};
 
-    if ('entry' in model) {
+    if ("entry" in model) {
       this.entry = EntriesHelper.initEntry(model.entry);
     }
   }
@@ -84,7 +85,9 @@ export class Tag {
   getShortTitle(): string {
     switch (this.entry.type) {
       case EntryType.Anime: return `${this.entry?.shortTitle} - ${this.label}`;
+
       case EntryType.YouTube: return ArrayHelper.getShortest((this.context as IYouTubeContext).altTitles ?? [], this.label);
+
       default: return this.label;
     }
   }
@@ -98,6 +101,7 @@ export class Tag {
   getDetailDescription(): string {
     switch (this.entry.type) {
       case EntryType.Anime: return `Episode ${this.label}`;
+
       default: return `${this.label}`;
     }
   }
@@ -105,6 +109,8 @@ export class Tag {
   /**
    * @description
    * Returns a human readable reaction starting time
+   *
+   * @returns The formatted start time string
    */
   getReadableStartTime(): string {
     return TimeHelper.parse(this.startTime);
@@ -113,6 +119,8 @@ export class Tag {
   /**
    * @description
    * Returns a human readable reaction duration
+   *
+   * @returns The formatted duration string
    */
   getReadableDuration(): string {
     return TimeHelper.format(this.endTime - this.startTime);
@@ -122,7 +130,8 @@ export class Tag {
    * @description
    * Checks if instance is of a given type
    *
-   * @param type The type to check against
+   * @param type - The type to check against
+   * @returns True if the entry matches the given type
    */
   is(type: EntryType): boolean {
     return this.entry.type === type;

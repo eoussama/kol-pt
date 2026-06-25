@@ -12,7 +12,7 @@ import { usePostStore } from "../state/posts.state";
  * vars about the posts
  */
 export function usePosts() {
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState("");
   const posts = usePostStore(e => e.posts);
   const error = usePostStore(e => e.error);
   const loading = usePostStore(e => e.loading);
@@ -30,9 +30,10 @@ export function usePosts() {
    * @param e The search event object
    */
   const onSearch = (e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
-    const value = (e.target.value ?? '').toLowerCase();
+    const value = (e.target.value ?? "").toLowerCase();
+
     setSearch(value);
-  }
+  };
 
   return { error, loading, search, posts: filteredPosts, postsCount: posts.length, onSearch };
 }

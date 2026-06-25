@@ -1,7 +1,7 @@
-import { CacheHelper } from '../cache.helper';
-import { get, ref, set } from 'firebase/database';
-import { ICache } from '../../../types/cache.type';
-import { FirebaseHelper } from '../firebase.helper';
+import type { ICache } from "../../../types/cache.type";
+import { get, ref, set } from "firebase/database";
+import { CacheHelper } from "../cache.helper";
+import { FirebaseHelper } from "../firebase.helper";
 
 
 
@@ -10,56 +10,45 @@ import { FirebaseHelper } from '../firebase.helper';
  * Helps with generic firebase realtime database data read and write
  */
 export class RepositoryHelper {
-
   /**
    * @description
    * Retrieves an element from the database
    *
-   * @param key The key of the targeted value
-   * @param cache Whether to use cache when needed
+   * @param key - The key of the targeted value
+   * @param cache - Whether to use cache when needed
+   * @returns Promise resolving to the fetched data
    */
-  static get<T = any>(key: keyof ICache['db'], cache: boolean = true): Promise<T> {
-    return new Promise(async resolve => {
-      if (cache && await CacheHelper.isValid(key)) {
+  static async get<T = unknown>(key: string, cache: boolean = true): Promise<T> {
+    const cacheKey = key as keyof ICache["db"];
 
-        // Fetching data from cache
-        const data = CacheHelper.get(key);
+    if (cache && await CacheHelper.isValid(cacheKey)) {
+      const data = await CacheHelper.get(cacheKey);
 
-        // Returning fetched data
-        return resolve(data as T);
-      }
+      return data as T;
+    }
 
-      // Retrieving data from firebase
-      const snapRef = ref(FirebaseHelper.db, key);
-      const snapshot = await get(snapRef);
-      const data = snapshot.val() as T;
+    const snapRef = ref(FirebaseHelper.db, key);
+    const snapshot = await get(snapRef);
+    const data = snapshot.val() as T;
 
-      // Updating the cache
-      CacheHelper.update(key, data);
+    if (cache) {
+      CacheHelper.update(key, data as ICache["db"][keyof ICache["db"]]);
+    }
 
-      // Returning fetched data
-      resolve(data);
-    });
+    return data;
   }
 
   /**
    * @description
    * Updates an element in the database
    *
-   * @param key The key of the targeted value
-   * @param value The value to update
+   * @param key - The key of the targeted value
+   * @param value - The value to update
+   * @returns Promise that resolves when the update is complete
    */
-  static set(key: keyof ICache['db'], value: any): Promise<void> {
-    return new Promise(async resolve => {
+  static async set(key: string, value: unknown): Promise<void> {
+    const snapRef = ref(FirebaseHelper.db, key);
 
-      // Preparing the target reference
-      const snapRef = ref(FirebaseHelper.db, key);
-
-      // Updating the valie
-      await set(snapRef, value);
-
-      // Reporting back
-      resolve();
-    });
+    await set(snapRef, value);
   }
 }

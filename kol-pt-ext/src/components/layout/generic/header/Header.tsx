@@ -1,14 +1,14 @@
-import styles from './Header.module.scss';
+import LoginIcon from "@mui/icons-material/Login";
 
-import { useMemo, useState } from 'react';
-import LoginIcon from '@mui/icons-material/Login';
-import LogoutIcon from '@mui/icons-material/Logout';
-import { useAuth } from '../../../../hooks/auth.hook';
-import { Page } from '../../../../core/enums/page.enum';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { usePostStore } from '../../../../state/posts.state';
-import { Button, IconButton, Tab, Tabs, Tooltip } from '@mui/material';
-import { NavigationHelper } from '../../../../core/helpers/navigator/navigation.helper';
+import LogoutIcon from "@mui/icons-material/Logout";
+import { Button, IconButton, Tab, Tabs, Tooltip } from "@mui/material";
+import { useMemo, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { Page } from "../../../../core/enums/page.enum";
+import { NavigationHelper } from "../../../../core/helpers/navigator/navigation.helper";
+import { useAuth } from "../../../../hooks/auth.hook";
+import { usePostStore } from "../../../../state/posts.state";
+import styles from "./Header.module.scss";
 
 
 
@@ -16,7 +16,7 @@ import { NavigationHelper } from '../../../../core/helpers/navigator/navigation.
  * @description
  * The Header component renders the application's header, including the logo and title,
  * and provides the user with the ability to open the Patreon page in a new tab.
- * 
+ *
  * @returns {JSX.Element} The JSX representation of the component.
  */
 function Header(): JSX.Element {
@@ -31,8 +31,8 @@ function Header(): JSX.Element {
    * Memorizes the current route
    */
   const route = useMemo(() => {
-    const path = location.pathname ?? '';
-    const frags = path.split('/') ?? [];
+    const path = location.pathname ?? "";
+    const frags = path.split("/") ?? [];
     const sanitizedFrags = frags.filter(e => e.trim().length > 0);
 
     return sanitizedFrags[0];
@@ -50,13 +50,14 @@ function Header(): JSX.Element {
    */
   const onRefresh = () => {
     loadPosts(false);
-  }
+  };
 
   /**
    * @description
    * Handles navigation change on the tabs
    *
-   * @param tab The new tab index
+   * @param _ - The synthetic event (unused)
+   * @param tab - The new tab index
    */
   const onNavigate = (_: React.SyntheticEvent, tab: number) => {
     setTag(tab);
@@ -72,52 +73,54 @@ function Header(): JSX.Element {
   const onTabClick = (event: React.MouseEvent, page: Page) => {
     event.preventDefault();
     navigate(page);
-  }
+  };
 
   return (
     <>
       <header
-        className={styles['flair']}
+        className={styles.flair}
         onClick={NavigationHelper.openProject}
       >
         KOL PT - v0.1.0
       </header>
 
-      <header className={styles['header']}>
-        <div className={styles['header__branding']}>
-          {!isLoggedIn() &&
-            <Button
-              size="small"
-              onClick={onLogin}
-              variant="outlined"
-              startIcon={<LoginIcon />}
-              className={styles['header__login']}
-            >
-              <span>Login</span>
-            </Button>
-          }
+      <header className={styles.header}>
+        <div className={styles.header__branding}>
+          {!isLoggedIn()
+            && (
+              <Button
+                size="small"
+                onClick={onLogin}
+                variant="outlined"
+                startIcon={<LoginIcon />}
+                className={styles.header__login}
+              >
+                <span>Login</span>
+              </Button>
+            )}
 
-          {isLoggedIn() && <>
-            <div className={styles['header__logo-wrapper']}>
-              <img className={styles['header__logo']} src={photo} alt="KOL PT Logo" onClick={onRefresh} />
-            </div>
+          {isLoggedIn() && (
+            <>
+              <div className={styles["header__logo-wrapper"]}>
+                <img className={styles.header__logo} src={photo} alt="KOL PT Logo" onClick={onRefresh} />
+              </div>
 
-            <div className={styles['header__info']}>
-              <h1 className={styles['header__title']}>KOL PT</h1>
-              <Tooltip title={email}>
-                <h2 className={styles['header__subtitle']}>{email}</h2>
-              </Tooltip>
-            </div>
-          </>
-          }
+              <div className={styles.header__info}>
+                <h1 className={styles.header__title}>KOL PT</h1>
+                <Tooltip title={email}>
+                  <h2 className={styles.header__subtitle}>{email}</h2>
+                </Tooltip>
+              </div>
+            </>
+          )}
         </div>
 
-        <div className={styles['header__actions']}>
+        <div className={styles.header__actions}>
           <Tooltip title="Open Discord">
             <IconButton
               aria-label="Opens KOl's Discord server"
               onClick={NavigationHelper.openDiscord}
-              className={`${styles['header__button']} ${styles['header__button--discord']}`}
+              className={`${styles.header__button} ${styles["header__button--discord"]}`}
             >
               <img src="./images/platforms/discord.png" alt="Discord icon" />
             </IconButton>
@@ -127,37 +130,41 @@ function Header(): JSX.Element {
             <IconButton
               aria-label="Open Patreon"
               onClick={NavigationHelper.openPatreon}
-              className={`${styles['header__button']} ${styles['header__button--patreon']}`}
+              className={`${styles.header__button} ${styles["header__button--patreon"]}`}
             >
               <img src="./images/platforms/patreon.png" alt="Patreon icon" />
             </IconButton>
           </Tooltip>
 
-          {isLoggedIn() &&
-            <Tooltip title="Logout">
-              <IconButton
-                size='small'
-                onClick={onLogout}
-                aria-label="logout"
-                className={styles['header__logout']}
-              >
-                <LogoutIcon />
-              </IconButton>
-            </Tooltip>}
+          {isLoggedIn()
+            && (
+              <Tooltip title="Logout">
+                <IconButton
+                  size="small"
+                  onClick={onLogout}
+                  aria-label="logout"
+                  className={styles.header__logout}
+                >
+                  <LogoutIcon />
+                </IconButton>
+              </Tooltip>
+            )}
         </div>
       </header>
 
-      {canShowTabs && <nav>
-        <Tabs
-          value={tab}
-          variant='fullWidth'
-          onChange={onNavigate}
-          aria-label="Main navigation tabs"
-        >
-          <Tab label="Feed" onClick={e => onTabClick(e, Page.Feed)} />
-          <Tab label="Entries" onClick={e => onTabClick(e, Page.Entries)} />
-        </Tabs>
-      </nav>}
+      {canShowTabs && (
+        <nav>
+          <Tabs
+            value={tab}
+            variant="fullWidth"
+            onChange={onNavigate}
+            aria-label="Main navigation tabs"
+          >
+            <Tab label="Feed" onClick={e => onTabClick(e, Page.Feed)} />
+            <Tab label="Entries" onClick={e => onTabClick(e, Page.Entries)} />
+          </Tabs>
+        </nav>
+      )}
     </>
   );
 }

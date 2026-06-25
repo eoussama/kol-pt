@@ -1,7 +1,7 @@
-import { Post } from "../core/models/post.model";
+import type { Post } from "../core/models/post.model";
+import type { IPostContext } from "../core/types/context/post-context.type";
+import type { IPostProviderProps } from "../core/types/providers/post-provider.props";
 import { createContext, useEffect, useState } from "react";
-import { IPostContext } from "../core/types/context/post-context.type";
-import { IPostProviderProps } from "../core/types/providers/post-provider.props";
 
 
 
@@ -9,13 +9,14 @@ import { IPostProviderProps } from "../core/types/providers/post-provider.props"
  * @description
  * React context for sharing Post data between components
  */
-export const PostContext = createContext<IPostContext>({} as any);
+export const PostContext = createContext<IPostContext>({} as IPostContext);
 
 /**
  * @description
  * React component that provides the Post context to its children.
  *
- * @param props An object containing props passed down to the provider.
+ * @param props - An object containing props passed down to the provider
+ * @returns The Post context provider wrapping its children
  */
 export function PostProvider(props: IPostProviderProps): JSX.Element {
   const [post, setPost] = useState<Post>(props.post);

@@ -21,7 +21,7 @@ export interface IYouTubeVideoResponse {
      * The video's thumbnails
      */
     thumbnails: { standard: { url: string } };
-  }
+  };
 
   /**
    * @description
@@ -34,5 +34,5 @@ export interface IYouTubeVideoResponse {
      * Total views on the video
      */
     viewCount: string;
-  }
+  };
 }

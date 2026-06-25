@@ -7,22 +7,24 @@ import { Base64Helper } from "../parse/base64.helper";
  * Helps with chrome storage
  */
 export class StorageHelper {
-
   /**
    * @description
    * Fetches a value from local storage
    *
-   * @param key The key to get
+   * @param key - The key to get
+   * @returns Promise resolving to the stored string value
    */
   static get(key: string): Promise<string> {
-    return new Promise(async resolve => {
+    return new Promise((resolve) => {
       if (chrome?.storage) {
-        chrome.storage.local.get(key, data => {
-          const value = (data[key] ?? '') as string;
+        chrome.storage.local.get(key, (data) => {
+          const value = (data[key] ?? "") as string;
           const output = Base64Helper.decrypt(value);
+
           resolve(output);
         });
-      } else {
+      }
+      else {
         const data = localStorage.getItem(key) as string;
         const output = Base64Helper.decrypt(data);
 
@@ -35,16 +37,18 @@ export class StorageHelper {
    * @description
    * Updates/adds a value to local storage
    *
-   * @param key The key to set
-   * @param value The value to set
+   * @param key - The key to set
+   * @param value - The value to set
+   * @returns Promise that resolves when the value is stored
    */
   static set(key: string, value: string): Promise<void> {
     const input = Base64Helper.encrypt(value);
 
-    return new Promise(async resolve => {
+    return new Promise((resolve) => {
       if (chrome?.storage) {
         chrome.storage.local.set({ [key]: input }, () => resolve());
-      } else {
+      }
+      else {
         localStorage.setItem(key, input);
         resolve();
       }
@@ -55,12 +59,13 @@ export class StorageHelper {
    * @description
    * Clears the storage
    *
-   * @param key The root key to get rid of
+   * @param key - The root key to get rid of
    */
   static clear(key: string): void {
     if (chrome?.storage) {
       chrome.storage.local.clear();
-    } else {
+    }
+    else {
       localStorage.removeItem(key);
     }
   }

@@ -26,5 +26,5 @@ export interface IAnimeInfo {
    * @description
    * The list of titles
    */
-  altTitles: Array<{ title: string, official: boolean }>;
+  altTitles: Array<{ title: string; official: boolean }>;
 }

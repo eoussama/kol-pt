@@ -1,11 +1,11 @@
-import { IEntry } from "./entry.type";
+import type { IEntry } from "./entry.type";
 
 
 
 /**
  * @description
  * Interface representing a movie entry which extends IEntry.
- * 
+ *
  * @property {string} rottentomatoesId - The id of the movie in Rotten Tomatoes.
  * @extends IEntry
  */

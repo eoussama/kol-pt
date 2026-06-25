@@ -8,5 +8,5 @@ export interface IEntryPageAkaSectionProps {
    * @description
    * The list of alternative titles.
    */
-  altTitles: Array<{ title: string, official: boolean }>;
+  altTitles: Array<{ title: string; official: boolean }>;
 }

@@ -1,22 +1,25 @@
-import styles from './PostCard.module.scss';
+import type { IPostCardProps } from "../../../../core/types/props/post-card-props.type";
 
-import { ViewMode } from '../../../../core/enums/view-mode.enum';
-import { IPostCardProps } from '../../../../core/types/props/post-card-props.type';
-import { NavigationHelper } from '../../../../core/helpers/navigator/navigation.helper';
-import { Box, Card, CardContent, CardMedia, Chip, Tooltip, Typography } from '@mui/material';
+import { Box, Card, CardContent, CardMedia, Chip, Tooltip, Typography } from "@mui/material";
+import { ViewMode } from "../../../../core/enums/view-mode.enum";
+import { NavigationHelper } from "../../../../core/helpers/navigator/navigation.helper";
+import styles from "./PostCard.module.scss";
 
 
 
 /**
  * @description
  * Renders a card for displaying a post, with an image, title, date, description and tags.
+ *
+ * @param props - The post card props
+ * @returns The rendered post card
  */
 function PostCard(props: IPostCardProps): JSX.Element {
   const { post } = props;
   const { viewMode } = props;
 
-  const viewModeClasses = viewMode === ViewMode.Compact ? styles['card--compact'] : styles['card--expanded'];
-  const cardClasses = `${styles['card']} ${viewModeClasses}`;
+  const viewModeClasses = viewMode === ViewMode.Compact ? styles["card--compact"] : styles["card--expanded"];
+  const cardClasses = `${styles.card} ${viewModeClasses}`;
 
   /**
    * @description
@@ -24,7 +27,7 @@ function PostCard(props: IPostCardProps): JSX.Element {
    */
   const goToPost = () => {
     NavigationHelper.openPost(post.id);
-  }
+  };
 
   /**
    * @description
@@ -38,44 +41,46 @@ function PostCard(props: IPostCardProps): JSX.Element {
     e.preventDefault();
 
     NavigationHelper.openReaction(post.id, reactionId);
-  }
+  };
 
   return (
     <>
-      <Card sx={{ display: 'flex' }} className={cardClasses} onClick={() => goToPost()}>
+      <Card sx={{ display: "flex" }} className={cardClasses} onClick={() => goToPost()}>
         <CardMedia
           component="img"
           alt={post.title}
           image={post.thumbnail}
-          className={styles['card__thumbnail']}
+          className={styles.card__thumbnail}
         />
 
-        <CardContent sx={{ flex: '1 0 auto' }} className={styles['card__body']}>
-          <div className={styles['card__info']}>
-            <Typography component="div" variant="h5" className={styles['card__title']}>
+        <CardContent sx={{ flex: "1 0 auto" }} className={styles.card__body}>
+          <div className={styles.card__info}>
+            <Typography component="div" variant="h5" className={styles.card__title}>
               {post.title}
             </Typography>
 
-            <Typography variant="subtitle1" color="text.secondary" className={styles['card__subtitle']} component="div">
+            <Typography variant="subtitle1" color="text.secondary" className={styles.card__subtitle} component="div">
               {post.creationDate.toLocaleString()}
             </Typography>
 
-            <Typography variant="subtitle1" color="text.secondary" className={styles['card__description']} component="div">
+            <Typography variant="subtitle1" color="text.secondary" className={styles.card__description} component="div">
               {post.description}
             </Typography>
           </div>
 
-          <div className={styles['card__tags']}>
-            {post.tags.map(tag => <Box key={tag.id} ml={1}>
-              <Tooltip title={tag.description}>
-                <Chip
-                  size='small'
-                  className={styles['tag']}
-                  label={tag.getShortTitle()}
-                  onClick={e => goToReaction(e, tag.id)}
-                />
-              </Tooltip>
-            </Box>)}
+          <div className={styles.card__tags}>
+            {post.tags.map(tag => (
+              <Box key={tag.id} ml={1}>
+                <Tooltip title={tag.description}>
+                  <Chip
+                    size="small"
+                    className={styles.tag}
+                    label={tag.getShortTitle()}
+                    onClick={e => goToReaction(e, tag.id)}
+                  />
+                </Tooltip>
+              </Box>
+            ))}
           </div>
         </CardContent>
       </Card>

@@ -1,6 +1,6 @@
-import { create } from 'zustand';
-import { User } from 'firebase/auth';
-import { IAuthState } from '../core/types/state/auth-state.type';
+import type { User } from "firebase/auth";
+import type { IAuthState } from "../core/types/state/auth-state.type";
+import { create } from "zustand";
 
 
 
@@ -19,12 +19,14 @@ export const useAuthStore = create<IAuthState>(set => ({
   /**
    * @description
    * Logs user in
+   *
+   * @param newUser - The authenticated user
    */
-  login(newUser: User): void { set({ user: newUser }) },
+  login(newUser: User): void { set({ user: newUser }); },
 
   /**
    * @description
    * Logs user out
    */
-  logout(): void { set({ user: null }) }
+  logout(): void { set({ user: null }); },
 }));

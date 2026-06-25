@@ -1,4 +1,4 @@
-import { MessageType } from "../enums/message-type.enum";
+import type { MessageType } from "../enums/message-type.enum";
 
 
 
@@ -11,7 +11,7 @@ import { MessageType } from "../enums/message-type.enum";
  *
  * @typedef T Generic type for the payload of the message.
  */
-export interface Imessage<T = any> {
+export interface Imessage<T = unknown> {
 
   /**
    * @description

@@ -1,4 +1,4 @@
-import { ViewMode } from '../enums/view-mode.enum';
+import type { ViewMode } from "../enums/view-mode.enum";
 
 
 

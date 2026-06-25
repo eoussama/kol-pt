@@ -22,7 +22,7 @@ export interface ISearchProps {
    * The search handler
    *
    * @param e The search event object
-   * @returns 
+   * @returns
    */
   onSearch: (e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => void;
 }

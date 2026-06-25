@@ -40,5 +40,5 @@ export enum MessageType {
    * @description
    * Sent by the background as a response for state syncing
    */
-  SyncResponse
+  SyncResponse,
 }

@@ -4,5 +4,5 @@
  */
 export enum ViewMode {
   Compact,
-  Expanded
+  Expanded,
 }

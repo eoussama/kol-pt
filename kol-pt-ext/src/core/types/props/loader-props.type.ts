@@ -3,7 +3,7 @@
  * The properties passed down to the loader element
  */
 export interface ILoaderProps {
-  
+
   /**
    * @description
    * The width of the loader, should also include the unite.

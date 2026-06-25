@@ -11,7 +11,7 @@ import { useEntriesStore } from "../state/entries.state";
  * vars about the entries
  */
 export function useEntries() {
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState("");
   const error = useEntriesStore(e => e.error);
   const entries = useEntriesStore(e => e.entries);
   const loading = useEntriesStore(e => e.loading);
@@ -29,9 +29,10 @@ export function useEntries() {
    * @param e The search event object
    */
   const onSearch = (e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
-    const value = (e.target.value ?? '').toLowerCase();
+    const value = (e.target.value ?? "").toLowerCase();
+
     setSearch(value);
-  }
+  };
 
   return { error, loading, search, entries: filteredEntries, entriesCount: entries.length, onSearch };
 }

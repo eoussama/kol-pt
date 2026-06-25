@@ -1,4 +1,4 @@
-import { EntryType } from "../../enums/entry-type.enum";
+import type { EntryType } from "../../enums/entry-type.enum";
 
 
 

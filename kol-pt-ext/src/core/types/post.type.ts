@@ -1,4 +1,4 @@
-import { ITag } from "./tag/tag.type";
+import type { ITag } from "./tag/tag.type";
 
 
 
@@ -7,7 +7,7 @@ import { ITag } from "./tag/tag.type";
  * Defines the structure of a post object containing various properties and an array of tags.
  */
 export interface IPost {
-  
+
   /**
    * @description
    * The unique identifier of the post.

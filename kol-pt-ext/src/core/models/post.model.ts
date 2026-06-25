@@ -1,6 +1,6 @@
+import type { IPost } from "../types/post.type";
+import type { ISearch } from "../types/search.type";
 import { Tag } from "./tag.model";
-import { IPost } from "../types/post.type";
-import { ISearch } from "../types/search.type";
 
 
 
@@ -9,7 +9,6 @@ import { ISearch } from "../types/search.type";
  * A class representing a post containing information about a post
  */
 export class Post implements ISearch {
-
   /**
    * @description
    * The unique identifier for the post.
@@ -47,14 +46,16 @@ export class Post implements ISearch {
   tags: Array<Tag>;
 
   /**
-   * @constructor
-   * @param model The data model to use for the post.
+   * @description
+   * Creates a new Post instance.
+   *
+   * @param model - The data model to use for the post
    */
   constructor(model: IPost) {
-    this.id = model.id ?? '';
-    this.title = model.title ?? '';
-    this.thumbnail = model.thumbnail ?? '';
-    this.description = model.description ?? '';
+    this.id = model.id ?? "";
+    this.title = model.title ?? "";
+    this.thumbnail = model.thumbnail ?? "";
+    this.description = model.description ?? "";
     this.creationDate = new Date(model.creationDate);
     this.tags = model.tags.map(tag => new Tag(tag)) ?? [];
   }
@@ -63,7 +64,8 @@ export class Post implements ISearch {
    * @description
    * Checks if model matches search query
    *
-   * @param search The search query
+   * @param search - The search query
+   * @returns True if the post matches the search query
    */
   match(search: string): boolean {
     const query = search.toLowerCase();
@@ -79,13 +81,15 @@ export class Post implements ISearch {
   /**
    * @description
    * Returns a string of tag info
+   *
+   * @returns Concatenated tag labels and descriptions
    */
   private getTagsQuery(): string {
     return this.tags
       .map(tag => tag.label
         .toString()
-        .concat(tag.description)
+        .concat(tag.description),
       )
-      .join('');
+      .join("");
   }
 }

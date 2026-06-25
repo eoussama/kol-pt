@@ -1,6 +1,6 @@
-import { ICache } from '../../types/cache.type';
-import { Nullable } from '../../types/nullable.type';
-import { StorageHelper } from '../chrome/storage.helper';
+import type { ICache } from "../../types/cache.type";
+import type { Nullable } from "../../types/nullable.type";
+import { StorageHelper } from "../chrome/storage.helper";
 
 
 
@@ -9,12 +9,11 @@ import { StorageHelper } from '../chrome/storage.helper';
  * Helps with managing cached data
  */
 export class CacheHelper {
-
   /**
    * @description
    * The cache key in local storage.
    */
-  private static readonly CACHE_KEY: string = 'L8WXOQ56Fw';
+  private static readonly CACHE_KEY: string = "L8WXOQ56Fw";
 
   /**
    * @description
@@ -29,94 +28,70 @@ export class CacheHelper {
    * @description
    * Checks if cached data is valid
    *
-   * @param key Specific value key to check
-   * if it exists in the cache or not.
+   * @param key - Specific value key to check if it exists in the cache or not
+   * @returns Promise resolving to true if the cache is valid
    */
-  static isValid(key: keyof ICache['db']): Promise<boolean> {
-    return new Promise(async resolve => {
-      try {
+  static async isValid(key: keyof ICache["db"]): Promise<boolean> {
+    try {
+      const cache = await this.load();
 
-        // Getting the cached data
-        const cache = await this.load();
+      if (cache) {
+        const expiryTime = cache.updateTime + CacheHelper.CACHE_LIFE;
+        const value = cache.db[key];
 
-        if (cache) {
-
-          // Calculating the expiry time
-          const expiryTime = cache.updateTime + CacheHelper.CACHE_LIFE;
-
-          // Checking if the cache has expired
-          resolve(expiryTime > Date.now() && (
-            Array.isArray(cache.db[key])
-              ? (cache.db[key] as Array<any>).length > 0
-              : Object.keys(cache.db[key]).length > 0
-          ));
-
-          return true;
-        }
-
-        resolve(false);
-      } catch (err) {
-        resolve(false);
+        return expiryTime > Date.now() && (
+          Array.isArray(value)
+            ? (value as Array<unknown>).length > 0
+            : Object.keys(value).length > 0
+        );
       }
-    });
+
+      return false;
+    }
+    catch {
+      return false;
+    }
   }
 
   /**
    * @description
    * Updates a portion of the cached database
    *
-   * @param key The key to update
-   * @param data The new data to replace the old one with
+   * @param key - The key to update
+   * @param data - The new data to replace the old one with
+   * @returns Promise that resolves when the cache is updated
    */
-  static update(key: string, data: any): Promise<void> {
-    return new Promise(async (resolve, reject) => {
-      try {
+  static async update(key: string, data: ICache["db"][keyof ICache["db"]]): Promise<void> {
+    const cache = await this.load();
 
-        // Getting the cached data
-        const cache = await this.load();
+    if (cache) {
+      const newCache = { ...cache };
 
-        if (cache) {
+      newCache.updateTime = Date.now();
+      newCache.db = { ...cache.db, [key]: data };
 
-          // Cloning old cache
-          const newCache = { ...cache };
+      const newCacheStr = JSON.stringify(newCache);
 
-          // Assigning values
-          newCache.updateTime = Date.now();
-          newCache.db = { ...cache.db, [key]: data };
-
-          // Sanitizing the new cache
-          const newCacheStr = JSON.stringify(newCache);
-
-          // Saving the new cache
-          StorageHelper.set(CacheHelper.CACHE_KEY, newCacheStr);
-
-          resolve();
-        }
-      } catch (err) {
-        reject(err);
-      }
-    });
+      StorageHelper.set(CacheHelper.CACHE_KEY, newCacheStr);
+    }
   }
 
   /**
    * @description
    * Fetches cached data
    *
-   * @param key The key to fetch
+   * @param key - The key to fetch
+   * @returns Promise resolving to the cached value or an empty array
    */
-  static get(key: keyof ICache['db']) {
-    return new Promise(async resolve => {
-      try {
+  static async get(key: keyof ICache["db"]): Promise<ICache["db"][keyof ICache["db"]] | Array<never>> {
+    try {
+      const cache = await this.load();
 
-        // Getting the cached data
-        const cache = await this.load();
-
-        // Returning cached data
-        resolve(cache?.db[key] ?? []);
-      } catch (err) {
-        resolve([]);
-      }
-    })
+      return cache?.db[key] ?? [];
+    }
+    catch {
+      return [];
+    }
   }
 
   /**
@@ -130,34 +105,32 @@ export class CacheHelper {
   /**
    * @description
    * Fetches the cached data
+   *
+   * @returns Promise resolving to the cache object or null
    */
-  private static load(): Promise<Nullable<ICache>> {
-    return new Promise(async resolve => {
-      try {
+  private static async load(): Promise<Nullable<ICache>> {
+    try {
+      const cache = await StorageHelper.get(CacheHelper.CACHE_KEY);
 
-        // Getting the cached data
-        const cache = await StorageHelper.get(CacheHelper.CACHE_KEY);
-
-        // Checking if cached data is valid
-        if (!Boolean(cache)) {
-          resolve(this.compose());
-          return false;
-        }
-        // Parsing the cached data
-        const parsedCache: ICache = JSON.parse(cache) ?? this.compose();
-
-        // Returned the sanitized cached data
-        resolve(parsedCache);
-      } catch (err) {
-        resolve(this.compose());
+      if (!cache) {
+        return this.compose();
       }
-    });
+
+      const parsedCache: ICache = JSON.parse(cache) ?? this.compose();
+
+      return parsedCache;
+    }
+    catch {
+      return this.compose();
+    }
   }
 
   /**
    * @description
    * Composes a raw cache object, used to
    * fallback for null cache values.
+   *
+   * @returns A fresh empty cache object
    */
   private static compose(): ICache {
     return { updateTime: 0, db: { posts: [], entries: [], users: {} } };

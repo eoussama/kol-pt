@@ -1,26 +1,27 @@
-import styles from './PostReaction.module.scss';
+import type { Tag } from "../../../../core/models/tag.model";
 
-import { useContext, useState } from 'react';
-import ReplayIcon from '@mui/icons-material/Replay';
-import { Checkbox } from '../../../styled/Checkbox';
-import { Tag } from '../../../../core/models/tag.model';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
-import { Chip, IconButton, Tooltip } from '@mui/material';
-import { usePlayer } from '../../../../hooks/player.hook';
-import PlayArrowIcon from '@mui/icons-material/PlayArrow';
-import { useAuthStore } from '../../../../state/auth.state';
-import { PostContext } from '../../../../context/PostContext';
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-import { ReactionOverlayContext } from '../../../../context/ReactionOverlayContext';
-import { IPostReactionProps } from '../../../../core/types/props/post-reaction-props.type';
+import type { IPostReactionProps } from "../../../../core/types/props/post-reaction-props.type";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+import PlayArrowIcon from "@mui/icons-material/PlayArrow";
+import ReplayIcon from "@mui/icons-material/Replay";
+import { Chip, IconButton, Tooltip } from "@mui/material";
+import { useContext, useState } from "react";
+import { PostContext } from "../../../../context/PostContext";
+import { ReactionOverlayContext } from "../../../../context/ReactionOverlayContext";
+import { usePlayer } from "../../../../hooks/player.hook";
+import { useAuthStore } from "../../../../state/auth.state";
+import { Checkbox } from "../../../styled/Checkbox";
+import styles from "./PostReaction.module.scss";
 
 
 
 /**
  * @description
  * A React component that renders a single post reaction with skip and more buttons.
- * 
- * @param props The props object containing the necessary properties to render the component.
+ *
+ * @param props - The props object containing the necessary properties to render the component
+ * @returns The rendered post reaction item
  */
 function PostReaction(props: IPostReactionProps): JSX.Element {
   const { tag } = props;
@@ -33,18 +34,22 @@ function PostReaction(props: IPostReactionProps): JSX.Element {
   /**
    * @description
    * Checks if user is logged in
+   *
+   * @returns True if user is authenticated
    */
   const isLoggedIn = () => {
     return Boolean(user);
-  }
+  };
 
   /**
    * @description
    * Checks whether the associated reaction is currently being played
+   *
+   * @returns True if the reaction is currently playing
    */
   const isPlaying = () => {
     return tag.startTime <= playback && playback <= tag.endTime;
-  }
+  };
 
   /**
    * @description
@@ -55,106 +60,124 @@ function PostReaction(props: IPostReactionProps): JSX.Element {
   const onDetail = (tag: Tag) => {
     setTag(tag);
     setDialogOpened(true);
-  }
+  };
 
   /**
-    * @description
-    * Triggers the more menu
-    * 
-    * @param event The mouse clicked event, provides extra content for the Mui menu
-    * @param tag The tag to show the menu for
-    */
+   * @description
+   * Triggers the more menu
+   *
+   * @param event The mouse clicked event, provides extra content for the Mui menu
+   * @param tag The tag to show the menu for
+   */
   const onMore = (event: React.MouseEvent<HTMLElement>, tag: Tag) => {
     setTag(tag);
     setAnchorEl(event.currentTarget);
     setAnchorOpened(true);
   };
 
-  return <>
-    <li key={tag.id} className={styles['reaction']}>
-      {isLoggedIn() &&
-        <div className={styles['reaction__tracking']}>
-          <Tooltip title={watched ? 'Mark as un-watched' : 'Mark as watched'}>
-            <Checkbox
-              className={styles['reaction__checkbox']}
-              onChange={e => setWatched(e.target.checked)}
-            />
+  return (
+    <>
+      <li key={tag.id} className={styles.reaction}>
+        {isLoggedIn()
+          && (
+            <div className={styles.reaction__tracking}>
+              <Tooltip title={watched ? "Mark as un-watched" : "Mark as watched"}>
+                <Checkbox
+                  className={styles.reaction__checkbox}
+                  onChange={e => setWatched(e.target.checked)}
+                />
+              </Tooltip>
+            </div>
+          )}
+
+        <div className={styles.reaction__left}>
+          <div className={styles.reaction__title}>
+            {tag.entry.title}
+            {isPlaying() && (
+              <Chip
+                size="small"
+                label={playing ? "Playing" : "Paused"}
+                className={styles.reaction__playing}
+              />
+            )}
+          </div>
+
+          <div className={styles.reaction__description}>
+            <span
+              className={`${styles.reaction__type} ${styles[`reaction__type--${tag.entry.type}`]}`}
+            >
+              {tag.entry.getTypeName()}
+              ,
+            </span>
+
+            {tag.getDetailDescription()}
+
+            <span className={styles.reaction__extra}>
+              , Starts at
+              {" "}
+              <span
+                className={styles.reaction__highlight}
+                onClick={() => onSkip(tag.startTime)}
+              >
+                {tag.getReadableStartTime()}
+              </span>
+              , Duration:
+              {" "}
+              {tag.getReadableDuration()}
+            </span>
+          </div>
+        </div>
+
+        <div className={styles.reaction__right}>
+          {!isPlaying() && (
+            <Tooltip title="Skip to reaction">
+              <IconButton
+                size="small"
+                aria-label="skip to reaction"
+                className={styles.reaction__skip}
+                onClick={() => onSkip(tag.startTime)}
+              >
+                <PlayArrowIcon />
+              </IconButton>
+            </Tooltip>
+          )}
+
+          {isPlaying() && (
+            <Tooltip title="Restart reaction">
+              <IconButton
+                size="small"
+                aria-label="restart reaction"
+                className={styles.reaction__skip}
+                onClick={() => onSkip(tag.startTime)}
+              >
+                <ReplayIcon />
+              </IconButton>
+            </Tooltip>
+          )}
+
+          <Tooltip title="Detail">
+            <IconButton
+              size="small"
+              aria-label="detail"
+              onClick={() => onDetail(tag)}
+            >
+              <InfoOutlinedIcon />
+            </IconButton>
+          </Tooltip>
+
+          <Tooltip title="More">
+            <IconButton
+              size="small"
+              aria-label="more"
+              onClick={e => onMore(e, tag)}
+            >
+              <MoreVertIcon />
+            </IconButton>
           </Tooltip>
         </div>
-      }
-
-      <div className={styles['reaction__left']}>
-        <div className={styles['reaction__title']}>
-          {tag.entry.title}
-          {isPlaying() && <Chip
-            size='small'
-            label={playing ? 'Playing' : 'Paused'}
-            className={styles['reaction__playing']}
-          />}
-        </div>
-
-        <div className={styles['reaction__description']}>
-          <span
-            className={`${styles['reaction__type']} ${styles['reaction__type--' + tag.entry.type]}`}
-          >{tag.entry.getTypeName()}, </span>
-
-          {tag.getDetailDescription()}
-
-          <span className={styles['reaction__extra']}>
-            , Starts at <span
-              className={styles['reaction__highlight']}
-              onClick={() => onSkip(tag.startTime)}>{tag.getReadableStartTime()}
-            </span>
-            , Duration: {tag.getReadableDuration()}
-          </span>
-        </div>
-      </div>
-
-      <div className={styles['reaction__right']}>
-        {!isPlaying() && <Tooltip title="Skip to reaction">
-          <IconButton
-            size='small'
-            aria-label="skip to reaction"
-            className={styles['reaction__skip']}
-            onClick={() => onSkip(tag.startTime)}
-          >
-            <PlayArrowIcon />
-          </IconButton>
-        </Tooltip>}
-
-        {isPlaying() && <Tooltip title="Restart reaction">
-          <IconButton
-            size='small'
-            aria-label="restart reaction"
-            className={styles['reaction__skip']}
-            onClick={() => onSkip(tag.startTime)}
-          >
-            <ReplayIcon />
-          </IconButton>
-        </Tooltip>}
-
-        <Tooltip title="Detail">
-          <IconButton
-            size='small'
-            aria-label='detail'
-            onClick={() => onDetail(tag)}
-          >
-            <InfoOutlinedIcon />
-          </IconButton>
-        </Tooltip>
-
-        <Tooltip title="More">
-          <IconButton
-            size='small'
-            aria-label='more'
-            onClick={e => onMore(e, tag)}
-          >
-            <MoreVertIcon />
-          </IconButton>
-        </Tooltip>
-      </div>
-    </li>
-  </>
+      </li>
+    </>
+  );
 }
 
 export default PostReaction;

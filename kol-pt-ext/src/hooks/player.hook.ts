@@ -1,6 +1,6 @@
-import Vimeo from '@vimeo/player';
-import { usePlayerStore } from '../state/player.state';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import Vimeo from "@vimeo/player";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { usePlayerStore } from "../state/player.state";
 
 
 
@@ -9,7 +9,6 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
  * A custom hook to manage a Vimeo player for a given post
  *
  * @param postId The id of the post
- *
  * @returns An object containing a function to skip the player to a specified time
  * and the current time of the player
  */
@@ -30,7 +29,7 @@ export function usePlayer(postId: string) {
     player.play();
     player.setCurrentTime(seconds);
 
-    video.scrollIntoView({ behavior: 'smooth' });
+    video.scrollIntoView({ behavior: "smooth" });
   }, [player]);
 
   // Pausing the player if another player is playing
@@ -47,9 +46,9 @@ export function usePlayer(postId: string) {
     }
   }, [playing]);
 
-  player.on('play', () => setPlaying(true));
-  player.on('pause', () => setPlaying(false));
-  player.on('timeupdate', e => setPlayback(e.seconds));
+  player.on("play", () => setPlaying(true));
+  player.on("pause", () => setPlaying(false));
+  player.on("timeupdate", e => setPlayback(e.seconds));
 
   return { playerPostId, playing, playback, player, onSkip };
 }

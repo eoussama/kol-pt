@@ -1,18 +1,16 @@
-import { Imessage } from '../core/types/message.type';
-import { URLHelper } from '../core/helpers/parse/url.helper';
-import { MessageType } from '../core/enums/message-type.enum';
-import { AuthHelper } from '../core/helpers/firebase/auth.helper';
-import { MessageHelper } from '../core/helpers/navigator/message.helper';
-import { PostsHelper } from '../core/helpers/firebase/repositories/posts.helper';
+import type { Imessage } from "../core/types/message.type";
+import { MessageType } from "../core/enums/message-type.enum";
+import { AuthHelper } from "../core/helpers/firebase/auth.helper";
+import { PostsHelper } from "../core/helpers/firebase/repositories/posts.helper";
+import { MessageHelper } from "../core/helpers/navigator/message.helper";
+import { URLHelper } from "../core/helpers/parse/url.helper";
 
 
 
 // On update
 chrome.webNavigation.onCompleted.addListener(async ({ tabId, url }) => {
-
   // On patreon page update
-  if (URLHelper.isPatreon(url ?? '')) {
-
+  if (URLHelper.isPatreon(url ?? "")) {
     // Sending initialization message to content
     MessageHelper.send(MessageType.Init, null, tabId);
   }
@@ -20,13 +18,10 @@ chrome.webNavigation.onCompleted.addListener(async ({ tabId, url }) => {
 
 // On load message received
 MessageHelper.listen(async (e: Imessage, { tab }) => {
-
   switch (e.type) {
-
     // If content script is requesting posts
     case MessageType.Load: {
       if (tab?.id) {
-
         // Fetching the posts
         const posts = await PostsHelper.load();
 
@@ -48,4 +43,4 @@ MessageHelper.listen(async (e: Imessage, { tab }) => {
   }
 });
 
-export { }
+export { };

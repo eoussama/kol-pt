@@ -1,19 +1,22 @@
-import styles from './TextExpand.module.scss';
+import type { ITextExpandProps } from "../../../../core/types/props/text-expand-props.type";
 
-import { useEffect, useState } from 'react';
-import { ITextExpandProps } from '../../../../core/types/props/text-expand-props.type';
+import { useEffect, useState } from "react";
+import styles from "./TextExpand.module.scss";
 
 
 
 /**
  * @description
  * Renders togglable text paragraphs.
+ *
+ * @param props - The text expand props
+ * @returns The rendered expandable text
  */
 function TextExpand(props: ITextExpandProps): JSX.Element {
   const { content } = props;
   const minLength = props.minLength ?? 200;
 
-  const [text, setText] = useState('');
+  const [text, setText] = useState("");
   const [expanded, setExpanded] = useState(false);
 
   /**
@@ -21,8 +24,8 @@ function TextExpand(props: ITextExpandProps): JSX.Element {
    * Toggles more/less description content
    */
   const onMoreToggle = () => {
-    setExpanded(!expanded)
-  }
+    setExpanded(!expanded);
+  };
 
   useEffect(() => {
     const newText = (expanded || content.length <= minLength)
@@ -35,12 +38,16 @@ function TextExpand(props: ITextExpandProps): JSX.Element {
   return (
     <>
       {text}
-      {content.length > minLength &&
-        <span
-          onClick={onMoreToggle}
-          className={styles['more']}
-        >read {expanded ? 'less' : 'more'}</span>
-      }
+      {content.length > minLength
+        && (
+          <span
+            onClick={onMoreToggle}
+            className={styles.more}
+          >
+            read
+            {expanded ? "less" : "more"}
+          </span>
+        )}
     </>
   );
 }

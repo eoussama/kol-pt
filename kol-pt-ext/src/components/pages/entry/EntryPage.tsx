@@ -1,36 +1,39 @@
-import styles from './EntryPage.module.scss';
+import type { Entry } from "../../../core/models/entry.model";
 
-import { useMemo } from 'react';
-import { useParams } from 'react-router-dom';
-import { useEntry } from '../../../hooks/entry.hook';
-import Error from '../../layout/generic/error/Error';
-import { Entry } from '../../../core/models/entry.model';
-import EntryAka from '../../layout/entry/entry-aka/EntryAka';
-import EntryHead from '../../layout/entry/entry-head/EntryHead';
-import EntryLinks from '../../layout/entry/entry-links/EntryLinks';
-import EntryReactions from '../../layout/entry/entry-reactions/EntryReactions';
-import { IEntryPageProps } from '../../../core/types/props/entry-page-props.type';
-import { IconHelper } from '../../../core/helpers/asset/icon.helper';
+import type { IEntryPageProps } from "../../../core/types/props/entry-page-props.type";
+import { useMemo } from "react";
+import { useParams } from "react-router-dom";
+import { IconHelper } from "../../../core/helpers/asset/icon.helper";
+import { useEntry } from "../../../hooks/entry.hook";
+import EntryAka from "../../layout/entry/entry-aka/EntryAka";
+import EntryHead from "../../layout/entry/entry-head/EntryHead";
+import EntryLinks from "../../layout/entry/entry-links/EntryLinks";
+import EntryReactions from "../../layout/entry/entry-reactions/EntryReactions";
+import Error from "../../layout/generic/error/Error";
+import styles from "./EntryPage.module.scss";
 
 
 
 /**
  * @description
  * The entry detail page
+ *
+ * @param props - Optional entry page props
+ * @returns The rendered entry detail page
  */
 function EntryPage(props?: IEntryPageProps): JSX.Element {
   const params = useParams();
   const entryId = useMemo(() => params.entryId ?? props?.entryId, [params, props?.entryId]);
-  const { loading, entry, description, photo, subscribers, altTitles, genres, reactions } = useEntry(entryId ?? '');
+  const { loading, entry, description, photo, subscribers, altTitles, genres, reactions } = useEntry(entryId ?? "");
 
-  const dialogClass = Boolean(props?.entryId) ? styles['root--dialog'] : '';
-  const classes = `${styles['root']} ${dialogClass}`;
+  const dialogClass = props?.entryId ? styles["root--dialog"] : "";
+  const classes = `${styles.root} ${dialogClass}`;
 
   return (
-    <Error error={!entry} message='Could not retrieve entry'>
+    <Error error={!entry} message="Could not retrieve entry">
       <div
         className={classes}
-        style={{ backgroundImage: `url(${photo}), url(${IconHelper.getIcon('placeholder', 'graphs')}` }}
+        style={{ backgroundImage: `url(${photo}), url(${IconHelper.getIcon("placeholder", "graphs")}` }}
       >
         <EntryHead
           photo={photo}
@@ -56,7 +59,7 @@ function EntryPage(props?: IEntryPageProps): JSX.Element {
           entry={entry as Entry}
         />
       </div>
-    </Error >
+    </Error>
   );
 }
 

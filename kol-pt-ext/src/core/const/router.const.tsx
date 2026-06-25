@@ -1,9 +1,9 @@
-import { Page } from '../enums/page.enum';
-import App from '../../components/pages/app/App';
-import FeedPage from '../../components/pages/feed/FeedPage';
-import { Navigate, createHashRouter } from 'react-router-dom';
-import EntryPage from '../../components/pages/entry/EntryPage';
-import EntriesPage from '../../components/pages/entries/EntriesPage';
+import { createHashRouter, Navigate } from "react-router-dom";
+import App from "../../components/pages/app/App";
+import EntriesPage from "../../components/pages/entries/EntriesPage";
+import EntryPage from "../../components/pages/entry/EntryPage";
+import FeedPage from "../../components/pages/feed/FeedPage";
+import { Page } from "../enums/page.enum";
 
 
 
@@ -30,8 +30,8 @@ export const router = createHashRouter([
       },
       {
         index: true,
-        element: <Navigate to={Page.Feed} />
-      }
-    ]
+        element: <Navigate to={Page.Feed} />,
+      },
+    ],
   },
 ]);

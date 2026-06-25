@@ -1,5 +1,5 @@
-import { IAnimeContext } from './anime-context.type';
-import { IYouTubeContext } from './youtube-context.type';
+import type { IAnimeContext } from "./anime-context.type";
+import type { IYouTubeContext } from "./youtube-context.type";
 
 
 

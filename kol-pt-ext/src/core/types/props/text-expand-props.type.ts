@@ -3,7 +3,7 @@
  * Props passed down to text expand component.
  */
 export interface ITextExpandProps {
-  
+
   /**
    * @description
    * The content to expand.

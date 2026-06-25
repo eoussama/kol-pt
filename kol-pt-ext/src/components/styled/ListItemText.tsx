@@ -1,4 +1,4 @@
-import { ListItemText as ListItemTextMui, styled } from '@mui/material';
+import { ListItemText as ListItemTextMui, styled } from "@mui/material";
 
 
 
@@ -7,12 +7,12 @@ import { ListItemText as ListItemTextMui, styled } from '@mui/material';
  * Overrides basic Mui UI list item text component's styles.
  */
 export const ListItemText = styled(ListItemTextMui)<{ component?: React.ElementType }>({
-  '.MuiListItemText-primary': {
+  ".MuiListItemText-primary": {
     fontSize: 14,
     fontWeight: 500,
-    overflow: 'hidden',
-    whiteSpace: 'nowrap',
-    textOverflow: 'ellipsis',
-    color: 'var(--color-text)',
-  }
+    overflow: "hidden",
+    whiteSpace: "nowrap",
+    textOverflow: "ellipsis",
+    color: "var(--color-text)",
+  },
 });

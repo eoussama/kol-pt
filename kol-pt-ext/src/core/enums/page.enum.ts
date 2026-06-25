@@ -8,23 +8,23 @@ export enum Page {
    * @description
    * The index page of the app
    */
-  Index = '/',
+  Index = "/",
 
   /**
    * @description
    * The main feed page
    */
-  Feed = 'feed',
+  Feed = "feed",
 
   /**
    * @description
    * The entries page list
    */
-  Entries = 'entries',
+  Entries = "entries",
 
   /**
    * @description
    * The entry detail page
    */
-  Entry = 'entry'
+  Entry = "entry",
 }
