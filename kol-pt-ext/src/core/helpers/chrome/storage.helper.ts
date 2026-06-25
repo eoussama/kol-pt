@@ -18,7 +18,7 @@ export class StorageHelper {
     return new Promise(async resolve => {
       if (chrome?.storage) {
         chrome.storage.local.get(key, data => {
-          const value = data[key] ?? '';
+          const value = (data[key] ?? '') as string;
           const output = Base64Helper.decrypt(value);
           resolve(output);
         });

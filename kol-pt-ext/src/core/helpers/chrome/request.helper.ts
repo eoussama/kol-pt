@@ -25,8 +25,9 @@ export class RequestHelper {
        * @description
        * Increments count when a request is about to be sent
        */
-      const onBeforeRequest = () => {
+      const onBeforeRequest = (): undefined => {
         numRequests++;
+        return undefined;
       };
 
       /**
@@ -50,8 +51,8 @@ export class RequestHelper {
         }
       };
 
-      chrome.webRequest.onBeforeRequest.addListener(onBeforeRequest, { urls: ["<all_urls>"] }, ["requestBody"]);
-      chrome.webRequest.onCompleted.addListener(() => onCompleted(), { urls: ["<all_urls>"] }, ["responseHeaders"]);
+      chrome.webRequest.onBeforeRequest.addListener(onBeforeRequest, { urls: ["<all_urls>"] });
+      chrome.webRequest.onCompleted.addListener(() => { onCompleted(); }, { urls: ["<all_urls>"] });
 
       // Fallback timeout
       setTimeout(() => onCompleted(true), this.MAX_WAIT);

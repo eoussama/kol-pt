@@ -8,7 +8,6 @@ allowBuilds:
 overrides:
   nth-check: ^2.1.1
   postcss: ^8.5.10
-  webpack-dev-server: ^5.2.5
   protobufjs: ^7.6.3
   '@protobufjs/utf8': ^1.1.1
   '@grpc/grpc-js': ^1.12.0

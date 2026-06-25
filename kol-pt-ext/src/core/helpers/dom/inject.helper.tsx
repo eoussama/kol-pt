@@ -1,4 +1,4 @@
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { Post } from '../../models/post.model';
 import PostEmbed from '../../../components/layout/embed/post-embed/PostEmbed';
 import PostLoader from '../../../components/layout/embed/post-loader/PostLoader';
@@ -14,21 +14,21 @@ export class InjectHelper {
   /**
    * @description
    * Injects a post's details into a target element.
-   * 
+   *
    * @param post The post to inject.
    * @param target The HTMLDivElement to inject the post's details into.
    */
   static postDetail(post: Post, target: HTMLDivElement) {
     const postWrapper = document.createElement('div');
 
-    ReactDOM.render(<PostEmbed post={post} />, postWrapper);
+    createRoot(postWrapper).render(<PostEmbed post={post} />);
     target.after(postWrapper);
   }
 
   /**
    * @description
    * Injects a post's loader into a target element.
-   * 
+   *
    * @param post The parent post element
    * @param target The HTMLDivElement to inject the post's loader into.
    */
@@ -36,7 +36,7 @@ export class InjectHelper {
     const postWrapper = document.createElement("div");
 
     post.dataset['kol_pt_loader'] = JSON.stringify(true);
-    ReactDOM.render(<PostLoader />, postWrapper);
+    createRoot(postWrapper).render(<PostLoader />);
     target.after(postWrapper);
   }
 

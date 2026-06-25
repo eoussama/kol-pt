@@ -44,10 +44,10 @@ importers:
   .:
     devDependencies:
       create-react-app:
-        specifier: ^5.0.1
+        specifier: ^5.1.0
         version: 5.1.0
       firebase-tools:
-        specifier: ^14.11.2
+        specifier: ^14.27.0
         version: 14.27.0(@types/node@26.0.0)(typescript@6.0.3)
 
 packages:
