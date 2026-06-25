@@ -53,8 +53,7 @@ function EntryHead(props: IEntryPageHeadSectionProps): JSX.Element {
           {entry.type === EEntryType.YOUTUBE
             && (
               <>
-                {" "}
-                -
+                {" - "}
                 {millify(viewCount)}
                 {" "}
                 subscribers

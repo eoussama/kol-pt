@@ -34,6 +34,12 @@ export class AuthHelper {
       },
       config: {
         name: "KOL PT",
+        logo: "https://github.com/eoussama/kol-pt/blob/main/public/icons/icon128x128.png?raw=true",
+        theme: {
+          text: "#222833",
+          primary: "#1976d2",
+          secondary: "#222833",
+        },
         firebase: {
           appId: config.appId,
           apiKey: config.apiKey,
