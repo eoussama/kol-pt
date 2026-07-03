@@ -30,13 +30,14 @@
     "test": "vitest run",
     "clean": "rm -rf build",
     "lint": "pnpm exec dx lint",
-    "lint:fix": "pnpm exec dx lint --fix"
+    "lint:fix": "pnpm exec dx lint --fix",
+    "prod": "pnpm audit && pnpm lint && pnpm clean && pnpm build && pnpm test"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@eoussama/core": "^0.0.4",
-    "@eoussama/firemitt": "^0.1.5",
+    "@eoussama/firemitt": "^0.1.8",
     "@mui/icons-material": "^7.3.11",
     "@mui/material": "^7.3.11",
     "@testing-library/jest-dom": "^6.9.1",

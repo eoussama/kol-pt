@@ -56,8 +56,8 @@ importers:
         specifier: ^0.0.4
         version: 0.0.4(@typescript-eslint/rule-tester@8.62.0(eslint@9.39.4)(typescript@5.9.3))(@typescript-eslint/typescript-estree@8.62.0(typescript@5.9.3))(@typescript-eslint/utils@8.62.0(eslint@9.39.4)(typescript@5.9.3))(@vue/compiler-sfc@3.5.38)(typescript@5.9.3)(vitest@3.2.6(@types/debug@4.1.13)(@types/node@22.20.0)(jsdom@26.1.0)(sass@1.101.0)(yaml@2.9.0))
       '@eoussama/firemitt':
-        specifier: ^0.1.5
-        version: 0.1.5
+        specifier: ^0.1.8
+        version: 0.1.8(@typescript-eslint/rule-tester@8.62.0(eslint@9.39.4)(typescript@5.9.3))(@typescript-eslint/typescript-estree@8.62.0(typescript@5.9.3))(@typescript-eslint/utils@8.62.0(eslint@9.39.4)(typescript@5.9.3))(@vue/compiler-sfc@3.5.38)(typescript@5.9.3)(vitest@3.2.6(@types/debug@4.1.13)(@types/node@22.20.0)(jsdom@26.1.0)(sass@1.101.0)(yaml@2.9.0))
       '@mui/icons-material':
         specifier: ^7.3.11
         version: 7.3.11(@mui/material@7.3.11(@emotion/react@11.14.0(@types/react@19.2.17)(react@19.2.7))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.17)(react@19.2.7))(@types/react@19.2.17)(react@19.2.7))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(@types/react@19.2.17)(react@19.2.7)
@@ -460,8 +460,9 @@ packages:
     resolution: {integrity: sha512-E8UNtitGI1MMw1nArpUgjEfWk2eMXP+tUeTVeXZ0jtvn0r9ofj4Hnb8e59mtBPaisQk9spfxSgWUy2VE8bt+gg==}
     hasBin: true
 
-  '@eoussama/firemitt@0.1.5':
-    resolution: {integrity: sha512-Pv1PKjuRtry9u3yKkphn8lOnV6eH/c0jrnVDTTYsBPWMpcfzZXmnysdIL1Rw1dEkxA70Mnm/iMWNRC5iYr8bYQ==}
+  '@eoussama/firemitt@0.1.8':
+    resolution: {integrity: sha512-SJOUiDC/0pXv95V6lrAtXzVM1Lmrl6Y5BruK/NTT475RVUfq2VzxPcVY+9Ynrmn3n+P8tLv7MKU4FV81FnvjMw==}
+    engines: {node: '>=18'}
 
   '@es-joy/jsdoccomment@0.52.0':
     resolution: {integrity: sha512-BXuN7BII+8AyNtn57euU2Yxo9yA/KUDNzrpXyi3pfqKmBhhysR6ZWOebFh3vyPoqA3/j1SOvGgucElMGwlXing==}
@@ -6210,7 +6211,35 @@ snapshots:
       - typescript
       - vitest
 
-  '@eoussama/firemitt@0.1.5': {}
+  '@eoussama/firemitt@0.1.8(@typescript-eslint/rule-tester@8.62.0(eslint@9.39.4)(typescript@5.9.3))(@typescript-eslint/typescript-estree@8.62.0(typescript@5.9.3))(@typescript-eslint/utils@8.62.0(eslint@9.39.4)(typescript@5.9.3))(@vue/compiler-sfc@3.5.38)(typescript@5.9.3)(vitest@3.2.6(@types/debug@4.1.13)(@types/node@22.20.0)(jsdom@26.1.0)(sass@1.101.0)(yaml@2.9.0))':
+    dependencies:
+      '@eoussama/core': 0.0.4(@typescript-eslint/rule-tester@8.62.0(eslint@9.39.4)(typescript@5.9.3))(@typescript-eslint/typescript-estree@8.62.0(typescript@5.9.3))(@typescript-eslint/utils@8.62.0(eslint@9.39.4)(typescript@5.9.3))(@vue/compiler-sfc@3.5.38)(typescript@5.9.3)(vitest@3.2.6(@types/debug@4.1.13)(@types/node@22.20.0)(jsdom@26.1.0)(sass@1.101.0)(yaml@2.9.0))
+      zod: 4.4.3
+    transitivePeerDependencies:
+      - '@eslint-react/eslint-plugin'
+      - '@eslint/json'
+      - '@next/eslint-plugin-next'
+      - '@prettier/plugin-xml'
+      - '@typescript-eslint/rule-tester'
+      - '@typescript-eslint/typescript-estree'
+      - '@typescript-eslint/utils'
+      - '@unocss/eslint-plugin'
+      - '@vue/compiler-sfc'
+      - astro-eslint-parser
+      - eslint-plugin-astro
+      - eslint-plugin-format
+      - eslint-plugin-react-hooks
+      - eslint-plugin-react-refresh
+      - eslint-plugin-solid
+      - eslint-plugin-svelte
+      - eslint-plugin-vuejs-accessibility
+      - jiti
+      - prettier-plugin-astro
+      - prettier-plugin-slidev
+      - supports-color
+      - svelte-eslint-parser
+      - typescript
+      - vitest
 
   '@es-joy/jsdoccomment@0.52.0':
     dependencies:
