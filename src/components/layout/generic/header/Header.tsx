@@ -82,7 +82,7 @@ function Header(): JSX.Element {
         className={styles.flair}
         onClick={NavigationHelper.openProject}
       >
-        KOL PT - v0.1.0
+        {`KOL PT — v${__APP_VERSION__}`}
       </header>
 
       <header className={styles.header}>

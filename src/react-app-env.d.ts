@@ -1,4 +1,7 @@
 /// <reference types="vite/client" />
+
+declare const __APP_VERSION__: string;
+
 /// <reference types="vitest/globals" />
 /// <reference types="@testing-library/jest-dom" />
 
