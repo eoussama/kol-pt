@@ -11,6 +11,7 @@
     "128": "icons/icon128x128.png"
   },
   "action": {
+    "default_title": "KOL Patreon Tracker",
     "default_icon": {
       "16": "icons/icon16x16.png",
       "32": "icons/icon32x32.png",
