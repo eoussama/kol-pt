@@ -41,6 +41,28 @@ MessageHelper.listen(async (e: Imessage, { tab }) => {
 
       break;
     }
+
+    // If image fetching is requested
+    case EMessageType.FETCH_IMAGE: {
+      if (tab?.id) {
+        const url = (e as Imessage<{ url: string }>).payload?.url ?? "";
+
+        try {
+          const response = await fetch(url);
+          const buffer = await response.arrayBuffer();
+          const mime = response.headers.get("content-type") ?? "image/jpeg";
+          const base64 = btoa(String.fromCharCode(...new Uint8Array(buffer)));
+          const dataUrl = `data:${mime};base64,${base64}`;
+
+          MessageHelper.send(EMessageType.FETCH_IMAGE_RESPONSE, { dataUrl }, tab.id);
+        }
+        catch {
+          MessageHelper.send(EMessageType.FETCH_IMAGE_RESPONSE, { dataUrl: null }, tab.id);
+        }
+      }
+
+      break;
+    }
   }
 });
 

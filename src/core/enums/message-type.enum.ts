@@ -32,6 +32,18 @@ export const EMessageType = {
    * Sent by the background as a response for state syncing.
    */
   SYNC_RESPONSE: 4,
+
+  /**
+   * @description
+   * Sent by content to ask the background to fetch an image URL and return a data URL.
+   */
+  FETCH_IMAGE: 5,
+
+  /**
+   * @description
+   * Sent by the background as a response with the fetched image as a data URL.
+   */
+  FETCH_IMAGE_RESPONSE: 6,
 } as const;
 
 export type TMessageType = (typeof EMessageType)[keyof typeof EMessageType];

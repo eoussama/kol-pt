@@ -10,7 +10,7 @@ import { MessageHelper } from "../../../../core/helpers/navigator/message.helper
 import { useAuthStore } from "../../../../state/auth.state";
 import PostReactions from "../post-reactions/PostReactions";
 
-import "./../../../../styles/index.scss";
+import "./../../../../styles/embed.scss";
 
 
 

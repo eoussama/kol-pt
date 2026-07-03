@@ -4,6 +4,7 @@ import type { IEntryPageProps } from "../../../core/types/props/entry-page-props
 import { useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { IconHelper } from "../../../core/helpers/asset/icon.helper";
+import { useCoverImage } from "../../../hooks/cover-image.hook";
 import { useEntry } from "../../../hooks/entry.hook";
 import EntryAka from "../../layout/entry/entry-aka/EntryAka";
 import EntryHead from "../../layout/entry/entry-head/EntryHead";
@@ -26,6 +27,8 @@ function EntryPage(props?: IEntryPageProps): JSX.Element {
   const params = useParams();
   const entryId = useMemo(() => params.entryId ?? props?.entryId, [params, props?.entryId]);
   const { loading, entry, description, photo, subscribers, altTitles, genres, reactions } = useEntry(entryId ?? "");
+  const coverDataUrl = useCoverImage(photo);
+  const displayPhoto = coverDataUrl ?? photo;
 
   const dialogClass = props?.entryId ? styles["root--dialog"] : "";
   const classes = `${styles.root} ${dialogClass}`;
@@ -34,10 +37,10 @@ function EntryPage(props?: IEntryPageProps): JSX.Element {
     <Error error={!entry} message="Could not retrieve entry">
       <div
         className={classes}
-        style={{ backgroundImage: `url(${photo}), url(${IconHelper.getIcon("placeholder", "graphs")}` }}
+        style={{ backgroundImage: `url(${displayPhoto}), url(${IconHelper.getIcon("placeholder", "graphs")}` }}
       >
         <EntryHead
-          photo={photo}
+          photo={displayPhoto}
           genres={genres}
           loading={loading}
           entry={entry as Entry}
