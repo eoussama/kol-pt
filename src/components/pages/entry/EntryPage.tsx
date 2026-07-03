@@ -1,6 +1,6 @@
 import type { Entry } from "../../../core/models/entry.model";
-
 import type { IEntryPageProps } from "../../../core/types/props/entry-page-props.type";
+
 import { useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { IconHelper } from "../../../core/helpers/asset/icon.helper";
@@ -10,6 +10,7 @@ import EntryHead from "../../layout/entry/entry-head/EntryHead";
 import EntryLinks from "../../layout/entry/entry-links/EntryLinks";
 import EntryReactions from "../../layout/entry/entry-reactions/EntryReactions";
 import Error from "../../layout/generic/error/Error";
+
 import styles from "./EntryPage.module.scss";
 
 

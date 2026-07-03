@@ -1,6 +1,7 @@
 import type { User } from "firebase/auth";
 import type { Imessage } from "../../../../core/types/message.type";
 import type { IPostEmbedProps } from "../../../../core/types/props/post-embed-props.type";
+
 import { useEffect } from "react";
 import { PostProvider } from "../../../../context/PostContext";
 import { ReactionOverlayProvider } from "../../../../context/ReactionOverlayContext";
@@ -8,6 +9,7 @@ import { EMessageType } from "../../../../core/enums/message-type.enum";
 import { MessageHelper } from "../../../../core/helpers/navigator/message.helper";
 import { useAuthStore } from "../../../../state/auth.state";
 import PostReactions from "../post-reactions/PostReactions";
+
 import "./../../../../styles/index.scss";
 
 

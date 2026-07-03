@@ -8,7 +8,7 @@ import { EMessageType } from "../enums/message-type.enum";
  * Zod schema for inter-tab messages.
  */
 export const MessageSchema = z.object({
-  tabId: z.number(),
+  tabId: z.number().optional(),
   type: z.union([
     z.literal(EMessageType.INIT),
     z.literal(EMessageType.ATTACH),

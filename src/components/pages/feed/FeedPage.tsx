@@ -1,5 +1,4 @@
 import ViewListIcon from "@mui/icons-material/ViewList";
-
 import ViewStreamIcon from "@mui/icons-material/ViewStream";
 import { Chip, CircularProgress, IconButton, Tooltip } from "@mui/material";
 import { EViewMode } from "../../../core/enums/view-mode.enum";
@@ -9,6 +8,7 @@ import Empty from "../../layout/generic/empty/Empty";
 import Error from "../../layout/generic/error/Error";
 import Search from "../../layout/generic/search/Search";
 import PostCard from "../../layout/post/post-card/PostCard";
+
 import styles from "./FeedPage.module.scss";
 
 

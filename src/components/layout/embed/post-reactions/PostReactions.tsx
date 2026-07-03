@@ -1,8 +1,8 @@
 import CloseIcon from "@mui/icons-material/Close";
-
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { AccordionDetails, AccordionSummary, Alert, Collapse, Dialog, DialogContent, DialogTitle, IconButton, Tooltip } from "@mui/material";
 import { useContext, useEffect, useState } from "react";
+
 import { PostContext } from "../../../../context/PostContext";
 import { ReactionOverlayContext } from "../../../../context/ReactionOverlayContext";
 import { IconHelper } from "../../../../core/helpers/asset/icon.helper";
@@ -13,6 +13,7 @@ import EntryPage from "../../../pages/entry/EntryPage";
 import { PostAccordion } from "../post-accordion/PostAccordion";
 import PostReactionMenu from "../post-reaction-menu/PostReactionMenu";
 import PostReaction from "../post-reaction/PostReaction";
+
 import styles from "./PostReactions.module.scss";
 
 
@@ -25,7 +26,7 @@ import styles from "./PostReactions.module.scss";
  */
 function PostReactions(): JSX.Element {
   const { post } = useContext(PostContext);
-  const { player } = usePlayer(post.id);
+  const { player, playerReady } = usePlayer(post.id);
   const user = useAuthStore(e => e.user);
   const [alertOpen, setAlertOpen] = useState(false);
   const [expanded, setExpanded] = useState<boolean>(true);
@@ -76,6 +77,10 @@ function PostReactions(): JSX.Element {
   };
 
   useEffect(() => {
+    if (!player) {
+      return;
+    }
+
     // Adding cue points
     for (const tag of post.tags) {
       player.addCuePoint(tag.startTime, { tag });
@@ -91,7 +96,7 @@ function PostReactions(): JSX.Element {
 
       player.setCurrentTime(reaction?.startTime ?? 0);
     }
-  }, []);
+  }, [playerReady]);
 
   useEffect(() => {
     setAlertOpen(!isLoggedIn());

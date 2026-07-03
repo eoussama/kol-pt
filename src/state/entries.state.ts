@@ -1,4 +1,5 @@
 import type { IEntriesState } from "../core/types/state/entries-state.type";
+
 import { create } from "zustand";
 import { EntriesHelper } from "../core/helpers/firebase/repositories/entries.helper";
 

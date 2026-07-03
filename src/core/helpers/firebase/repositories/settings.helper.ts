@@ -1,4 +1,5 @@
 import type { ISettings } from "../../../types/settings.type";
+
 import { EViewMode } from "../../../enums/view-mode.enum";
 import { RepositoryHelper } from "./repository.helper";
 

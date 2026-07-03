@@ -1,5 +1,6 @@
 import type { TViewMode } from "../core/enums/view-mode.enum";
 import type { ISettingsState } from "../core/types/state/settings-state.type";
+
 import { create } from "zustand";
 import { EViewMode } from "../core/enums/view-mode.enum";
 import { SettingsHelper } from "../core/helpers/firebase/repositories/settings.helper";

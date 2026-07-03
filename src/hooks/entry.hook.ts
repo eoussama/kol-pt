@@ -4,6 +4,7 @@ import type { Entry } from "../core/models/entry.model";
 import type { YouTube } from "../core/models/youtube.model";
 import type { IAnimeInfo } from "../core/types/api/anime-info.type";
 import type { IReaction } from "../core/types/reaction.type";
+
 import { useEffect, useState } from "react";
 import { EEntryType } from "../core/enums/entry-type.enum";
 import { JikanHelper } from "../core/helpers/api/jikan.helper";

@@ -9,6 +9,7 @@ import { EPage } from "../../../../core/enums/page.enum";
 import { NavigationHelper } from "../../../../core/helpers/navigator/navigation.helper";
 import { useAuth } from "../../../../hooks/auth.hook";
 import { usePostStore } from "../../../../state/posts.state";
+
 import styles from "./Header.module.scss";
 
 

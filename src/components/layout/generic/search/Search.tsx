@@ -1,6 +1,7 @@
 import type { ISearchProps } from "../../../../core/types/props/search-props.type";
 
 import { InputBase } from "@mui/material";
+
 import styles from "./Search.module.scss";
 
 

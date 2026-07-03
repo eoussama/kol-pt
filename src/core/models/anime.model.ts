@@ -1,6 +1,7 @@
 import type { IAnimeEntry } from "../types/entry/anime-entry.type";
 import type { IOption } from "../types/option.type";
 import type { IAnimeContext } from "../types/tag/anime-context.type";
+
 import { EEntryType } from "../enums/entry-type.enum";
 import { IconHelper } from "../helpers/asset/icon.helper";
 import { NavigationHelper } from "../helpers/navigator/navigation.helper";

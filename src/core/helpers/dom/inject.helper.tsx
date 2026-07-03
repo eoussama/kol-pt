@@ -1,4 +1,5 @@
 import type { Post } from "../../models/post.model";
+
 import { createRoot } from "react-dom/client";
 import PostEmbed from "../../../components/layout/embed/post-embed/PostEmbed";
 import PostLoader from "../../../components/layout/embed/post-loader/PostLoader";
@@ -20,6 +21,7 @@ export class InjectHelper {
   static postDetail(post: Post, target: HTMLDivElement) {
     const postWrapper = document.createElement("div");
 
+    postWrapper.id = "kol-pt-embed";
     createRoot(postWrapper).render(<PostEmbed post={post} />);
     target.after(postWrapper);
   }
@@ -34,6 +36,7 @@ export class InjectHelper {
   static postLoader(post: HTMLDivElement, target: HTMLDivElement) {
     const postWrapper = document.createElement("div");
 
+    postWrapper.dataset.kol_pt_loader = JSON.stringify(true);
     post.dataset.kol_pt_loader = JSON.stringify(true);
     createRoot(postWrapper).render(<PostLoader />);
     target.after(postWrapper);
@@ -47,7 +50,36 @@ export class InjectHelper {
    * @param post - The target post to get the injection element of
    * @returns The target injection HTMLDivElement
    */
-  static getInjectionTarget(post: HTMLDivElement): HTMLDivElement {
-    return post.querySelector("[data-tag=\"post-content-collapse\"]") ?? post.querySelector("[data-tag=\"post-content\"]") as HTMLDivElement;
+  static getInjectionTarget(post: HTMLDivElement): HTMLDivElement | null {
+    const candidates = [
+      "[data-tag=\"post-tags\"]",
+      "[data-tag=\"post-content-collapse\"]",
+      "[data-tag=\"post-content\"]",
+      "[data-tag=\"post-body\"]",
+      "[data-tag=\"post-card-body\"]",
+      "[data-tag=\"post-card-content\"]",
+      "[data-tag=\"post-card-media\"]",
+      "[data-tag=\"post-card-text\"]",
+      "div.patreon-post-content",
+    ];
+
+    for (const selector of candidates) {
+      const el = post.querySelector<HTMLDivElement>(selector);
+
+      if (el) {
+        return el;
+      }
+    }
+
+    // Use the block containing the post permalink as a stable anchor
+    const postLink = post.querySelector<HTMLAnchorElement>("a[href*=\"/posts/\"]");
+    const linkBlock = postLink?.closest<HTMLDivElement>("div");
+
+    if (linkBlock && linkBlock !== post) {
+      return linkBlock;
+    }
+
+    // Fall back to the post card itself
+    return post;
   }
 }

@@ -1,9 +1,10 @@
 import type { IEntryPageReactionsSectionProps } from "../../../../core/types/props/entry-reactions.props.type";
-
 import type { IReaction } from "../../../../core/types/reaction.type";
+
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import { IconButton, Tooltip } from "@mui/material";
 import { NavigationHelper } from "../../../../core/helpers/navigator/navigation.helper";
+
 import styles from "./EntryReactions.module.scss";
 
 

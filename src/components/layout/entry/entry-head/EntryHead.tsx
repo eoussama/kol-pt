@@ -8,6 +8,7 @@ import { EEntryType } from "../../../../core/enums/entry-type.enum";
 import { EPage } from "../../../../core/enums/page.enum";
 import Loader from "../../generic/loader/Loader";
 import TextExpand from "../../generic/text-expand/TextExpand";
+
 import styles from "./EntryHead.module.scss";
 
 

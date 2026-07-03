@@ -1,5 +1,6 @@
 import type { IPost } from "../types/post.type";
 import type { ISearch } from "../types/search.type";
+
 import { Tag } from "./tag.model";
 
 

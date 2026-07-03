@@ -3,6 +3,7 @@ import type { IAnimeEntry } from "../../../types/entry/anime-entry.type";
 import type { IEntry } from "../../../types/entry/entry.type";
 import type { IYouTubeEntry } from "../../../types/entry/youtube-entry.type";
 import type { IReaction } from "../../../types/reaction.type";
+
 import { EEntryType } from "../../../enums/entry-type.enum";
 import { Anime } from "../../../models/anime.model";
 import { Entry } from "../../../models/entry.model";

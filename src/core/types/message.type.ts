@@ -17,7 +17,7 @@ export interface Imessage<T = unknown> {
    * @description
    * The ID of the target tab
    */
-  tabId: number;
+  tabId?: number;
 
   /**
    * @description

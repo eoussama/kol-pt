@@ -1,6 +1,7 @@
 import type { ITextExpandProps } from "../../../../core/types/props/text-expand-props.type";
 
 import { useEffect, useState } from "react";
+
 import styles from "./TextExpand.module.scss";
 
 

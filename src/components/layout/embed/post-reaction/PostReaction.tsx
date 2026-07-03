@@ -1,6 +1,6 @@
 import type { Tag } from "../../../../core/models/tag.model";
-
 import type { IPostReactionProps } from "../../../../core/types/props/post-reaction-props.type";
+
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
@@ -12,6 +12,7 @@ import { ReactionOverlayContext } from "../../../../context/ReactionOverlayConte
 import { usePlayer } from "../../../../hooks/player.hook";
 import { useAuthStore } from "../../../../state/auth.state";
 import { Checkbox } from "../../../styled/Checkbox";
+
 import styles from "./PostReaction.module.scss";
 
 

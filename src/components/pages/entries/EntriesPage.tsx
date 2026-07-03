@@ -1,6 +1,6 @@
 import type { Entry } from "../../../core/models/entry.model";
-
 import type { YouTube } from "../../../core/models/youtube.model";
+
 import { Avatar, Chip, CircularProgress, Divider, List, ListItem, ListItemAvatar, Tooltip } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { EEntryType } from "../../../core/enums/entry-type.enum";
@@ -10,6 +10,7 @@ import Empty from "../../layout/generic/empty/Empty";
 import Error from "../../layout/generic/error/Error";
 import Search from "../../layout/generic/search/Search";
 import { ListItemText } from "../../styled/ListItemText";
+
 import styles from "./EntriesPage.module.scss";
 
 

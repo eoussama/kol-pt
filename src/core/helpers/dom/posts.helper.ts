@@ -1,4 +1,7 @@
 import type { Post } from "../../models/post.model";
+import type { IPost } from "../../types/post.type";
+
+import { Post as PostModel } from "../../models/post.model";
 import { InjectHelper } from "./inject.helper";
 import { ObserverHelper } from "./observer.helper";
 import { PlayerHelper } from "./player.helper";
@@ -18,7 +21,7 @@ export class PostsHelper {
    */
   static async init(): Promise<void> {
     const target = "[data-tag=\"post-card\"]";
-    const parent = document.getElementById("renderPageContentWrapper") as HTMLDivElement;
+    const parent = (document.getElementById("main-content") ?? document.body) as HTMLDivElement;
 
     await ObserverHelper.onAddedOnce(parent, target);
 
@@ -33,7 +36,9 @@ export class PostsHelper {
             if (!PostsHelper.isPostLocked(postEl as HTMLDivElement) && !postEl.dataset.kol_pt_loader) {
               const sibling = InjectHelper.getInjectionTarget(postEl as HTMLDivElement);
 
-              InjectHelper.postLoader(postEl as HTMLDivElement, sibling);
+              if (sibling) {
+                InjectHelper.postLoader(postEl as HTMLDivElement, sibling);
+              }
             }
           });
 
@@ -82,9 +87,10 @@ export class PostsHelper {
    * @description
    * Initializes the attachments
    *
-   * @param posts - The list of target posts
+   * @param rawPosts - The list of target posts (plain JSON from cross-context message)
    */
-  static attach(posts: Array<Post>): void {
+  static attach(rawPosts: Array<Post>): void {
+    const posts = rawPosts.map(p => new PostModel(p as unknown as IPost));
     const postIds = posts.map(post => post.id);
     const postEls = PostsHelper.getPostsElements(postIds);
 
@@ -112,13 +118,12 @@ export class PostsHelper {
     // Attaching metadata
     postEl.dataset.kol_pt = JSON.stringify(true);
 
-    // Attaching raw player
-    await PlayerHelper.attach(postEl);
-
-    // Injecting post detail
+    // Injecting post detail before waiting on the player
     const sibling = InjectHelper.getInjectionTarget(postEl);
 
-    InjectHelper.postDetail(post, sibling);
+    if (sibling) {
+      InjectHelper.postDetail(post, sibling);
+    }
 
     // Styling post
     postEl.style.borderRadius = "10px";
@@ -127,6 +132,9 @@ export class PostsHelper {
     // Removing the loader
     postEl.removeAttribute("data-kol_pt_loader");
     postEl.querySelector("[data-kol_pt_loader]")?.remove();
+
+    // Attaching raw player (non-blocking for the UI above)
+    await PlayerHelper.attach(postEl);
   }
 
   /**
@@ -154,7 +162,7 @@ export class PostsHelper {
   private static isPostAllowed(post: HTMLDivElement, postIds: Array<string>): boolean {
     if (!this.isPostLocked(post)) {
       for (const postId of postIds) {
-        if (post.querySelector(`[href$="${postId}"]`) || window.location.href.endsWith(postId)) {
+        if (post.querySelector(`[href$="${postId}"]`) || window.location.href.includes(postId)) {
           post.dataset.kol_pt_id = postId;
 
           return true;

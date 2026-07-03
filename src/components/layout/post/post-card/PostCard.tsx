@@ -3,6 +3,7 @@ import type { IPostCardProps } from "../../../../core/types/props/post-card-prop
 import { Box, Card, CardContent, CardMedia, Chip, Tooltip, Typography } from "@mui/material";
 import { EViewMode } from "../../../../core/enums/view-mode.enum";
 import { NavigationHelper } from "../../../../core/helpers/navigator/navigation.helper";
+
 import styles from "./PostCard.module.scss";
 
 

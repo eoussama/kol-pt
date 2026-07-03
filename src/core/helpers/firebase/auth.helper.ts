@@ -1,4 +1,5 @@
 import type { NextOrObserver, User, UserCredential } from "firebase/auth";
+
 import { FiremittHelper } from "@eoussama/firemitt";
 import { GoogleAuthProvider, onAuthStateChanged, signInWithCredential, signOut } from "firebase/auth";
 import { config } from "../../../config/env";
