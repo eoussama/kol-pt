@@ -13,7 +13,6 @@ export const AnimeEntrySchema = EntrySchema.extend({
   malId: z.number(),
   anilistId: z.number(),
   kitsuId: z.string(),
-  zoroId: z.string(),
 });
 
 export type TAnimeEntry = z.infer<typeof AnimeEntrySchema>;

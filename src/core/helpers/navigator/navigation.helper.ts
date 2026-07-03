@@ -116,31 +116,6 @@ export class NavigationHelper {
 
   // #endregion
 
-  // #region Stream
-
-  /**
-   * @description
-   * Opens the Zoro.to page of the anime in a new tab.
-   *
-   * @param zoroId The ID of the entry on zoro.to.
-   */
-  static openZoro(zoroId: string): void {
-    window.open(`https://zoro.to/watch/${zoroId}`, "_blank");
-  }
-
-  /**
-   * @description
-   * Opens the Zoro.to page of the anime in a new tab.
-   *
-   * @param zoroId The ID of anime on zoro.to.
-   * @param episodeId The ID of the episode.
-   */
-  static openZoroEpisode(zoroId: string, episodeId: number): void {
-    window.open(`https://zoro.to/watch/${zoroId}?ep=${episodeId}`, "_blank");
-  }
-
-  // #endregion
-
   // #region YouTube
 
   /**

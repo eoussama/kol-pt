@@ -33,12 +33,6 @@ export class Anime extends Entry {
 
   /**
    * @description
-   *The ID of the Zoro.to page.
-   */
-  zoroId: string;
-
-  /**
-   * @description
    * Creates a new Anime instance.
    *
    * @param model - The anime entry model
@@ -48,7 +42,6 @@ export class Anime extends Entry {
 
     this.type = EEntryType.ANIME;
     this.malId = model?.malId ?? -1;
-    this.zoroId = model?.zoroId ?? "";
     this.kitsuId = model?.kitsuId ?? "";
     this.anilistId = model?.anilistId ?? -1;
   }
@@ -79,24 +72,6 @@ export class Anime extends Entry {
 
   /**
    * @description
-   * Opens the Zoro.to page of the anime in a new tab.
-   */
-  viewZoro(): void {
-    NavigationHelper.openZoro(this.zoroId);
-  }
-
-  /**
-   * @description
-   * Opens the Zoro.to page of the anime in a new tab.
-   *
-   * @param episodeId The ID of the episode
-   */
-  watchZoro(episodeId: number): void {
-    NavigationHelper.openZoroEpisode(this.zoroId, episodeId);
-  }
-
-  /**
-   * @description
    * Gets the list of menu options
    *
    * @param context - The parent tag's context, passed for extra context
@@ -106,14 +81,6 @@ export class Anime extends Entry {
     const options = super.getOptions(context);
 
     return [
-      {
-        divider: true,
-        label: "Watch on Zoro",
-        iconAlt: "Zoro.to icon",
-        canShow: () => Boolean(context?.zoroId),
-        icon: IconHelper.getIcon("zoro", "platforms"),
-        action: () => this.watchZoro(context?.zoroId ?? -1),
-      },
       {
         iconAlt: "MAL icon",
         label: "View on MyAnimeList",
@@ -134,13 +101,6 @@ export class Anime extends Entry {
         action: this.viewKitsu.bind(this),
         canShow: () => (this.kitsuId?.length ?? 0) > 0,
         icon: IconHelper.getIcon("kitsu", "platforms"),
-      },
-      {
-        label: "View on Zoro",
-        iconAlt: "Zoro.to icon",
-        action: this.viewZoro.bind(this),
-        canShow: () => Boolean(this.zoroId),
-        icon: IconHelper.getIcon("zoro", "platforms"),
       },
       ...options,
     ];
