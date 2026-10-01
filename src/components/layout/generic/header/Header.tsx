@@ -43,14 +43,14 @@ function Header(): JSX.Element {
    * @description
    * Condition to show/hide the tabs
    */
-  const canShowTabs = useMemo(() => ([EPage.FEED, EPage.ENTRIES] as Array<string>).includes(route ?? ""), [route]);
+  const canShowTabs = useMemo(() => ([EPage.FEED, EPage.ENTRIES, EPage.HISTORY] as Array<string>).includes(route ?? ""), [route]);
 
   /**
    * @description
    * The selected tab, derived from the route so it stays in sync with
    * navigation that does not go through the tabs
    */
-  const tab = route === EPage.ENTRIES ? 1 : 0;
+  const tab = Math.max(0, ([EPage.FEED, EPage.ENTRIES, EPage.HISTORY] as Array<string>).indexOf(route ?? ""));
 
   /**
    * @description
@@ -158,6 +158,7 @@ function Header(): JSX.Element {
           >
             <Tab label="Feed" onClick={e => onTabClick(e, EPage.FEED)} />
             <Tab label="Entries" onClick={e => onTabClick(e, EPage.ENTRIES)} />
+            <Tab label="History" onClick={e => onTabClick(e, EPage.HISTORY)} />
           </Tabs>
         </nav>
       )}

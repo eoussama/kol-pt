@@ -1,10 +1,44 @@
+import type { IStoredWatchlist } from "../../core/storage/items";
+import type { IWatchlistEntry } from "../../core/utils/watchlist";
 import { watchlistItem } from "../../core/storage/items";
-import { readWatchlist, watchlistKey } from "../../core/utils/watchlist";
+
+import { readWatchlistEntries, watchlistKey } from "../../core/utils/watchlist";
 import { readValue, updateValues } from "../database";
 
 
 
 let queue: Promise<unknown> = Promise.resolve();
+
+/**
+ * @description
+ * Builds the stored watchlist from its entries.
+ *
+ * @param uid - The user's ID
+ * @param entries - The watched reactions
+ * @returns The watchlist to store
+ */
+function toStored(uid: string, entries: ReadonlyArray<IWatchlistEntry>): IStoredWatchlist {
+  const watchedAt: Record<string, number> = {};
+
+  for (const entry of entries) {
+    if (entry.watchedAt !== null) {
+      watchedAt[entry.key] = entry.watchedAt;
+    }
+  }
+
+  return { uid, keys: entries.map(entry => entry.key), watchedAt };
+}
+
+/**
+ * @description
+ * Lists the entries of a stored watchlist.
+ *
+ * @param stored - The stored watchlist
+ * @returns The watched reactions
+ */
+function fromStored(stored: IStoredWatchlist): Array<IWatchlistEntry> {
+  return stored.keys.map(key => ({ key, watchedAt: stored.watchedAt?.[key] ?? null }));
+}
 
 /**
  * @description
@@ -31,11 +65,11 @@ function enqueue<T>(task: () => Promise<T>): Promise<T> {
  */
 export function loadWatchlist(uid: string): Promise<Array<string>> {
   return enqueue(async () => {
-    const keys = readWatchlist(await readValue(`users/${uid}/watchlist`));
+    const stored = toStored(uid, readWatchlistEntries(await readValue(`users/${uid}/watchlist`)));
 
-    await watchlistItem.setValue({ uid, keys });
+    await watchlistItem.setValue(stored);
 
-    return keys;
+    return stored.keys;
   });
 }
 
@@ -52,34 +86,34 @@ export function clearWatchlist(): Promise<void> {
 /**
  * @description
  * Marks a reaction as watched or not, in the database and extension storage.
- * Only that reaction's key is written.
+ * Only that reaction's key is written: the time it was watched, or nothing.
  *
  * @param uid - The user's ID
  * @param postId - The post's ID
  * @param tagId - The reaction's (tag's) ID
  * @param watched - Whether the reaction is watched
+ * @param now - The current time, in epoch milliseconds
  * @returns Promise resolving to the watched reactions' keys
  */
-export function setWatched(uid: string, postId: string, tagId: string, watched: boolean): Promise<Array<string>> {
+export function setWatched(uid: string, postId: string, tagId: string, watched: boolean, now: () => number = Date.now): Promise<Array<string>> {
   return enqueue(async () => {
     const key = watchlistKey(postId, tagId);
+    const watchedAt = now();
 
-    await updateValues(`users/${uid}/watchlist`, { [key]: watched ? true : null });
+    await updateValues(`users/${uid}/watchlist`, { [key]: watched ? watchedAt : null });
 
     const current = await watchlistItem.getValue();
-    const keys = new Set(current?.uid === uid
-      ? current.keys
-      : readWatchlist(await readValue(`users/${uid}/watchlist`)));
+    const entries = (current?.uid === uid ? fromStored(current) : readWatchlistEntries(await readValue(`users/${uid}/watchlist`)))
+      .filter(entry => entry.key !== key);
 
     if (watched) {
-      keys.add(key);
-    }
-    else {
-      keys.delete(key);
+      entries.push({ key, watchedAt });
     }
 
-    await watchlistItem.setValue({ uid, keys: [...keys] });
+    const stored = toStored(uid, entries);
 
-    return [...keys];
+    await watchlistItem.setValue(stored);
+
+    return stored.keys;
   });
 }

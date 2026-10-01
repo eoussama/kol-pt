@@ -17,11 +17,11 @@ export function useWatchlistSync(): void {
 
     watchlistItem.getValue().then((watchlist) => {
       if (active) {
-        setKeys(watchlist?.keys ?? []);
+        setKeys(watchlist?.keys ?? [], watchlist?.watchedAt);
       }
     }).catch(() => undefined);
 
-    const unwatch = watchlistItem.watch(watchlist => setKeys(watchlist?.keys ?? []));
+    const unwatch = watchlistItem.watch(watchlist => setKeys(watchlist?.keys ?? [], watchlist?.watchedAt));
 
     return () => {
       active = false;

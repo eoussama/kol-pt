@@ -18,6 +18,13 @@ export interface IWatchlistState {
 
   /**
    * @description
+   * When each reaction was watched, in epoch milliseconds, by watchlist key.
+   * Reactions marked before dates were recorded have none.
+   */
+  watchedAt: ReadonlyMap<string, number>;
+
+  /**
+   * @description
    * Posts with a change being saved, and the reaction being changed.
    */
   saving: ReadonlyMap<string, string>;
@@ -25,9 +32,9 @@ export interface IWatchlistState {
   /**
    * @description
    * Replaces the watched reactions with the stored ones, given as
-   * `<postId>/<tagId>` watchlist keys.
+   * `<postId>/<tagId>` watchlist keys, with when they were watched.
    */
-  setKeys: (keys: ReadonlyArray<string>) => void;
+  setKeys: (keys: ReadonlyArray<string>, watchedAt?: Readonly<Record<string, number>>) => void;
 
   /**
    * @description
@@ -65,10 +72,12 @@ function groupByPost(keys: ReadonlyArray<string>): Map<string, Set<string>> {
 export const useWatchlistStore = create<IWatchlistState>((set, get) => ({
   posts: new Map(),
 
+  watchedAt: new Map(),
+
   saving: new Map(),
 
-  setKeys(keys) {
-    set({ posts: groupByPost(keys) });
+  setKeys(keys, watchedAt = {}) {
+    set({ posts: groupByPost(keys), watchedAt: new Map(Object.entries(watchedAt)) });
   },
 
   async toggle(postId, tagId, watched) {

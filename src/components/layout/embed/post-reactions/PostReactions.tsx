@@ -8,6 +8,7 @@ import { PostContext } from "../../../../context/PostContext";
 import { ReactionOverlayContext } from "../../../../context/ReactionOverlayContext";
 import { getImageUrl } from "../../../../core/utils/assets";
 import { openPassione } from "../../../../core/utils/links";
+import { useAutoWatch } from "../../../../hooks/auto-watch.hook";
 import { useAuthStore } from "../../../../state/auth.state";
 import EntryView from "../../../pages/entry/EntryView";
 import { PostAccordion } from "../post-accordion/PostAccordion";
@@ -27,6 +28,8 @@ import styles from "./PostReactions.module.scss";
 function PostReactions(): JSX.Element {
   const { post } = useContext(PostContext);
   const { ready, cue } = usePlayer();
+
+  useAutoWatch(post);
   const user = useAuthStore(e => e.user);
   const [alertOpen, setAlertOpen] = useState(false);
   const [expanded, setExpanded] = useState<boolean>(true);

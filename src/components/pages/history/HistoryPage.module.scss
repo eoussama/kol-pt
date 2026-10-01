@@ -1,0 +1,44 @@
+.actions {
+  &__count {
+    margin-left: 5px;
+  }
+}
+
+.history {
+  overflow: hidden;
+  border-radius: 10px;
+
+  padding: 0 !important;
+  margin: 20px 15px !important;
+
+  .item {
+    cursor: pointer;
+    background-color: var(--kolpt-color-surface);
+
+    padding: 0 15px;
+
+    transition-duration: 0.2s;
+    transition-property: background-color;
+
+    &__line {
+      display: block;
+
+      font-size: 12px;
+      font-weight: 100;
+
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    &:hover {
+      background-color: var(--kolpt-color-surface-hover);
+    }
+  }
+
+  &__loader {
+    margin: 60px 10px;
+    text-align: center;
+    color: var(--kolpt-color-primary);
+  }
+}

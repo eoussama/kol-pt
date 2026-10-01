@@ -1,6 +1,7 @@
 import { Outlet } from "react-router";
 
 import { useAuthSync } from "../../../hooks/auth-sync.hook";
+import { useWatchlistSync } from "../../../hooks/watchlist-sync.hook";
 import Header from "../../layout/generic/header/Header";
 
 import styles from "./App.module.scss";
@@ -16,6 +17,7 @@ import styles from "./App.module.scss";
  */
 function App(): JSX.Element {
   useAuthSync();
+  useWatchlistSync();
 
   return (
     <main className={styles.root}>

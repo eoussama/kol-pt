@@ -35,10 +35,36 @@ export const authUserItem = storage.defineItem<IAuthUser | null>("local:auth-use
 
 /**
  * @description
+ * A user's watched reactions, as kept in extension storage.
+ */
+export interface IStoredWatchlist {
+
+  /**
+   * @description
+   * Whose watchlist it is.
+   */
+  uid: string;
+
+  /**
+   * @description
+   * The watched reactions' watchlist keys.
+   */
+  keys: Array<string>;
+
+  /**
+   * @description
+   * When each reaction was watched, in epoch milliseconds, by watchlist key.
+   * Reactions marked before dates were recorded have none.
+   */
+  watchedAt?: Record<string, number>;
+}
+
+/**
+ * @description
  * The reactions the signed-in user marked as watched, as watchlist keys.
  * Written by the background; every Patreon tab watches it.
  */
-export const watchlistItem = storage.defineItem<{ uid: string; keys: Array<string> } | null>("local:watchlist", { fallback: null });
+export const watchlistItem = storage.defineItem<IStoredWatchlist | null>("local:watchlist", { fallback: null });
 
 /**
  * @description

@@ -30,19 +30,57 @@ export function watchlistKey(postId: string, tagId: string): string {
 
 /**
  * @description
- * Reads a watchlist as stored in the database, `{ postId: { tagId: true } }`,
- * into a list of watchlist keys. The database SDK returns an object whose
- * keys are small integers as an array (`{ 1: true }` reads as
- * `[, true]`), so arrays are read by index. Anything else reads as empty.
+ * A watched reaction.
+ */
+export interface IWatchlistEntry {
+
+  /**
+   * @description
+   * The reaction's watchlist key, `<postId>/<tagId>`.
+   */
+  key: string;
+
+  /**
+   * @description
+   * When it was marked watched, in epoch milliseconds, or null for reactions
+   * marked before dates were recorded.
+   */
+  watchedAt: number | null;
+}
+
+/**
+ * @description
+ * Reads a watchlist as stored in the database, `{ postId: { tagId: when } }`,
+ * where `when` is the time it was watched, or `true` for reactions marked
+ * before dates were recorded. The database SDK returns an object whose keys
+ * are small integers as an array (`{ 1: true }` reads as `[, true]`), so
+ * arrays are read by index. Anything else reads as empty.
+ *
+ * @param value - The raw database value
+ * @returns The watched reactions
+ */
+export function readWatchlistEntries(value: unknown): Array<IWatchlistEntry> {
+  const entries = (node: unknown): Array<[string, unknown]> =>
+    node && typeof node === "object" ? Object.entries(node) : [];
+
+  return entries(value).flatMap(([postId, tags]) => entries(tags).flatMap(([tagId, watched]): Array<IWatchlistEntry> => {
+    const key = `${postId}/${tagId}`;
+
+    if (watched === true) {
+      return [{ key, watchedAt: null }];
+    }
+
+    return typeof watched === "number" && Number.isFinite(watched) && watched > 0 ? [{ key, watchedAt: watched }] : [];
+  }));
+}
+
+/**
+ * @description
+ * Reads the keys of a watchlist as stored in the database.
  *
  * @param value - The raw database value
  * @returns The watched reactions' keys
  */
 export function readWatchlist(value: unknown): Array<string> {
-  const entries = (node: unknown): Array<[string, unknown]> =>
-    node && typeof node === "object" ? Object.entries(node) : [];
-
-  return entries(value).flatMap(([postId, tags]) => entries(tags)
-    .filter(([, watched]) => watched === true)
-    .map(([tagId]) => `${postId}/${tagId}`));
+  return readWatchlistEntries(value).map(entry => entry.key);
 }
