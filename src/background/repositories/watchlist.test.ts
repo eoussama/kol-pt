@@ -45,10 +45,18 @@ describe("watchlist repository", () => {
   });
 
   it("does not mix users' watchlists", async () => {
+    vi.mocked(readValue).mockResolvedValue(null);
     await watchlistItem.setValue({ uid: "someone-else", keys: ["p9/t9"] });
     await setWatched("u1", "p1", "t1", true);
 
     await expect(watchlistItem.getValue()).resolves.toEqual({ uid: "u1", keys: ["p1/t1"] });
+  });
+
+  it("keeps the user's other watched reactions when storage lost them", async () => {
+    vi.mocked(readValue).mockResolvedValue({ p1: { t1: true, t2: true } });
+    await setWatched("u1", "p2", "t3", true);
+
+    expect((await watchlistItem.getValue())?.keys.sort()).toEqual(["p1/t1", "p1/t2", "p2/t3"]);
   });
 
   it("forgets the watchlist on sign out", async () => {

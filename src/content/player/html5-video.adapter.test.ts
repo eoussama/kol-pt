@@ -7,13 +7,14 @@ import { Html5VideoAdapter } from "./html5-video.adapter";
  * Builds Patreon's player markup around a video whose loading state the test
  * controls. jsdom has no media pipeline, so readiness and playback are faked.
  *
+ * @param playLabel - The Play button's label, which Patreon translates
  * @returns The video, its Play button, the play spy and state controls
  */
-function setup() {
+function setup(playLabel = "Play") {
   document.body.innerHTML = `
     <div role="application">
       <video preload="none"></video>
-      <button type="button" aria-label="Play"></button>
+      <button type="button" aria-label="${playLabel}"><span><svg data-tag="IconPlaybackPlay"></svg></span></button>
     </div>`;
 
   const video = document.querySelector("video") as HTMLVideoElement;
@@ -68,6 +69,32 @@ describe("html5VideoAdapter", () => {
     loadMetadata();
 
     expect(video.currentTime).toBe(120);
+  });
+
+  it("finds Patreon's Play button whatever the page language", async () => {
+    const { video, button } = setup("Lecture");
+    const onClick = vi.fn();
+
+    button.addEventListener("click", onClick);
+    await new Html5VideoAdapter(video).playFrom(10);
+
+    expect(onClick).toHaveBeenCalledTimes(1);
+  });
+
+  it("does not undo the viewer's own seeking once the jump is over", async () => {
+    vi.useFakeTimers();
+
+    const { video, loadMetadata, startPlaying } = setup();
+
+    loadMetadata();
+    await new Html5VideoAdapter(video).playFrom(300);
+    vi.advanceTimersByTime(5000);
+
+    video.currentTime = 15;
+    startPlaying();
+
+    expect(video.currentTime).toBe(15);
+    vi.useRealTimers();
   });
 
   it("seeks and plays directly once the media is loaded", async () => {

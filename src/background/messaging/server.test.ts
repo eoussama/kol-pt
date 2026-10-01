@@ -33,9 +33,9 @@ describe("request protocol", () => {
   });
 
   it("answers a request with its handler's result", async () => {
-    serve(stubHandlers({ "entries.list": async ({ force }) => force ? [] : [{ id: "e1", title: "Clevatess", type: 0 }] }));
+    serve(stubHandlers({ "entries.list": async ({ force }) => force ? [] : [{ id: "e1", title: "Clevatess", type: 0, altTitles: [] }] }));
 
-    await expect(request("entries.list", {})).resolves.toEqual([{ id: "e1", title: "Clevatess", type: 0 }]);
+    await expect(request("entries.list", {})).resolves.toEqual([{ id: "e1", title: "Clevatess", type: 0, altTitles: [] }]);
     await expect(request("entries.list", { force: true })).resolves.toEqual([]);
   });
 

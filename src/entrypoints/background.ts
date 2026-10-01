@@ -9,11 +9,18 @@ import { LEGACY_STORAGE_KEYS } from "../core/storage/items";
 
 
 export default defineBackground(() => {
-  // Both must be registered synchronously, every time the background starts
-  watchAuthState((user) => {
-    (user ? loadWatchlist(user.uid) : clearWatchlist()).catch(() => undefined);
-  });
+  // Both must be registered synchronously, every time the background starts.
+  // The server first: watching auth throws if the build lacks Firebase settings.
   serve(handlers);
+
+  try {
+    watchAuthState((user) => {
+      (user ? loadWatchlist(user.uid) : clearWatchlist()).catch(() => undefined);
+    });
+  }
+  catch (error) {
+    console.error("[KOL PT] Sign-in is unavailable:", error);
+  }
 
   browser.runtime.onInstalled.addListener(({ reason }) => {
     if (reason === "update") {

@@ -59,9 +59,15 @@ export function getPostId(card: Element): string | null {
     }
   }
 
-  const inputId = card.querySelector(PatreonSelectors.commentInput)?.id ?? "";
+  for (const element of card.querySelectorAll(PatreonSelectors.commentInput)) {
+    const id = COMMENT_INPUT_RGX.exec(element.id)?.[1];
 
-  return COMMENT_INPUT_RGX.exec(inputId)?.[1] ?? null;
+    if (id) {
+      return id;
+    }
+  }
+
+  return null;
 }
 
 /**

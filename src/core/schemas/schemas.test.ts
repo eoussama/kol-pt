@@ -67,6 +67,12 @@ describe("entryListSchema", () => {
     ]);
   });
 
+  it("reads alternative titles stored as an object and numeric titles", () => {
+    const [entry] = EntryListSchema.parse([{ id: "e4", title: 1984, type: EEntryType.MOVIE, altTitles: { 0: "Nineteen Eighty-Four" } }]);
+
+    expect(entry).toMatchObject({ title: "1984", altTitles: ["Nineteen Eighty-Four"] });
+  });
+
   it("drops entries of unknown type", () => {
     expect(EntryListSchema.parse([{ id: "x", title: "?", type: 42 }])).toEqual([]);
   });

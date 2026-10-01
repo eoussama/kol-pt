@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { IdSchema } from "../primitives.schema";
+import { IdSchema, listOf, TextSchema } from "../primitives.schema";
 
 
 
@@ -9,7 +9,7 @@ import { IdSchema } from "../primitives.schema";
  */
 export const BaseEntrySchema = z.looseObject({
   id: IdSchema,
-  title: z.string(),
-  imdbId: z.string().optional(),
-  altTitles: z.array(z.string()).optional(),
+  title: TextSchema,
+  imdbId: TextSchema.optional(),
+  altTitles: listOf(TextSchema),
 });

@@ -67,7 +67,9 @@ export function setWatched(uid: string, postId: string, tagId: string, watched: 
     await updateValues(`users/${uid}/watchlist`, { [key]: watched ? true : null });
 
     const current = await watchlistItem.getValue();
-    const keys = new Set(current?.uid === uid ? current.keys : []);
+    const keys = new Set(current?.uid === uid
+      ? current.keys
+      : readWatchlist(await readValue(`users/${uid}/watchlist`)));
 
     if (watched) {
       keys.add(key);

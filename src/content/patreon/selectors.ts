@@ -25,7 +25,8 @@ export const PatreonSelectors = {
 
   /**
    * @description
-   * The comment box, whose id is `comment-section-input-<postId>`.
+   * The comment box, whose id is `comment-section-input-<postId>`. Its label
+   * comes first and has the same prefix (`...-<postId>-label`).
    */
   commentInput: "[id^=\"comment-section-input-\"]",
 
@@ -57,6 +58,8 @@ export const PatreonSelectors = {
   player: {
     root: "[role=\"application\"]",
     video: "video",
+    // The icon is language-independent; the label is a fallback
+    playIcon: "[data-tag=\"IconPlaybackPlay\"]",
     playButton: "button[aria-label=\"Play\"]",
   },
 

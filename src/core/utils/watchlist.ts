@@ -31,21 +31,18 @@ export function watchlistKey(postId: string, tagId: string): string {
 /**
  * @description
  * Reads a watchlist as stored in the database, `{ postId: { tagId: true } }`,
- * into a list of watchlist keys. Anything else reads as an empty list.
+ * into a list of watchlist keys. The database SDK returns an object whose
+ * keys are small integers as an array (`{ 1: true }` reads as
+ * `[, true]`), so arrays are read by index. Anything else reads as empty.
  *
  * @param value - The raw database value
  * @returns The watched reactions' keys
  */
 export function readWatchlist(value: unknown): Array<string> {
-  if (!value || typeof value !== "object" || Array.isArray(value)) {
-    return [];
-  }
+  const entries = (node: unknown): Array<[string, unknown]> =>
+    node && typeof node === "object" ? Object.entries(node) : [];
 
-  return Object.entries(value as Record<string, unknown>).flatMap(([postId, tags]) =>
-    tags && typeof tags === "object" && !Array.isArray(tags)
-      ? Object.entries(tags as Record<string, unknown>)
-          .filter(([, watched]) => watched === true)
-          .map(([tagId]) => `${postId}/${tagId}`)
-      : [],
-  );
+  return entries(value).flatMap(([postId, tags]) => entries(tags)
+    .filter(([, watched]) => watched === true)
+    .map(([tagId]) => `${postId}/${tagId}`));
 }

@@ -19,6 +19,12 @@ describe("readWatchlist", () => {
     expect(readWatchlist(stored).sort()).toEqual(["170879619/t9", "171089353/t1", "171089353/t2"]);
   });
 
+  it("reads tags the database SDK returned as an array", () => {
+    // { 171089353: { 1: true, 3: true } } comes back with the tags as an array
+    // eslint-disable-next-line no-sparse-arrays
+    expect(readWatchlist({ 171089353: [, true, , true] })).toEqual(["171089353/1", "171089353/3"]);
+  });
+
   it.each([null, undefined, "x", ["t1", "t2"], { 1: "not a map" }])("reads %j as empty", (value) => {
     expect(readWatchlist(value)).toEqual([]);
   });

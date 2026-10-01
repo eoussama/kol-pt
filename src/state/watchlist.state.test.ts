@@ -38,6 +38,27 @@ describe("watchlist store", () => {
     expect(requestMock).toHaveBeenCalledWith("watchlist.set", { postId: "p1", tagId: "t1", watched: true });
   });
 
+  it("keeps the latest choice when a reaction is toggled twice quickly", async () => {
+    const responses: Array<(keys: Array<string>) => void> = [];
+
+    requestMock.mockImplementation(() => new Promise((resolve) => {
+      responses.push(resolve as (keys: Array<string>) => void);
+    }));
+
+    const first = useWatchlistStore.getState().toggle("p1", "t1", true);
+    const second = useWatchlistStore.getState().toggle("p1", "t1", false);
+
+    responses[0]?.(["p1/t1"]);
+    await first;
+
+    expect(isWatched("p1/t1")).toBe(false);
+
+    responses[1]?.([]);
+    await second;
+
+    expect(isWatched("p1/t1")).toBe(false);
+  });
+
   it("rolls the change back if saving fails", async () => {
     useWatchlistStore.getState().setKeys(["p1/t1"]);
     requestMock.mockRejectedValue(new Error("Not signed in"));

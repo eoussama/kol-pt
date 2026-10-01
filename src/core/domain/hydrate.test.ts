@@ -14,7 +14,7 @@ function tag(id: string, entryId: string, startTime: number, context: Record<str
 
 const entries: Array<TEntry> = [
   { id: "e1", title: "Clevatess", type: EEntryType.ANIME, malId: 57891, altTitles: ["Clevatess: Majuu no Ou", "Clev"] },
-  { id: "e2", title: "Some Channel", type: EEntryType.YOUTUBE, handle: "somechannel", channelId: "UC1" },
+  { id: "e2", title: "Some Channel", type: EEntryType.YOUTUBE, handle: "somechannel", channelId: "UC1", altTitles: [] },
 ];
 
 const posts: Array<TPost> = [
@@ -70,7 +70,7 @@ describe("findReactions", () => {
 
 describe("entry links", () => {
   it("hides links for ids that are unknown", () => {
-    const anime = createEntry({ id: "e9", title: "Unknown", type: EEntryType.ANIME });
+    const anime = createEntry({ id: "e9", title: "Unknown", type: EEntryType.ANIME, altTitles: [] });
 
     expect(anime.getOptions().filter(option => option.canShow())).toEqual([]);
   });

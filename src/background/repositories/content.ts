@@ -11,6 +11,16 @@ import { readValue } from "../database";
 
 /**
  * @description
+ * How long to wait before refreshing the entries again because a post refers
+ * to an entry they lack, in milliseconds. Such a post may simply point to an
+ * entry that does not exist.
+ */
+const MISSING_ENTRY_REFRESH_MS = 10 * 60 * 1000;
+
+
+
+/**
+ * @description
  * Returns the tracked posts, validated, from the cache while it is fresh.
  *
  * @param force - Whether to bypass the cache
@@ -46,8 +56,9 @@ export async function getPostsWithEntries(force = false): Promise<{ posts: Array
 
   const known = new Set(entries.map(entry => entry.id));
   const hasUnknown = posts.some(post => post.tags.some(tag => !known.has(tag.entryId)));
+  const fetchedAt = (await entriesCacheItem.getValue())?.updatedAt ?? 0;
 
-  if (hasUnknown && !force) {
+  if (hasUnknown && !force && Date.now() - fetchedAt > MISSING_ENTRY_REFRESH_MS) {
     entries = await getEntries(true);
   }
 

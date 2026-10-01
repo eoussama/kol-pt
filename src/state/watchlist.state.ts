@@ -52,7 +52,13 @@ export const useWatchlistStore = create<IWatchlistState>((set, get) => ({
 
   async toggle(postId, tagId, watched) {
     const key = watchlistKey(postId, tagId);
+
+    // A later toggle of the same reaction owns the pending state from then on
     const settle = () => {
+      if (get().pending.get(key) !== watched) {
+        return;
+      }
+
       const pending = new Map(get().pending);
 
       pending.delete(key);

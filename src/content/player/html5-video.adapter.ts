@@ -30,6 +30,8 @@ export class Html5VideoAdapter implements IPlayerAdapter {
 
   private pendingCue: number | null = null;
 
+  private removeGuard: (() => void) | null = null;
+
   private readonly disposers: Array<() => void> = [];
 
   /**
@@ -115,6 +117,7 @@ export class Html5VideoAdapter implements IPlayerAdapter {
    * Removes every listener the adapter added.
    */
   dispose(): void {
+    this.removeGuard?.();
     this.disposers.splice(0).forEach(dispose => dispose());
   }
 
@@ -153,7 +156,7 @@ export class Html5VideoAdapter implements IPlayerAdapter {
       return;
     }
 
-    const playButton = this.element.querySelector<HTMLButtonElement>(PatreonSelectors.player.playButton);
+    const playButton = this.findPlayButton();
 
     if (!this.hasMetadata() && playButton) {
       playButton.click();
@@ -171,21 +174,50 @@ export class Html5VideoAdapter implements IPlayerAdapter {
 
   /**
    * @description
+   * Finds Patreon's Play button: the overlay shown before the first play,
+   * or the control bar's. Looked up by its icon, which does not depend on
+   * the viewer's language, then by its English label.
+   *
+   * @returns The Play button, if any
+   */
+  private findPlayButton(): HTMLButtonElement | null {
+    return this.element.querySelector(PatreonSelectors.player.playIcon)?.closest("button")
+      ?? this.element.querySelector<HTMLButtonElement>(PatreonSelectors.player.playButton);
+  }
+
+  /**
+   * @description
    * Puts the playhead back if Patreon restores a saved position shortly
-   * after a jump.
+   * after a jump. The guard ends on the first `playing` event, after
+   * `RESUME_GUARD_MS`, or when another jump starts, so it never undoes the
+   * viewer's own seeking later on.
    *
    * @param seconds - The requested position
    */
   private guardPosition(seconds: number): void {
-    const startedAt = Date.now();
+    this.removeGuard?.();
 
-    const remove = this.listen("playing", () => {
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    let removeListener = (): void => undefined;
+
+    const remove = () => {
+      clearTimeout(timer);
+      removeListener();
+
+      if (this.removeGuard === remove) {
+        this.removeGuard = null;
+      }
+    };
+
+    removeListener = this.listen("playing", () => {
       remove();
 
-      if (Date.now() - startedAt <= RESUME_GUARD_MS && Math.abs(this.video.currentTime - seconds) > RESUME_TOLERANCE_S) {
+      if (Math.abs(this.video.currentTime - seconds) > RESUME_TOLERANCE_S) {
         this.video.currentTime = seconds;
       }
     });
+    timer = setTimeout(remove, RESUME_GUARD_MS);
+    this.removeGuard = remove;
   }
 
   /**

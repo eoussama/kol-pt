@@ -22,19 +22,33 @@ export default defineContentScript({
 
     root.render(<EmbedRoot registry={registry} />);
 
-    // Without tracked posts (e.g. offline), the loaders are removed
-    request("posts.list", {})
-      .then(({ posts, entries }) => hydratePosts(posts, entries))
-      .catch(() => [])
-      .then((posts) => {
+    // The background serves posts from its cache, so they are asked for again
+    // on every client-side navigation: this picks up newly tracked posts and
+    // recovers from a failed first load
+    let loaded = false;
+    const loadPosts = () => request("posts.list", {})
+      .then(({ posts, entries }) => {
+        loaded = true;
+
         if (ctx.isValid) {
-          controller.setPosts(posts);
+          controller.setPosts(hydratePosts(posts, entries));
+        }
+      })
+      .catch(() => {
+        // Without posts yet (e.g. offline), the loaders are removed
+        if (ctx.isValid && !loaded) {
+          controller.setPosts([]);
         }
       });
 
+    loadPosts();
+
     // Cards appear after load, on infinite scroll and on client-side navigation
     watchCards({ signal: ctx.signal, onChange: () => controller.sync() });
-    ctx.addEventListener(window, "wxt:locationchange", () => controller.sync());
+    ctx.addEventListener(window, "wxt:locationchange", () => {
+      controller.sync();
+      loadPosts();
+    });
 
     ctx.onInvalidated(() => {
       controller.dispose();
