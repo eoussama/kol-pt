@@ -1,7 +1,8 @@
 import type { IPostsState } from "../core/types/state/posts-state.type";
 
 import { create } from "zustand";
-import { PostsHelper } from "../core/helpers/firebase/repositories/posts.helper";
+import { hydratePosts } from "../core/domain/hydrate";
+import { request } from "../core/messaging/client";
 
 
 
@@ -42,9 +43,9 @@ export const usePostStore = create<IPostsState>(set => ({
       set({ error: false });
       set({ loading: true });
 
-      const data = await PostsHelper.load(cache);
+      const { posts, entries } = await request("posts.list", { force: !cache });
 
-      set(() => ({ posts: data }));
+      set({ posts: hydratePosts(posts, entries) });
     }
     catch {
       set({ error: true });

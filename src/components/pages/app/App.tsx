@@ -1,5 +1,6 @@
 import { Outlet } from "react-router";
 
+import { useAuthSync } from "../../../hooks/auth-sync.hook";
 import Header from "../../layout/generic/header/Header";
 
 import styles from "./App.module.scss";
@@ -14,6 +15,8 @@ import styles from "./App.module.scss";
  * @returns {JSX.Element} The JSX representation of the component.
  */
 function App(): JSX.Element {
+  useAuthSync();
+
   return (
     <main className={styles.root}>
       <Header />

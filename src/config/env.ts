@@ -1,78 +1,49 @@
-import { EnvSchema } from "./env.schema";
+import type { TFirebaseConfig } from "./env.schema";
+
+import { FirebaseConfigSchema } from "./env.schema";
 
 
 
-/**
- * @description
- * Configuration object containing various environment variables
- * and constants required for the application.
- *
- * @property appId - Firebase app ID.
- * @property apiKey - Firebase API key.
- * @property projectId - Firebase project ID.
- * @property authDomain - Firebase auth domain.
- * @property databaseURL - Firebase database URL.
- * @property measurementId - Firebase measurement ID.
- * @property storageBucket - Firebase storage bucket.
- * @property messagingSenderId - Firebase messaging sender ID.
- * @property youtubeApiKey - YouTube Data API key.
- * @property patreonUrl - Patreon URL of the creator.
- * @property creatorName - Creator name.
- * @property fireguardUrl - The URL for the Fireguard authentication instance.
- */
-export interface IConfig {
-  appId: string;
-  apiKey: string;
-  projectId: string;
-  authDomain: string;
-  databaseURL: string;
-  measurementId: string;
-  storageBucket: string;
-  messagingSenderId: string;
-  youtubeApiKey: string;
-  creatorName: string;
-  patreonUrl: string;
-  fireguardUrl: string;
-}
-
-let cached: IConfig | null = null;
+let firebaseConfig: TFirebaseConfig | null = null;
 
 /**
  * @description
- * Validates the build-time environment on first use and returns the
- * application configuration. Validation is deferred so that modules which
- * never touch the configuration (tests, the content script) can be imported
- * without a complete environment.
+ * The Firebase web app configuration, validated on first use.
  *
- * @returns The validated configuration
+ * @returns The configuration
+ * @throws When a variable is missing from the build environment
  */
-export function getConfig(): IConfig {
-  if (cached) {
-    return cached;
+export function getFirebaseConfig(): TFirebaseConfig {
+  if (firebaseConfig) {
+    return firebaseConfig;
   }
 
-  const parsed = EnvSchema.safeParse(import.meta.env);
+  const parsed = FirebaseConfigSchema.safeParse({
+    apiKey: import.meta.env.WXT_FIREBASE_API_KEY,
+    authDomain: import.meta.env.WXT_FIREBASE_AUTH_DOMAIN,
+    databaseURL: import.meta.env.WXT_FIREBASE_DATABASE_URL,
+    projectId: import.meta.env.WXT_FIREBASE_PROJECT_ID,
+    storageBucket: import.meta.env.WXT_FIREBASE_STORAGE_BUCKET,
+    measurementId: import.meta.env.WXT_FIREBASE_MEASUREMENT_ID,
+    appId: import.meta.env.WXT_FIREBASE_APP_ID,
+    messagingSenderId: import.meta.env.WXT_FIREBASE_MESSAGING_SENDER_ID,
+  });
 
   if (!parsed.success) {
-    throw new Error(`Invalid environment configuration:\n${parsed.error.message}`);
+    throw new Error(`Invalid Firebase configuration (check the WXT_FIREBASE_* variables):\n${parsed.error.message}`);
   }
 
-  const env = parsed.data;
+  firebaseConfig = parsed.data;
 
-  cached = {
-    appId: env.WXT_FIREBASE_APP_ID,
-    apiKey: env.WXT_FIREBASE_API_KEY,
-    projectId: env.WXT_FIREBASE_PROJECT_ID,
-    authDomain: env.WXT_FIREBASE_AUTH_DOMAIN,
-    databaseURL: env.WXT_FIREBASE_DATABASE_URL,
-    measurementId: env.WXT_FIREBASE_MEASUREMENT_ID,
-    storageBucket: env.WXT_FIREBASE_STORAGE_BUCKET,
-    messagingSenderId: env.WXT_FIREBASE_MESSAGING_SENDER_ID,
-    youtubeApiKey: env.WXT_YOUTUBE_DATA_API_KEY,
-    creatorName: env.WXT_CREATOR_NAME,
-    patreonUrl: env.WXT_PATREON_URL,
-    fireguardUrl: env.WXT_FIREGUARD_URL,
-  };
+  return firebaseConfig;
+}
 
-  return cached;
+/**
+ * @description
+ * The YouTube Data API key, empty if not configured.
+ *
+ * @returns The API key
+ */
+export function getYouTubeApiKey(): string {
+  return import.meta.env.WXT_YOUTUBE_DATA_API_KEY ?? "";
 }

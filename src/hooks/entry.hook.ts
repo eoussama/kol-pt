@@ -4,11 +4,9 @@ import type { TAnimeInfo } from "../core/schemas/api/anime-info.schema";
 
 import { useEffect, useState } from "react";
 import { Anime } from "../core/domain/anime";
+import { createEntry, findReactions, hydratePosts } from "../core/domain/hydrate";
 import { YouTube } from "../core/domain/youtube";
-import { JikanHelper } from "../core/helpers/api/jikan.helper";
-import { YouTubeHelper } from "../core/helpers/api/youtube.helper";
-import { EntriesHelper } from "../core/helpers/firebase/repositories/entries.helper";
-import { PostsHelper } from "../core/helpers/firebase/repositories/posts.helper";
+import { request } from "../core/messaging/client";
 import { getPlaceholderUrl } from "../core/utils/assets";
 
 
@@ -87,13 +85,13 @@ function mergeAltTitles(info: TAnimeInfo, entry: Entry): Array<IAltTitle> {
  */
 async function loadDetails(entry: Entry): Promise<Partial<IEntryState>> {
   if (entry instanceof Anime && entry.malId > 0) {
-    const info = await JikanHelper.getAnimeInfo(entry.malId);
+    const info = await request("anime.info", { malId: entry.malId });
 
     return { photo: info.photo, genres: info.genres, description: info.description, altTitles: mergeAltTitles(info, entry) };
   }
 
-  if (entry instanceof YouTube) {
-    const info = await YouTubeHelper.getChannelInfo(entry.channelId);
+  if (entry instanceof YouTube && entry.channelId) {
+    const info = await request("youtube.channel", { channelId: entry.channelId });
 
     return { photo: info.thumbnail, description: info.description, subscribers: info.subscribers ?? 0 };
   }
@@ -124,9 +122,11 @@ export function useEntry(entryId: string): IEntryState {
 
     if (entryId) {
       (async () => {
-        const [entry, reactions] = await Promise.all([EntriesHelper.get(entryId), PostsHelper.getReactions(entryId)]);
+        const { posts, entries } = await request("posts.list", {});
+        const data = entries.find(candidate => candidate.id === entryId);
+        const entry = data ? createEntry(data) : null;
 
-        update({ entry: entry ?? null, reactions });
+        update({ entry, reactions: findReactions(hydratePosts(posts, entries), entryId) });
 
         if (entry) {
           update(await loadDetails(entry));

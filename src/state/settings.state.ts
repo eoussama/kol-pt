@@ -3,7 +3,7 @@ import type { ISettingsState } from "../core/types/state/settings-state.type";
 
 import { create } from "zustand";
 import { EViewMode } from "../core/enums/view-mode.enum";
-import { SettingsHelper } from "../core/helpers/firebase/repositories/settings.helper";
+import { request } from "../core/messaging/client";
 import { useAuthStore } from "./auth.state";
 
 
@@ -22,20 +22,15 @@ export const useSettingsStore = create<ISettingsState>(set => ({
 
   /**
    * @description
-   * Updates the view mode.
+   * Updates the view mode, and saves it for the signed-in user.
    *
    * @param viewMode The new view mode.
    */
   setViewMode(viewMode: TViewMode) {
-    // Fetching logged in user
-    const user = useAuthStore.getState().user;
-
-    // Update view mode
     set({ viewMode });
 
-    // If the user is logged in, update the view mode remotely.
-    if (user) {
-      SettingsHelper.set<TViewMode>(user.uid, "viewMode", viewMode);
+    if (useAuthStore.getState().user) {
+      request("settings.set", { settings: { viewMode } }).catch(() => undefined);
     }
   },
 

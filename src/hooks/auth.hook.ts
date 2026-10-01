@@ -1,8 +1,15 @@
-import { useEffect, useState } from "react";
-import { AuthHelper } from "../core/helpers/firebase/auth.helper";
+import { FiremittHelper } from "@eoussama/firemitt";
+import { getFiremittOptions } from "../core/auth/fireguard";
+import { request } from "../core/messaging/client";
 import { useAuthStore } from "../state/auth.state";
 
 
+
+/**
+ * @description
+ * The picture shown for users without a profile picture.
+ */
+const DEFAULT_PHOTO = "./icons/icon128x128.png";
 
 /**
  * @description
@@ -11,45 +18,34 @@ import { useAuthStore } from "../state/auth.state";
  * @returns Auth state and handlers
  */
 export function useAuth() {
-  const [email, setEmail] = useState("");
-  const login = useAuthStore(e => e.login);
-  const logout = useAuthStore(e => e.logout);
-  const connectedUser = useAuthStore(e => e.user);
-  const [photo, setPhoto] = useState("./icons/icon128x128.png");
+  const user = useAuthStore(e => e.user);
 
-  const isLoggedIn = () => Boolean(connectedUser);
+  const isLoggedIn = () => Boolean(user);
 
   /**
    * @description
-   * Logs user in
+   * Signs in with Google through Fireguard, then hands the token to the
+   * background, which owns the Firebase session.
    */
   const onLogin = () => {
-    AuthHelper.login();
+    FiremittHelper.auth({ ...getFiremittOptions(), mode: "popup", pos: { y: 50, x: Math.round(window.screen.width / 2 - 225) } })
+      .then(idToken => request("auth.signIn", { idToken }))
+      .catch(() => undefined);
   };
 
   /**
    * @description
-   * Logs user out
+   * Signs out
    */
   const onLogout = () => {
-    AuthHelper.logout();
+    request("auth.signOut", {}).catch(() => undefined);
   };
 
-  useEffect(() => {
-    setEmail(connectedUser?.email ?? "");
-    setPhoto(connectedUser?.photoURL ?? "./icons/icon128x128.png");
-  }, [connectedUser?.uid]);
-
-  useEffect(() => {
-    AuthHelper.onChange((user) => {
-      if (user) {
-        login(user);
-      }
-      else {
-        logout();
-      }
-    });
-  }, []);
-
-  return { email, photo, onLogin, onLogout, isLoggedIn };
+  return {
+    email: user?.email ?? "",
+    photo: user?.photoURL ?? DEFAULT_PHOTO,
+    onLogin,
+    onLogout,
+    isLoggedIn,
+  };
 }

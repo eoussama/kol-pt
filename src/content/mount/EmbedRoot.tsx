@@ -1,16 +1,12 @@
-import type { User } from "firebase/auth";
-import type { Imessage } from "../../core/types/message.type";
 import type { CardRegistry } from "./card-registry";
 
 import { CacheProvider } from "@emotion/react";
-import { useEffect, useSyncExternalStore } from "react";
+import { useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 import PostEmbed from "../../components/layout/embed/post-embed/PostEmbed";
 import PostLoader from "../../components/layout/embed/post-loader/PostLoader";
 import { ErrorBoundary } from "../../components/layout/generic/error-boundary/ErrorBoundary";
-import { EMessageType } from "../../core/enums/message-type.enum";
-import { MessageHelper } from "../../core/helpers/navigator/message.helper";
-import { useAuthStore } from "../../state/auth.state";
+import { useAuthSync } from "../../hooks/auth-sync.hook";
 import { PlayerProvider } from "../player/PlayerProvider";
 import { emotionCache } from "./emotion-cache";
 
@@ -26,26 +22,15 @@ interface IEmbedRootProps {
 
 /**
  * @description
- * Keeps the signed-in user in sync with the background, once per page.
+ * Mirrors the signed-in user. A component of its own so that, inside its
+ * error boundary, a failure here cannot take the panels down.
+ *
+ * @returns Nothing
  */
-function useAuthSync(): void {
-  const login = useAuthStore(e => e.login);
-  const logout = useAuthStore(e => e.logout);
+function AuthSync(): null {
+  useAuthSync();
 
-  useEffect(() => {
-    const unsubscribe = MessageHelper.listen<User>((e: Imessage<User>) => {
-      if (e.payload) {
-        login(e.payload);
-      }
-      else {
-        logout();
-      }
-    }, EMessageType.SYNC_RESPONSE);
-
-    MessageHelper.send(EMessageType.SYNC_REQUEST);
-
-    return unsubscribe;
-  }, [login, logout]);
+  return null;
 }
 
 /**
@@ -60,10 +45,12 @@ function useAuthSync(): void {
 export function EmbedRoot(props: IEmbedRootProps): JSX.Element {
   const embeds = useSyncExternalStore(props.registry.subscribe, props.registry.getSnapshot);
 
-  useAuthSync();
-
   return (
     <CacheProvider value={emotionCache}>
+      <ErrorBoundary>
+        <AuthSync />
+      </ErrorBoundary>
+
       {embeds.map(embed => createPortal(
         <ErrorBoundary>
           {embed.post

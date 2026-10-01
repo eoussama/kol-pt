@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { EViewMode } from "../core/enums/view-mode.enum";
-import { SettingsHelper } from "../core/helpers/firebase/repositories/settings.helper";
+import { request } from "../core/messaging/client";
 import { useAuthStore } from "../state/auth.state";
 import { useSettingsStore } from "../state/settings.state";
 
@@ -23,9 +23,8 @@ export function useViewMode() {
 
   useEffect(() => {
     if (user) {
-      SettingsHelper
-        .get(user.uid, "viewMode")
-        .then(applyViewMode)
+      request("settings.get", {})
+        .then(settings => applyViewMode(settings.viewMode))
         .catch(() => undefined);
     }
   }, [user?.uid]);

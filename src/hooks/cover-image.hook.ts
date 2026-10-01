@@ -1,49 +1,38 @@
 import { useEffect, useState } from "react";
-import { browser } from "wxt/browser";
-import { EMessageType } from "../core/enums/message-type.enum";
-import { MessageHelper } from "../core/helpers/navigator/message.helper";
+import { request } from "../core/messaging/client";
 
 
 
 /**
  * @description
- * Fetches an external image URL via the background service worker and returns
- * a data URL, bypassing the page's Content Security Policy.
+ * Fetches an external image through the background and returns it as a data
+ * URL, so it shows on pages whose content security policy blocks its host.
  *
- * @param url - The external image URL to fetch
- * @returns The fetched image as a data URL, or null while loading / on error
+ * @param url - The external image URL
+ * @returns The image as a data URL, or null while loading, on error, or for non-https URLs
  */
 export function useCoverImage(url: string | null | undefined): string | null {
   const [dataUrl, setDataUrl] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!url || !url.startsWith("http")) {
+    setDataUrl(null);
+
+    if (!url?.startsWith("https://")) {
       return;
     }
 
-    setDataUrl(null);
+    let active = true;
 
-    let settled = false;
-
-    const handler = (raw: unknown) => {
-      if (settled) {
-        return;
-      }
-
-      const msg = raw as { type?: number; payload?: { dataUrl?: string | null } };
-
-      if (msg?.type === EMessageType.FETCH_IMAGE_RESPONSE) {
-        settled = true;
-        setDataUrl(msg.payload?.dataUrl ?? null);
-        browser.runtime.onMessage.removeListener(handler);
-      }
-    };
-
-    browser.runtime.onMessage.addListener(handler);
-    MessageHelper.send(EMessageType.FETCH_IMAGE, { url });
+    request("images.fetch", { url })
+      .then((result) => {
+        if (active) {
+          setDataUrl(result);
+        }
+      })
+      .catch(() => undefined);
 
     return () => {
-      browser.runtime.onMessage.removeListener(handler);
+      active = false;
     };
   }, [url]);
 

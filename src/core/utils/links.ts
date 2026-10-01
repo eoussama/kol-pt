@@ -1,4 +1,4 @@
-import { getConfig } from "../../config/env";
+import { appConfig } from "../../config/app";
 
 
 
@@ -41,7 +41,7 @@ export function openPassione(): void {
  * Opens the creator's Patreon page.
  */
 export function openPatreon(): void {
-  const { patreonUrl, creatorName } = getConfig();
+  const { patreonUrl, creatorName } = appConfig;
 
   openExternal(`${patreonUrl}/${creatorName}`);
 }
@@ -54,7 +54,7 @@ export function openPatreon(): void {
  * @param reactionId - The reaction (tag) to position the video at
  */
 export function openPost(postId: string, reactionId?: string): void {
-  const url = new URL(`${getConfig().patreonUrl}/posts/${encodeURIComponent(postId)}`);
+  const url = new URL(`${appConfig.patreonUrl}/posts/${encodeURIComponent(postId)}`);
 
   if (reactionId) {
     url.searchParams.set("reactionId", reactionId);

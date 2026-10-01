@@ -1,29 +1,22 @@
-import type { TUnsafe } from "@eoussama/core";
-import type { User } from "firebase/auth";
+import type { IAuthUser } from "../auth-user.type";
 
 
 
 /**
  * @description
- * Interface representing the state of the user.
+ * The signed-in user, mirrored from extension storage.
  */
 export interface IAuthState {
 
   /**
    * @description
-   * The currently active user.
+   * The signed-in user, or null.
    */
-  user: TUnsafe<User>;
+  user: IAuthUser | null;
 
   /**
    * @description
-   * The login action
+   * Replaces the signed-in user.
    */
-  login: (newUser: User) => void;
-
-  /**
-   * @description
-   * The logout action
-   */
-  logout: () => void;
+  setUser: (user: IAuthUser | null) => void;
 }
