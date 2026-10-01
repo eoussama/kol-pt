@@ -19,10 +19,13 @@ Please read and follow our [Code of Conduct](CODE_OF_CONDUCT.md) before contribu
 ## Getting Started
 
 1. Fork the repository on GitHub
-2. Clone your forked repository: `git clone https://github.com/eoussama/kol-pt.git`
+2. Clone your fork: `git clone https://github.com/<your-username>/kol-pt.git`
 3. Navigate to the project directory: `cd kol-pt`
-4. Install dependencies: `pnpm install`
-5. Create a new branch for your feature: `git checkout -b feature/your-feature-name`
+4. Use Node.js 24 (`nvm use` reads `.nvmrc`) and enable pnpm: `corepack enable`
+5. Install dependencies: `pnpm install`
+6. Copy `.env.example` to `.env` and fill in the values
+7. Start a development build: `pnpm dev` (Chrome) or `pnpm dev:firefox`, then load it as described in the [README](README.md#loading-the-build)
+8. Create a new branch for your feature: `git checkout -b feature/your-feature-name`
 
 ## How to Contribute
 
@@ -46,9 +49,10 @@ Please read and follow our [Code of Conduct](CODE_OF_CONDUCT.md) before contribu
 
 1. Ensure your code follows our [Coding Standards](#coding-standards)
 2. Update the README.md with details of changes if applicable
-3. Make sure all tests pass before submitting: `pnpm test`
-4. Your pull request will be reviewed by maintainers
-5. Once approved, your pull request will be merged
+3. Make sure everything passes before submitting: `pnpm prod` (audit, lint, type-check, tests and builds for every browser)
+4. If you touched the content script, try it on KOL's Patreon in at least one Chromium browser and Firefox
+5. Your pull request will be reviewed by maintainers
+6. Once approved, your pull request will be merged
 
 ## Coding Standards
 
@@ -57,6 +61,8 @@ Please read and follow our [Code of Conduct](CODE_OF_CONDUCT.md) before contribu
 - Write comments only for non-obvious logic
 - Follow the existing project code style and linting rules: `pnpm lint`
 - Write unit tests for new features
+- Keep Patreon selectors in `src/content/patreon/selectors.ts`, and only rely on `data-tag` attributes, ids and ARIA labels: Patreon's class names change with every deploy
+- Only the background script may talk to Firebase or third-party APIs; other parts of the extension go through the request protocol in `src/core/messaging`
 
 ## Reporting Bugs
 
