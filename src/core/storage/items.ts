@@ -2,6 +2,7 @@ import type { TEntry } from "../schemas/entry/entry.schema";
 import type { TPost } from "../schemas/post.schema";
 import type { TPatreonColorMode } from "../theme/color-mode";
 import type { IAuthUser } from "../types/auth-user.type";
+import type { IProgress } from "../utils/progress";
 
 import { storage } from "wxt/utils/storage";
 
@@ -72,6 +73,32 @@ export const watchlistItem = storage.defineItem<IStoredWatchlist | null>("local:
  * the watchlist.
  */
 export const favoritesItem = storage.defineItem<IStoredWatchlist | null>("local:favorites", { fallback: null });
+
+/**
+ * @description
+ * Where a user stopped watching each post, as kept in extension storage.
+ */
+export interface IStoredProgress {
+
+  /**
+   * @description
+   * Whose positions they are.
+   */
+  uid: string;
+
+  /**
+   * @description
+   * The saved positions, by post (database key).
+   */
+  posts: Record<string, IProgress>;
+}
+
+/**
+ * @description
+ * Where the signed-in user stopped watching each post. Written by the
+ * background; the popup and every Patreon tab watch it.
+ */
+export const progressItem = storage.defineItem<IStoredProgress | null>("local:progress", { fallback: null });
 
 /**
  * @description

@@ -8,6 +8,7 @@ import PostLoader from "../../components/layout/embed/post-loader/PostLoader";
 import { ErrorBoundary } from "../../components/layout/generic/error-boundary/ErrorBoundary";
 import { ThemeRoot } from "../../components/theme/ThemeRoot";
 import { useAuthSync } from "../../hooks/auth-sync.hook";
+import { useProgressSync } from "../../hooks/progress-sync.hook";
 import { useWatchlistSync } from "../../hooks/watchlist-sync.hook";
 import { PlayerProvider } from "../player/PlayerProvider";
 import { emotionCache } from "./emotion-cache";
@@ -24,7 +25,7 @@ interface IEmbedRootProps {
 
 /**
  * @description
- * Mirrors the signed-in user and their watchlist. A component of its own so
+ * Mirrors the signed-in user, their watchlist and saved positions. A component of its own so
  * that, inside its error boundary, a failure here cannot take the panels down.
  *
  * @returns Nothing
@@ -32,6 +33,7 @@ interface IEmbedRootProps {
 function StateSync(): null {
   useAuthSync();
   useWatchlistSync();
+  useProgressSync();
 
   return null;
 }

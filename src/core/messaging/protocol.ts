@@ -121,6 +121,16 @@ export interface IRequestMap {
     payload: { postId: string; tagId: string; favorite: boolean };
     response: Array<string>;
   };
+
+  /**
+   * @description
+   * Saves where the signed-in user stopped watching a post, in seconds, or
+   * forgets it (null).
+   */
+  "progress.set": {
+    payload: { postId: string; time: number | null };
+    response: null;
+  };
 }
 
 /**

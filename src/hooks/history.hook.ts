@@ -1,10 +1,13 @@
 import type { Post } from "../core/domain/post";
 import type { Tag } from "../core/domain/tag";
+import type { IProgress } from "../core/utils/progress";
 
 import { useEffect, useMemo, useState } from "react";
+import { findReactionAt } from "../core/utils/progress";
 import { toDatabaseKey, watchlistKey } from "../core/utils/watchlist";
 import { useFavoritesStore } from "../state/favorites.state";
 import { usePostStore } from "../state/posts.state";
+import { useProgressStore } from "../state/progress.state";
 import { useWatchlistStore } from "../state/watchlist.state";
 
 
@@ -13,7 +16,7 @@ import { useWatchlistStore } from "../state/watchlist.state";
  * @description
  * Which reactions the history lists.
  */
-export type THistoryKind = "watched" | "favorites";
+export type THistoryKind = "watched" | "favorites" | "continue";
 
 /**
  * @description
@@ -25,9 +28,16 @@ export interface IHistoryItem {
 
   /**
    * @description
-   * When it was marked, or null for reactions marked before dates were recorded.
+   * When it was marked, or null for reactions marked before dates were
+   * recorded. For a post to continue, when its position was saved.
    */
   markedAt: Date | null;
+
+  /**
+   * @description
+   * For a post to continue, where the user stopped watching, in seconds.
+   */
+  resumeAt?: number;
 }
 
 /**
@@ -59,7 +69,27 @@ export function buildHistory(
 
 /**
  * @description
- * The signed-in user's watched reactions or favorites, searchable.
+ * Lists the posts the user stopped watching partway, most recently watched
+ * first, each with the reaction they stopped in.
+ *
+ * @param posts - The tracked posts
+ * @param progress - The saved positions, by post (database key)
+ * @returns The posts to continue
+ */
+export function buildContinueList(posts: ReadonlyArray<Post>, progress: ReadonlyMap<string, IProgress>): Array<IHistoryItem> {
+  const items = posts.flatMap((post): Array<IHistoryItem> => {
+    const saved = progress.get(toDatabaseKey(post.id));
+    const tag = saved ? findReactionAt(post.tags, saved.time) : null;
+
+    return saved && tag ? [{ post, tag, markedAt: new Date(saved.updatedAt), resumeAt: saved.time }] : [];
+  });
+
+  return items.sort((a, b) => (b.markedAt?.getTime() ?? 0) - (a.markedAt?.getTime() ?? 0));
+}
+
+/**
+ * @description
+ * The signed-in user's watched reactions, favorites or posts to continue, searchable.
  *
  * @param kind - Which reactions to list
  * @returns The history and its loading state
@@ -74,6 +104,7 @@ export function useHistory(kind: THistoryKind) {
   const watchedAt = useWatchlistStore(e => e.markedAt);
   const favoritePosts = useFavoritesStore(e => e.posts);
   const favoritedAt = useFavoritesStore(e => e.markedAt);
+  const progress = useProgressStore(e => e.posts);
   const marked = kind === "watched" ? watchedPosts : favoritePosts;
   const markedAt = kind === "watched" ? watchedAt : favoritedAt;
 
@@ -81,7 +112,10 @@ export function useHistory(kind: THistoryKind) {
     loadPosts();
   }, [loadPosts]);
 
-  const history = useMemo(() => buildHistory(posts, marked, markedAt), [posts, marked, markedAt]);
+  const history = useMemo(
+    () => kind === "continue" ? buildContinueList(posts, progress) : buildHistory(posts, marked, markedAt),
+    [kind, posts, progress, marked, markedAt],
+  );
   const filtered = useMemo(() => history.filter(item => item.tag.entry?.match(search) || item.post.match(search) || item.tag.getTitle().toLowerCase().includes(search)), [history, search]);
 
   /**

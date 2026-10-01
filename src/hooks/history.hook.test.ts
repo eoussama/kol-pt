@@ -1,7 +1,7 @@
 import type { TPost } from "../core/schemas/post.schema";
 
 import { hydratePosts } from "../core/domain/hydrate";
-import { buildHistory } from "./history.hook";
+import { buildContinueList, buildHistory } from "./history.hook";
 
 
 
@@ -28,5 +28,16 @@ describe("buildHistory", () => {
 
   it("is empty when nothing is watched", () => {
     expect(buildHistory(posts, new Map(), new Map())).toEqual([]);
+  });
+});
+
+describe("buildContinueList", () => {
+  it("lists posts with a saved position, most recently watched first, with the reaction stopped in", () => {
+    const progress = new Map([["old-post-1", { time: 30, updatedAt: 100 }], ["new-post-2", { time: 10, updatedAt: 50 }]]);
+
+    const items = buildContinueList(posts, progress);
+
+    expect(items.map(item => [item.post.id, item.tag.id, item.resumeAt])).toEqual([["old-post-1", "t1", 30], ["new-post-2", "t3", 10]]);
+    expect(items[0]?.markedAt?.getTime()).toBe(100);
   });
 });

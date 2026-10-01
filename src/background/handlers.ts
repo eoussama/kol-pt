@@ -6,6 +6,7 @@ import { requireUser, signInWithGoogleToken, signOutUser } from "./auth";
 import { fetchImageAsDataUrl } from "./images";
 import { isExtensionPage } from "./messaging/server";
 import { getEntries, getPostsWithEntries } from "./repositories/content";
+import { setProgress } from "./repositories/progress";
 import { getSettings, updateSettings } from "./repositories/settings";
 import { favorites, setWatched } from "./repositories/watchlist";
 
@@ -51,4 +52,10 @@ export const handlers: THandlers = {
   "watchlist.set": async ({ postId, tagId, watched }) => setWatched((await requireUser()).uid, postId, tagId, watched),
 
   "favorites.set": async ({ postId, tagId, favorite }) => setWatched((await requireUser()).uid, postId, tagId, favorite, Date.now, favorites),
+
+  "progress.set": async ({ postId, time }) => {
+    await setProgress((await requireUser()).uid, postId, time);
+
+    return null;
+  },
 };

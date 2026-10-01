@@ -48,16 +48,22 @@ export function openPatreon(): void {
 
 /**
  * @description
- * Opens a Patreon post, optionally positioned at one of its reactions.
+ * Opens a Patreon post, optionally positioned at one of its reactions or at
+ * a saved position.
  *
  * @param postId - The post's ID
  * @param reactionId - The reaction (tag) to position the video at
+ * @param resumeAt - The position to resume at, in seconds; wins over the reaction
  */
-export function openPost(postId: string, reactionId?: string): void {
+export function openPost(postId: string, reactionId?: string, resumeAt?: number): void {
   const url = new URL(`${appConfig.patreonUrl}/posts/${encodeURIComponent(postId)}`);
 
   if (reactionId) {
     url.searchParams.set("reactionId", reactionId);
+  }
+
+  if (resumeAt !== undefined) {
+    url.searchParams.set("resumeAt", String(Math.floor(resumeAt)));
   }
 
   openExternal(url.href);

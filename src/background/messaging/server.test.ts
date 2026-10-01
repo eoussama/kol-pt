@@ -24,6 +24,7 @@ function stubHandlers(overrides: Partial<THandlers> = {}): THandlers {
     "settings.set": fail,
     "watchlist.set": fail,
     "favorites.set": fail,
+    "progress.set": fail,
     ...overrides,
   };
 }

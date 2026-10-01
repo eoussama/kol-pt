@@ -9,11 +9,13 @@ import { ReactionOverlayContext } from "../../../../context/ReactionOverlayConte
 import { getImageUrl } from "../../../../core/utils/assets";
 import { openPassione } from "../../../../core/utils/links";
 import { useAutoWatch } from "../../../../hooks/auto-watch.hook";
+import { useProgressTracking } from "../../../../hooks/progress.hook";
 import { useAuthStore } from "../../../../state/auth.state";
 import EntryView from "../../../pages/entry/EntryView";
 import { PostAccordion } from "../post-accordion/PostAccordion";
 import PostReactionMenu from "../post-reaction-menu/PostReactionMenu";
 import PostReaction from "../post-reaction/PostReaction";
+import PostResume from "../post-resume/PostResume";
 
 import styles from "./PostReactions.module.scss";
 
@@ -30,6 +32,7 @@ function PostReactions(): JSX.Element {
   const { ready, cue } = usePlayer();
 
   useAutoWatch(post);
+  useProgressTracking(post);
   const user = useAuthStore(e => e.user);
   const [alertOpen, setAlertOpen] = useState(false);
   const [expanded, setExpanded] = useState<boolean>(true);
@@ -79,16 +82,21 @@ function PostReactions(): JSX.Element {
     openPassione();
   };
 
-  // Positioning the video at the reaction linked from the popup (?reactionId=)
+  // Positioning the video where the popup's link says (?resumeAt= or ?reactionId=)
   useEffect(() => {
     if (!ready) {
       return;
     }
 
-    const reactionId = new URLSearchParams(window.location.search).get("reactionId");
+    const params = new URLSearchParams(window.location.search);
+    const resumeAt = Number(params.get("resumeAt") ?? Number.NaN);
+    const reactionId = params.get("reactionId");
     const reaction = reactionId ? post.tags.find(tag => tag.id === reactionId) : undefined;
 
-    if (reaction) {
+    if (Number.isFinite(resumeAt) && resumeAt >= 0) {
+      cue(resumeAt);
+    }
+    else if (reaction) {
       cue(reaction.startTime);
     }
   }, [ready, cue, post]);
@@ -147,6 +155,8 @@ function PostReactions(): JSX.Element {
         </AccordionSummary>
 
         <AccordionDetails className={styles.post__body}>
+          <PostResume />
+
           <ul className={styles.reactions}>
             {post.tags.map(tag => <PostReaction key={tag.id} tag={tag} />)}
           </ul>

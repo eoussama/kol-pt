@@ -1,0 +1,43 @@
+.resume {
+  padding: 10px 15px;
+  background-color: var(--kolpt-color-surface);
+  border-top: 1px solid var(--kolpt-color-border);
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  &__icon {
+    color: var(--kolpt-color-icon);
+  }
+
+  &__text {
+    min-width: 0;
+  }
+
+  &__title {
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--kolpt-color-title);
+  }
+
+  &__description {
+    font-size: 12px;
+    font-weight: 300;
+    color: var(--kolpt-color-muted);
+
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  &__time {
+    font-weight: 500;
+  }
+
+  &__button {
+    flex-shrink: 0;
+    margin-left: auto !important;
+    text-transform: none !important;
+  }
+}

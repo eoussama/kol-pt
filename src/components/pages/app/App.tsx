@@ -1,6 +1,7 @@
 import { Outlet } from "react-router";
 
 import { useAuthSync } from "../../../hooks/auth-sync.hook";
+import { useProgressSync } from "../../../hooks/progress-sync.hook";
 import { useWatchlistSync } from "../../../hooks/watchlist-sync.hook";
 import Header from "../../layout/generic/header/Header";
 
@@ -18,6 +19,7 @@ import styles from "./App.module.scss";
 function App(): JSX.Element {
   useAuthSync();
   useWatchlistSync();
+  useProgressSync();
 
   return (
     <main className={styles.root}>
