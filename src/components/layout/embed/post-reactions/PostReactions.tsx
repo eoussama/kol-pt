@@ -34,19 +34,10 @@ function PostReactions(): JSX.Element {
   useAutoWatch(post);
   useProgressTracking(post);
   const user = useAuthStore(e => e.user);
-  const [alertOpen, setAlertOpen] = useState(false);
+  const authReady = useAuthStore(e => e.ready);
+  const [dismissed, setDismissed] = useState(false);
   const [expanded, setExpanded] = useState<boolean>(true);
   const { tag, dialogOpened, setDialogOpened } = useContext(ReactionOverlayContext);
-
-  /**
-   * @description
-   * Checks if user is logged in
-   *
-   * @returns True if user is authenticated
-   */
-  const isLoggedIn = () => {
-    return Boolean(user);
-  };
 
   /**
    * @description
@@ -101,9 +92,13 @@ function PostReactions(): JSX.Element {
     }
   }, [ready, cue, post]);
 
+  // A dismissed callout comes back after signing out and in again
   useEffect(() => {
-    setAlertOpen(!isLoggedIn());
+    setDismissed(false);
   }, [user?.uid]);
+
+  // Only once the stored sign-in is known, so it never shows just to vanish
+  const alertOpen = authReady && !user && !dismissed;
 
   return (
     <>
@@ -117,7 +112,7 @@ function PostReactions(): JSX.Element {
               <IconButton
                 size="small"
                 aria-label="Login in notice"
-                onClick={() => setAlertOpen(false)}
+                onClick={() => setDismissed(true)}
               >
                 <CloseIcon />
               </IconButton>

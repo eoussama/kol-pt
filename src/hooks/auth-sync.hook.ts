@@ -20,7 +20,12 @@ export function useAuthSync(): void {
       if (active) {
         setUser(user);
       }
-    }).catch(() => undefined);
+    }).catch(() => {
+      // Unreadable storage: settle on whatever is known rather than wait forever
+      if (active) {
+        setUser(useAuthStore.getState().user);
+      }
+    });
 
     const unwatch = authUserItem.watch(user => setUser(user));
 

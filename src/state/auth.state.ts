@@ -10,8 +10,9 @@ import { create } from "zustand";
  */
 export const useAuthStore = create<IAuthState>(set => ({
   user: null,
+  ready: false,
 
   setUser(user) {
-    set({ user });
+    set({ user, ready: true });
   },
 }));
