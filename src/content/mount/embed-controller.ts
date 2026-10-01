@@ -1,7 +1,7 @@
 import type { Post } from "../../core/domain/post";
 import type { CardRegistry, ICardEmbed } from "./card-registry";
 
-import { findCards, getMountPoint, insertAt, resolveCards } from "../patreon/post-card";
+import { findCards, getMountPoint, insertAt, resolveCards, toNumericPostId } from "../patreon/post-card";
 import { HOST_ATTRIBUTE } from "../patreon/selectors";
 
 
@@ -46,7 +46,8 @@ export class EmbedController {
    * @param posts - Every tracked post
    */
   setPosts(posts: Array<Post>): void {
-    this.posts = new Map(posts.map(post => [post.id, post]));
+    // Cards are identified by Patreon's numeric id, posts by their URL slug
+    this.posts = new Map(posts.map(post => [toNumericPostId(post.id), post]));
     this.sync();
   }
 

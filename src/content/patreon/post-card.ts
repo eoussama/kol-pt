@@ -33,6 +33,19 @@ export interface IMountPoint {
 
 /**
  * @description
+ * Reduces a stored post id to Patreon's numeric post id, which is what the
+ * page exposes. The database stores posts by their URL slug
+ * (`anime-tonight-2-78568944`); bare numeric ids are kept as they are.
+ *
+ * @param id - The stored post id
+ * @returns The numeric post id, or the id unchanged if it has none
+ */
+export function toNumericPostId(id: string): string {
+  return /(?:^|-)(\d+)$/.exec(id)?.[1] ?? id;
+}
+
+/**
+ * @description
  * Extracts a post id from a Patreon post URL.
  *
  * @param url - An absolute or relative post URL

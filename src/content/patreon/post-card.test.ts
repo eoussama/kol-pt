@@ -1,5 +1,5 @@
 import feed from "./__fixtures__/feed.html?raw";
-import { findCards, getMountPoint, getPostId, getPostIdFromUrl, insertAt, isLocked, resolveCards } from "./post-card";
+import { findCards, getMountPoint, getPostId, getPostIdFromUrl, insertAt, isLocked, resolveCards, toNumericPostId } from "./post-card";
 
 
 
@@ -29,6 +29,16 @@ describe("getPostIdFromUrl", () => {
     "",
   ])("returns null for %s", (url) => {
     expect(getPostIdFromUrl(url)).toBeNull();
+  });
+});
+
+describe("toNumericPostId", () => {
+  it.each([
+    ["anime-tonight-2-78568944", "78568944"],
+    ["78568944", "78568944"],
+    ["no-number", "no-number"],
+  ])("reads %s as %s", (id, expected) => {
+    expect(toNumericPostId(id)).toBe(expected);
   });
 });
 

@@ -48,6 +48,12 @@ describe("embedController", () => {
     expect(embed?.card.style.boxShadow).not.toBe("");
   });
 
+  it("matches posts stored by their URL slug", () => {
+    controller.setPosts([post("shows-anime-9-30-1001")]);
+
+    expect(registry.getSnapshot().map(e => [e.postId, e.post?.id])).toEqual([["1001", "shows-anime-9-30-1001"]]);
+  });
+
   it("mounts cards added after the posts loaded", () => {
     controller.setPosts([post("1001"), post("2001")]);
 
