@@ -48,6 +48,9 @@
   &__login {
     font-family: 'Open Sans';
     background-color: #ffffff !important;
+    // The header stays blue in both themes, so the button keeps the brand blue
+    color: var(--kolpt-color-primary) !important;
+    border-color: rgba(var(--kolpt-color-primary-rgb), 0.5) !important;
   }
 
   &__logout {

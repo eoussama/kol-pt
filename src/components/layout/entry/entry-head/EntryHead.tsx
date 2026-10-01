@@ -2,7 +2,7 @@ import type { IEntryPageHeadSectionProps } from "../../../../core/types/props/en
 
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { Chip } from "@mui/material";
-import millify from "millify";
+import { millify } from "millify";
 import { EEntryType } from "../../../../core/enums/entry-type.enum";
 import Loader from "../../generic/loader/Loader";
 import TextExpand from "../../generic/text-expand/TextExpand";

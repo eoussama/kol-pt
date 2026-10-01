@@ -1,5 +1,6 @@
 import type { TEntry } from "../schemas/entry/entry.schema";
 import type { TPost } from "../schemas/post.schema";
+import type { TPatreonColorMode } from "../theme/color-mode";
 import type { IAuthUser } from "../types/auth-user.type";
 
 import { storage } from "wxt/utils/storage";
@@ -38,6 +39,13 @@ export const authUserItem = storage.defineItem<IAuthUser | null>("local:auth-use
  * Written by the background; every Patreon tab watches it.
  */
 export const watchlistItem = storage.defineItem<{ uid: string; keys: Array<string> } | null>("local:watchlist", { fallback: null });
+
+/**
+ * @description
+ * Patreon's appearance setting, last seen on a Patreon page, so the popup can
+ * match it.
+ */
+export const patreonColorModeItem = storage.defineItem<TPatreonColorMode | null>("local:patreon-color-mode", { fallback: null });
 
 /**
  * @description

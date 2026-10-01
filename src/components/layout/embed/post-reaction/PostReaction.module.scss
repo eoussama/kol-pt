@@ -1,6 +1,6 @@
 .reaction {
   padding: 10px 15px;
-  background-color: #ffffff;
+  background-color: var(--kolpt-color-surface);
 
   display: flex;
   align-items: center;
@@ -22,12 +22,12 @@
 
   &__title {
     font-size: 14px;
-    color: #232630;
+    color: var(--kolpt-color-title);
     font-weight: 400;
   }
 
   &__description {
-    color: grey;
+    color: var(--kolpt-color-muted);
     font-size: 12px;
     font-weight: 300;
   }
@@ -48,7 +48,7 @@
     margin-left: auto;
 
     button {
-      color: #b9b9b9;
+      color: var(--kolpt-color-icon);
     }
   }
 
@@ -75,7 +75,7 @@
   }
 
   &:not(:last-of-type) {
-    border-bottom: 1px solid #e1e1e1;
+    border-bottom: 1px solid var(--kolpt-color-border);
   }
 
   &:hover {

@@ -21,7 +21,7 @@
 
     .reaction {
       padding: 8px 5px 8px 15px;
-      background-color: #ffffff;
+      background-color: var(--kolpt-color-surface);
 
       display: flex;
       align-items: center;
@@ -50,12 +50,12 @@
         transition-property: opacity;
 
         button {
-          color: #b9b9b9;
+          color: var(--kolpt-color-icon);
         }
       }
 
       &:not(:last-of-type) {
-        border-bottom: 1px solid #f3f3f3;
+        border-bottom: 1px solid var(--kolpt-color-divider);
       }
 
       &:hover {

@@ -6,6 +6,7 @@ import { createPortal } from "react-dom";
 import PostEmbed from "../../components/layout/embed/post-embed/PostEmbed";
 import PostLoader from "../../components/layout/embed/post-loader/PostLoader";
 import { ErrorBoundary } from "../../components/layout/generic/error-boundary/ErrorBoundary";
+import { ThemeRoot } from "../../components/theme/ThemeRoot";
 import { useAuthSync } from "../../hooks/auth-sync.hook";
 import { useWatchlistSync } from "../../hooks/watchlist-sync.hook";
 import { PlayerProvider } from "../player/PlayerProvider";
@@ -49,23 +50,25 @@ export function EmbedRoot(props: IEmbedRootProps): JSX.Element {
 
   return (
     <CacheProvider value={emotionCache}>
-      <ErrorBoundary>
-        <StateSync />
-      </ErrorBoundary>
-
-      {embeds.map(embed => createPortal(
+      <ThemeRoot>
         <ErrorBoundary>
-          {embed.post
-            ? (
-                <PlayerProvider card={embed.card} postId={embed.postId}>
-                  <PostEmbed post={embed.post} />
-                </PlayerProvider>
-              )
-            : <PostLoader />}
-        </ErrorBoundary>,
-        embed.host,
-        embed.key,
-      ))}
+          <StateSync />
+        </ErrorBoundary>
+
+        {embeds.map(embed => createPortal(
+          <ErrorBoundary>
+            {embed.post
+              ? (
+                  <PlayerProvider card={embed.card} postId={embed.postId}>
+                    <PostEmbed post={embed.post} />
+                  </PlayerProvider>
+                )
+              : <PostLoader />}
+          </ErrorBoundary>,
+          embed.host,
+          embed.key,
+        ))}
+      </ThemeRoot>
     </CacheProvider>
   );
 }
