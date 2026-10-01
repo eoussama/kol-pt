@@ -1,7 +1,7 @@
 .actions {
-  &__count {
-    margin-left: 5px;
-  }
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .history {

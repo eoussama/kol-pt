@@ -36,7 +36,6 @@
     font-weight: 500;
   }
 
-  &__right,
   &__extra {
     opacity: 0;
 
@@ -47,9 +46,48 @@
   &__right {
     margin-left: auto;
 
+    display: flex;
+    align-items: center;
+
     button {
       color: var(--kolpt-color-icon);
     }
+
+    // The actions appear on hover. The heart is one of them but has its
+    // own animation, and stays once favorited.
+    > :not(.reaction__favorite) {
+      opacity: 0;
+
+      transition-duration: 0.2s;
+      transition-property: opacity;
+    }
+  }
+
+  // A favorite stays visible. At rest it takes the place of the three dots
+  // (one button over) and slides left into its own place on hover. An
+  // unfavorited heart is hidden at rest and just fades in on hover.
+  &__favorite {
+    opacity: 0;
+
+    transition-duration: 0.2s;
+    transition-property: opacity, transform;
+    transition-timing-function: ease;
+
+    button {
+      color: var(--kolpt-color-icon);
+    }
+
+    &--shifted {
+      transform: translateX(34px);
+    }
+
+    &--on {
+      opacity: 1;
+    }
+  }
+
+  &__heart {
+    color: #e0245e !important;
   }
 
   &__tracking {
@@ -86,9 +124,14 @@
 
   &:hover {
 
-    .reaction__right,
+    .reaction__right > :not(.reaction__favorite),
     .reaction__extra {
       opacity: 1;
+    }
+
+    .reaction__favorite {
+      opacity: 1;
+      transform: none;
     }
   }
 }

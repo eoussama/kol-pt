@@ -1,6 +1,7 @@
-import type { IHistoryItem } from "../../../hooks/history.hook";
+import type { IHistoryItem, THistoryKind } from "../../../hooks/history.hook";
 
 import { Chip, CircularProgress, Divider, List, ListItem, Tooltip } from "@mui/material";
+import { useState } from "react";
 import { openPost } from "../../../core/utils/links";
 import { useHistory } from "../../../hooks/history.hook";
 import { useAuthStore } from "../../../state/auth.state";
@@ -15,15 +16,18 @@ import styles from "./HistoryPage.module.scss";
 
 /**
  * @description
- * Describes when a reaction was watched.
+ * Describes when a reaction was watched or favorited.
  *
- * @param item - The watched reaction
- * @returns The watch date, or a note for reactions without one
+ * @param item - The reaction
+ * @param kind - Whether it is listed as watched or as a favorite
+ * @returns The date, or a note for reactions without one
  */
-function describeWatched(item: IHistoryItem): string {
-  return item.watchedAt
-    ? `Watched ${item.watchedAt.toLocaleDateString()} at ${item.watchedAt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`
-    : "Watched";
+function describeMarked(item: IHistoryItem, kind: THistoryKind): string {
+  const label = kind === "watched" ? "Watched" : "Favorited";
+
+  return item.markedAt
+    ? `${label} ${item.markedAt.toLocaleDateString()} at ${item.markedAt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`
+    : label;
 }
 
 /**
@@ -35,10 +39,11 @@ function describeWatched(item: IHistoryItem): string {
  */
 function HistoryPage(): JSX.Element {
   const user = useAuthStore(e => e.user);
-  const { history, error, loading, search, historyCount, onSearch } = useHistory();
+  const [kind, setKind] = useState<THistoryKind>("watched");
+  const { history, error, loading, search, historyCount, onSearch } = useHistory(kind);
 
   const emptyMessage = !user
-    ? "Login to keep a history of the reactions you watch"
+    ? "Login to keep a history of the reactions you watch and favorite"
     : historyCount > 0
       ? (
           <>
@@ -47,16 +52,30 @@ function HistoryPage(): JSX.Element {
             <b>{search}</b>
           </>
         )
-      : "Reactions you watch will show up here";
+      : (kind === "watched" ? "Reactions you watch will show up here" : "Reactions you favorite will show up here");
 
   return (
     <>
       <Search
         onSearch={onSearch}
         actions={(
-          <Tooltip title="Watched Reactions">
-            <Chip className={styles.actions__count} size="small" label={historyCount} />
-          </Tooltip>
+          <div className={styles.actions}>
+            <Chip
+              size="small"
+              label="Watched"
+              onClick={() => setKind("watched")}
+              color={kind === "watched" ? "primary" : "default"}
+            />
+            <Chip
+              size="small"
+              label="Favorites"
+              onClick={() => setKind("favorites")}
+              color={kind === "favorites" ? "primary" : "default"}
+            />
+            <Tooltip title={kind === "watched" ? "Watched Reactions" : "Favorite Reactions"}>
+              <Chip size="small" label={historyCount} />
+            </Tooltip>
+          </div>
         )}
       />
 
@@ -80,7 +99,7 @@ function HistoryPage(): JSX.Element {
                                 {" · "}
                                 {item.post.title}
                               </span>
-                              <span className={styles.item__line}>{describeWatched(item)}</span>
+                              <span className={styles.item__line}>{describeMarked(item, kind)}</span>
                             </>
                           )}
                         />

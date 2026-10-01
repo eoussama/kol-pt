@@ -1,7 +1,7 @@
 import { fakeBrowser } from "wxt/testing/fake-browser";
-import { watchlistItem } from "../../core/storage/items";
+import { favoritesItem, watchlistItem } from "../../core/storage/items";
 import { readValue, updateValues } from "../database";
-import { clearWatchlist, loadWatchlist, setWatched } from "./watchlist";
+import { clearWatchlist, favorites, loadWatchlist, setWatched } from "./watchlist";
 
 
 
@@ -84,5 +84,31 @@ describe("watchlist repository", () => {
     await clearWatchlist();
 
     await expect(watchlistItem.getValue()).resolves.toBeNull();
+  });
+
+  it("keeps favorites in their own list, apart from the watchlist", async () => {
+    vi.mocked(readValue).mockResolvedValue(null);
+    await setWatched("u1", "p1", "t1", true, () => 100);
+    await setWatched("u1", "p1", "t2", true, () => 200, favorites);
+
+    expect(updateValues).toHaveBeenNthCalledWith(1, "users/u1/watchlist", { "p1/t1": 100 });
+    expect(updateValues).toHaveBeenNthCalledWith(2, "users/u1/favorites", { "p1/t2": 200 });
+    await expect(watchlistItem.getValue()).resolves.toMatchObject({ keys: ["p1/t1"] });
+    await expect(favoritesItem.getValue()).resolves.toEqual({ uid: "u1", keys: ["p1/t2"], watchedAt: { "p1/t2": 200 } });
+  });
+
+  it("loads and clears favorites without touching the watchlist", async () => {
+    await watchlistItem.setValue({ uid: "u1", keys: ["p9/t9"], watchedAt: {} });
+    vi.mocked(readValue).mockResolvedValue({ p1: { t1: 300 } });
+
+    await loadWatchlist("u1", favorites);
+
+    expect(readValue).toHaveBeenCalledWith("users/u1/favorites");
+    await expect(favoritesItem.getValue()).resolves.toMatchObject({ keys: ["p1/t1"] });
+
+    await clearWatchlist(favorites);
+
+    await expect(favoritesItem.getValue()).resolves.toBeNull();
+    await expect(watchlistItem.getValue()).resolves.toMatchObject({ keys: ["p9/t9"] });
   });
 });

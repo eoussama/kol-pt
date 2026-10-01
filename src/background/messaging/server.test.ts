@@ -23,6 +23,7 @@ function stubHandlers(overrides: Partial<THandlers> = {}): THandlers {
     "settings.get": fail,
     "settings.set": fail,
     "watchlist.set": fail,
+    "favorites.set": fail,
     ...overrides,
   };
 }

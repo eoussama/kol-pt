@@ -3,7 +3,7 @@ import { defineBackground } from "wxt/utils/define-background";
 import { watchAuthState } from "../background/auth";
 import { handlers } from "../background/handlers";
 import { serve } from "../background/messaging/server";
-import { clearWatchlist, loadWatchlist } from "../background/repositories/watchlist";
+import { clearWatchlist, favorites, loadWatchlist } from "../background/repositories/watchlist";
 import { LEGACY_STORAGE_KEYS } from "../core/storage/items";
 
 
@@ -15,7 +15,9 @@ export default defineBackground(() => {
 
   try {
     watchAuthState((user) => {
-      (user ? loadWatchlist(user.uid) : clearWatchlist()).catch(() => undefined);
+      for (const list of [undefined, favorites]) {
+        (user ? loadWatchlist(user.uid, list) : clearWatchlist(list)).catch(() => undefined);
+      }
     });
   }
   catch (error) {

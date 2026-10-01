@@ -55,7 +55,7 @@ describe("useAutoWatch", () => {
     toggle.mockClear();
     player.playing = true;
     useAuthStore.setState({ user: { uid: "u1", email: null, displayName: null, photoURL: null } });
-    useWatchlistStore.setState({ posts: new Map(), watchedAt: new Map(), saving: new Map(), toggle });
+    useWatchlistStore.setState({ posts: new Map(), markedAt: new Map(), saving: new Map(), toggle });
   });
 
   it("marks a reaction watched once it finishes playing", () => {

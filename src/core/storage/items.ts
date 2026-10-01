@@ -68,6 +68,13 @@ export const watchlistItem = storage.defineItem<IStoredWatchlist | null>("local:
 
 /**
  * @description
+ * The reactions the signed-in user marked as favorites, in the same shape as
+ * the watchlist.
+ */
+export const favoritesItem = storage.defineItem<IStoredWatchlist | null>("local:favorites", { fallback: null });
+
+/**
+ * @description
  * Patreon's appearance setting, last seen on a Patreon page, so the popup can
  * match it.
  */

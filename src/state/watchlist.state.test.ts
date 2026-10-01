@@ -14,7 +14,7 @@ function stored(postId: string): Array<string> {
 describe("watchlist store", () => {
   beforeEach(() => {
     requestMock.mockReset();
-    useWatchlistStore.setState({ posts: new Map(), saving: new Map() });
+    useWatchlistStore.setState({ posts: new Map(), markedAt: new Map(), saving: new Map() });
   });
 
   it("keeps a separate watchlist per post", () => {

@@ -15,15 +15,15 @@ const posts = hydratePosts([
 ] as Array<TPost>, []);
 
 describe("buildHistory", () => {
-  it("lists watched reactions, most recently watched first, undated ones last", () => {
+  it("lists marked reactions, most recently marked first, undated ones last", () => {
     const watched = new Map([["old-post-1", new Set(["t1", "t2"])], ["new-post-2", new Set(["t3"])]]);
     const watchedAt = new Map([["old-post-1/t2", 500], ["new-post-2/t3", 300]]);
 
     const history = buildHistory(posts, watched, watchedAt);
 
     expect(history.map(item => `${item.post.id}/${item.tag.id}`)).toEqual(["old-post-1/t2", "new-post-2/t3", "old-post-1/t1"]);
-    expect(history[0]?.watchedAt?.getTime()).toBe(500);
-    expect(history[2]?.watchedAt).toBeNull();
+    expect(history[0]?.markedAt?.getTime()).toBe(500);
+    expect(history[2]?.markedAt).toBeNull();
   });
 
   it("is empty when nothing is watched", () => {

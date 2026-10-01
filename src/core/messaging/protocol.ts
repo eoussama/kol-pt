@@ -111,6 +111,16 @@ export interface IRequestMap {
     payload: { postId: string; tagId: string; watched: boolean };
     response: Array<string>;
   };
+
+  /**
+   * @description
+   * Marks one of the signed-in user's reactions as a favorite or not.
+   * Responds with every favorite's key.
+   */
+  "favorites.set": {
+    payload: { postId: string; tagId: string; favorite: boolean };
+    response: Array<string>;
+  };
 }
 
 /**

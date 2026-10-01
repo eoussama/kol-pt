@@ -1,31 +1,42 @@
 import { useEffect } from "react";
-import { watchlistItem } from "../core/storage/items";
+import { favoritesItem, watchlistItem } from "../core/storage/items";
+import { useFavoritesStore } from "../state/favorites.state";
 import { useWatchlistStore } from "../state/watchlist.state";
 
 
 
 /**
  * @description
- * Mirrors the watchlist from extension storage into the watchlist store, so a
- * change made in one tab shows in every tab. Use once per page, at the root.
+ * Mirrors the watchlist and the favorites from extension storage into their
+ * stores, so a change made in one tab shows in every tab. Use once per page,
+ * at the root.
  */
 export function useWatchlistSync(): void {
-  const setKeys = useWatchlistStore(e => e.setKeys);
+  const setWatched = useWatchlistStore(e => e.setKeys);
+  const setFavorites = useFavoritesStore(e => e.setKeys);
 
   useEffect(() => {
     let active = true;
 
-    watchlistItem.getValue().then((watchlist) => {
+    watchlistItem.getValue().then((list) => {
       if (active) {
-        setKeys(watchlist?.keys ?? [], watchlist?.watchedAt);
+        setWatched(list?.keys ?? [], list?.watchedAt);
       }
     }).catch(() => undefined);
 
-    const unwatch = watchlistItem.watch(watchlist => setKeys(watchlist?.keys ?? [], watchlist?.watchedAt));
+    favoritesItem.getValue().then((list) => {
+      if (active) {
+        setFavorites(list?.keys ?? [], list?.watchedAt);
+      }
+    }).catch(() => undefined);
+
+    const unwatchWatched = watchlistItem.watch(list => setWatched(list?.keys ?? [], list?.watchedAt));
+    const unwatchFavorites = favoritesItem.watch(list => setFavorites(list?.keys ?? [], list?.watchedAt));
 
     return () => {
       active = false;
-      unwatch();
+      unwatchWatched();
+      unwatchFavorites();
     };
-  }, [setKeys]);
+  }, [setWatched, setFavorites]);
 }

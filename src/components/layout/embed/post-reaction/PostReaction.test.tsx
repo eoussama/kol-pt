@@ -3,6 +3,7 @@ import { PostContext } from "../../../../context/PostContext";
 import { ReactionOverlayContext } from "../../../../context/ReactionOverlayContext";
 import { Tag } from "../../../../core/domain/tag";
 import { useAuthStore } from "../../../../state/auth.state";
+import { useFavoritesStore } from "../../../../state/favorites.state";
 import { useWatchlistStore } from "../../../../state/watchlist.state";
 import PostReaction from "./PostReaction";
 
@@ -57,5 +58,36 @@ describe("watched checkbox while saving", () => {
     renderRow("p1", "t3");
 
     expect(screen.getByRole("checkbox")).toBeChecked();
+  });
+
+  it("shows a heart that reflects, and saves, favorites", () => {
+    const toggle = vi.fn(async () => true);
+
+    useFavoritesStore.setState({ posts: new Map([["p1", new Set(["t3"])]]), markedAt: new Map(), saving: new Map(), toggle });
+
+    const first = renderRow("p1", "t3");
+
+    expect(screen.getByRole("button", { name: "remove from favorites" })).toHaveAttribute("aria-pressed", "true");
+    first.unmount();
+
+    renderRow("p1", "t1");
+    screen.getByRole("button", { name: "add to favorites" }).click();
+
+    expect(toggle).toHaveBeenCalledWith("p1", "t1", true);
+  });
+
+  it("shows a loader instead of the heart while a favorite is saved", () => {
+    renderRow("p1", "t1");
+
+    act(() => useFavoritesStore.setState({ saving: new Map([["p1", "t1"]]) }));
+
+    expect(screen.queryByRole("button", { name: "add to favorites" })).not.toBeInTheDocument();
+  });
+
+  it("has no heart for signed-out users", () => {
+    useAuthStore.setState({ user: null });
+    renderRow("p1", "t1");
+
+    expect(screen.queryByRole("button", { name: /favorites/ })).not.toBeInTheDocument();
   });
 });

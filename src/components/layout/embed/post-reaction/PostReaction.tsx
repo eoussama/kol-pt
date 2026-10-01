@@ -1,6 +1,8 @@
 import type { Tag } from "../../../../core/domain/tag";
 import type { IPostReactionProps } from "../../../../core/types/props/post-reaction-props.type";
 
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
@@ -11,6 +13,7 @@ import { usePlayer } from "../../../../content/player/PlayerProvider";
 import { PostContext } from "../../../../context/PostContext";
 import { ReactionOverlayContext } from "../../../../context/ReactionOverlayContext";
 import { useAuthStore } from "../../../../state/auth.state";
+import { useFavoritesStore, usePostFavorites } from "../../../../state/favorites.state";
 import { usePostWatchlist, useWatchlistStore } from "../../../../state/watchlist.state";
 import { Checkbox } from "../../../styled/Checkbox";
 
@@ -32,6 +35,9 @@ function PostReaction(props: IPostReactionProps): JSX.Element {
   const { isWatched, saving, isSaving } = usePostWatchlist(post.id);
   const watched = isWatched(tag.id);
   const savingThis = isSaving(tag.id);
+  const favorites = usePostFavorites(post.id);
+  const favorite = favorites.isFavorite(tag.id);
+  const toggleFavorite = useFavoritesStore(e => e.toggle);
   const toggleWatched = useWatchlistStore(e => e.toggle);
   const { playing, currentTime, playFrom } = usePlayer();
   const { setAnchorOpened, setAnchorEl, setTag, setDialogOpened } = useContext(ReactionOverlayContext);
@@ -171,29 +177,53 @@ function PostReaction(props: IPostReactionProps): JSX.Element {
           )}
 
           {tag.entry && (
-            <>
-              <Tooltip title="Detail">
-                <IconButton
-                  size="small"
-                  aria-label="detail"
-                  onClick={() => onDetail(tag)}
-                >
-                  <InfoOutlinedIcon />
-                </IconButton>
-              </Tooltip>
+            <Tooltip title="Detail">
+              <IconButton
+                size="small"
+                aria-label="detail"
+                onClick={() => onDetail(tag)}
+              >
+                <InfoOutlinedIcon />
+              </IconButton>
+            </Tooltip>
+          )}
 
-              <Tooltip title="More">
-                <IconButton
-                  size="small"
-                  aria-label="more"
-                  onClick={e => onMore(e, tag)}
-                >
-                  <MoreVertIcon />
-                </IconButton>
-              </Tooltip>
-            </>
+          {isLoggedIn() && (
+            <div className={[styles.reaction__favorite, favorite && styles["reaction__favorite--on"], favorite && tag.entry && styles["reaction__favorite--shifted"]].filter(Boolean).join(" ")}>
+              {favorites.isSaving(tag.id)
+                ? <CircularProgress size={18} aria-label="Saving" className={styles.reaction__saving} />
+                : (
+                    <Tooltip title={favorite ? "Remove from favorites" : "Add to favorites"}>
+                      <span>
+                        <IconButton
+                          size="small"
+                          disabled={favorites.saving}
+                          aria-pressed={favorite}
+                          aria-label={favorite ? "remove from favorites" : "add to favorites"}
+                          onClick={() => toggleFavorite(post.id, tag.id, !favorite)}
+                          className={favorite ? styles.reaction__heart : undefined}
+                        >
+                          {favorite ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+                        </IconButton>
+                      </span>
+                    </Tooltip>
+                  )}
+            </div>
+          )}
+
+          {tag.entry && (
+            <Tooltip title="More">
+              <IconButton
+                size="small"
+                aria-label="more"
+                onClick={e => onMore(e, tag)}
+              >
+                <MoreVertIcon />
+              </IconButton>
+            </Tooltip>
           )}
         </div>
+
       </li>
     </>
   );
