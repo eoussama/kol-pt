@@ -74,6 +74,12 @@
     padding: 0 !important;
   }
 
+  // Same footprint as the checkbox, so the row does not shift while saving
+  &__saving {
+    display: block;
+    margin: 2px;
+  }
+
   &:not(:last-of-type) {
     border-bottom: 1px solid var(--kolpt-color-border);
   }

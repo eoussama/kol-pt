@@ -1,39 +1,60 @@
 import { create } from "zustand";
 import { request } from "../core/messaging/client";
-import { watchlistKey } from "../core/utils/watchlist";
+import { toDatabaseKey } from "../core/utils/watchlist";
 
 
 
 /**
  * @description
- * The reactions the signed-in user marked as watched.
+ * The reactions the signed-in user marked as watched, kept per post.
  */
 export interface IWatchlistState {
 
   /**
    * @description
-   * Watched reactions, as stored, by watchlist key.
+   * Watched reactions, as stored: the watched reaction ids of each post.
    */
-  keys: ReadonlySet<string>;
+  posts: ReadonlyMap<string, ReadonlySet<string>>;
 
   /**
    * @description
-   * Changes sent to the background but not confirmed yet, by watchlist key.
+   * Posts with a change being saved, and the reaction being changed.
    */
-  pending: ReadonlyMap<string, boolean>;
+  saving: ReadonlyMap<string, string>;
 
   /**
    * @description
-   * Replaces the watched reactions with the stored ones.
+   * Replaces the watched reactions with the stored ones, given as
+   * `<postId>/<tagId>` watchlist keys.
    */
   setKeys: (keys: ReadonlyArray<string>) => void;
 
   /**
    * @description
-   * Marks a reaction as watched or not. The change shows immediately and is
-   * rolled back if saving fails.
+   * Marks a reaction as watched or not. The checkbox only changes once the
+   * background confirms the save, and nothing else in the post can be
+   * changed meanwhile. Resolves to whether it was saved.
    */
-  toggle: (postId: string, tagId: string, watched: boolean) => Promise<void>;
+  toggle: (postId: string, tagId: string, watched: boolean) => Promise<boolean>;
+}
+
+/**
+ * @description
+ * Groups `<postId>/<tagId>` watchlist keys by post.
+ *
+ * @param keys - The watchlist keys
+ * @returns The watched reaction ids of each post
+ */
+function groupByPost(keys: ReadonlyArray<string>): Map<string, Set<string>> {
+  const posts = new Map<string, Set<string>>();
+
+  for (const key of keys) {
+    const [postId = "", tagId = ""] = key.split("/");
+
+    posts.set(postId, (posts.get(postId) ?? new Set()).add(tagId));
+  }
+
+  return posts;
 }
 
 /**
@@ -42,53 +63,55 @@ export interface IWatchlistState {
  * storage by `useWatchlistSync`.
  */
 export const useWatchlistStore = create<IWatchlistState>((set, get) => ({
-  keys: new Set(),
+  posts: new Map(),
 
-  pending: new Map(),
+  saving: new Map(),
 
   setKeys(keys) {
-    set({ keys: new Set(keys) });
+    set({ posts: groupByPost(keys) });
   },
 
   async toggle(postId, tagId, watched) {
-    const key = watchlistKey(postId, tagId);
+    const post = toDatabaseKey(postId);
 
-    // A later toggle of the same reaction owns the pending state from then on
-    const settle = () => {
-      if (get().pending.get(key) !== watched) {
-        return;
-      }
+    if (get().saving.has(post)) {
+      return false;
+    }
 
-      const pending = new Map(get().pending);
-
-      pending.delete(key);
-      set({ pending });
-    };
-
-    set({ pending: new Map(get().pending).set(key, watched) });
+    set({ saving: new Map(get().saving).set(post, toDatabaseKey(tagId)) });
 
     try {
-      set({ keys: new Set(await request("watchlist.set", { postId, tagId, watched })) });
+      set({ posts: groupByPost(await request("watchlist.set", { postId, tagId, watched })) });
+
+      return true;
     }
     catch {
-      // Dropping the pending change shows the stored state again
+      return false;
     }
     finally {
-      settle();
+      const saving = new Map(get().saving);
+
+      saving.delete(post);
+      set({ saving });
     }
   },
 }));
 
 /**
  * @description
- * Whether a reaction is watched, including changes not confirmed yet.
+ * A post's watchlist, for its reactions' checkboxes.
  *
  * @param postId - The post's ID
- * @param tagId - The reaction's (tag's) ID
- * @returns True if watched
+ * @returns Whether a reaction is watched, whether a save is in flight for the post, and whether it is for a given reaction
  */
-export function useIsWatched(postId: string, tagId: string): boolean {
-  const key = watchlistKey(postId, tagId);
+export function usePostWatchlist(postId: string): { isWatched: (tagId: string) => boolean; saving: boolean; isSaving: (tagId: string) => boolean } {
+  const post = toDatabaseKey(postId);
+  const watched = useWatchlistStore(state => state.posts.get(post));
+  const savingTagId = useWatchlistStore(state => state.saving.get(post) ?? null);
 
-  return useWatchlistStore(state => state.pending.get(key) ?? state.keys.has(key));
+  return {
+    isWatched: tagId => watched?.has(toDatabaseKey(tagId)) ?? false,
+    saving: savingTagId !== null,
+    isSaving: tagId => savingTagId === toDatabaseKey(tagId),
+  };
 }
