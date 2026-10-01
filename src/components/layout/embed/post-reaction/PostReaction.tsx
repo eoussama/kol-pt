@@ -6,10 +6,12 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import ReplayIcon from "@mui/icons-material/Replay";
 import { Chip, IconButton, Tooltip } from "@mui/material";
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import { usePlayer } from "../../../../content/player/PlayerProvider";
+import { PostContext } from "../../../../context/PostContext";
 import { ReactionOverlayContext } from "../../../../context/ReactionOverlayContext";
 import { useAuthStore } from "../../../../state/auth.state";
+import { useIsWatched, useWatchlistStore } from "../../../../state/watchlist.state";
 import { Checkbox } from "../../../styled/Checkbox";
 
 import styles from "./PostReaction.module.scss";
@@ -26,7 +28,9 @@ import styles from "./PostReaction.module.scss";
 function PostReaction(props: IPostReactionProps): JSX.Element {
   const { tag } = props;
   const user = useAuthStore(e => e.user);
-  const [watched, setWatched] = useState(false);
+  const { post } = useContext(PostContext);
+  const watched = useIsWatched(post.id, tag.id);
+  const toggleWatched = useWatchlistStore(e => e.toggle);
   const { playing, currentTime, playFrom } = usePlayer();
   const { setAnchorOpened, setAnchorEl, setTag, setDialogOpened } = useContext(ReactionOverlayContext);
 
@@ -82,8 +86,9 @@ function PostReaction(props: IPostReactionProps): JSX.Element {
             <div className={styles.reaction__tracking}>
               <Tooltip title={watched ? "Mark as un-watched" : "Mark as watched"}>
                 <Checkbox
+                  checked={watched}
                   className={styles.reaction__checkbox}
-                  onChange={e => setWatched(e.target.checked)}
+                  onChange={e => toggleWatched(post.id, tag.id, e.target.checked)}
                 />
               </Tooltip>
             </div>

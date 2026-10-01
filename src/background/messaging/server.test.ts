@@ -22,6 +22,7 @@ function stubHandlers(overrides: Partial<THandlers> = {}): THandlers {
     "auth.signOut": fail,
     "settings.get": fail,
     "settings.set": fail,
+    "watchlist.set": fail,
     ...overrides,
   };
 }

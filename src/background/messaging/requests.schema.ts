@@ -21,6 +21,7 @@ export const RequestSchema = z.discriminatedUnion("type", [
   message("auth.signOut"),
   message("settings.get"),
   message("settings.set").extend({ settings: SettingsSchema.partial() }),
+  message("watchlist.set").extend({ postId: z.string().min(1), tagId: z.string().min(1), watched: z.boolean() }),
 ]);
 
 /**

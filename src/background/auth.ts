@@ -30,11 +30,15 @@ export function toAuthUser(user: User): IAuthUser {
  * every page sees the same state, even after the background was suspended.
  * Must run when the background starts.
  *
+ * @param onChange - Also called with the user on every change
  * @returns A function that stops watching
  */
-export function watchAuthState(): () => void {
+export function watchAuthState(onChange?: (user: IAuthUser | null) => void): () => void {
   return onAuthStateChanged(getFirebaseAuth(), (user) => {
-    authUserItem.setValue(user ? toAuthUser(user) : null).catch(() => undefined);
+    const authUser = user ? toAuthUser(user) : null;
+
+    authUserItem.setValue(authUser).catch(() => undefined);
+    onChange?.(authUser);
   });
 }
 

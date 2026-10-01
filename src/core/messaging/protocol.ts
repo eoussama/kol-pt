@@ -101,6 +101,16 @@ export interface IRequestMap {
     payload: { settings: Partial<TSettings> };
     response: TSettings;
   };
+
+  /**
+   * @description
+   * Marks one of the signed-in user's reactions as watched or not.
+   * Responds with every watched reaction's key.
+   */
+  "watchlist.set": {
+    payload: { postId: string; tagId: string; watched: boolean };
+    response: Array<string>;
+  };
 }
 
 /**

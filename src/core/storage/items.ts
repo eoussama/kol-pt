@@ -34,6 +34,13 @@ export const authUserItem = storage.defineItem<IAuthUser | null>("local:auth-use
 
 /**
  * @description
+ * The reactions the signed-in user marked as watched, as watchlist keys.
+ * Written by the background; every Patreon tab watches it.
+ */
+export const watchlistItem = storage.defineItem<{ uid: string; keys: Array<string> } | null>("local:watchlist", { fallback: null });
+
+/**
+ * @description
  * Cached tracked posts.
  */
 export const postsCacheItem = storage.defineItem<ICached<Array<TPost>> | null>("local:cache-posts", { fallback: null });

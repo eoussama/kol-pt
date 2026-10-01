@@ -7,6 +7,7 @@ import { fetchImageAsDataUrl } from "./images";
 import { isExtensionPage } from "./messaging/server";
 import { getEntries, getPostsWithEntries } from "./repositories/content";
 import { getSettings, updateSettings } from "./repositories/settings";
+import { setWatched } from "./repositories/watchlist";
 
 
 
@@ -46,4 +47,6 @@ export const handlers: THandlers = {
   "settings.get": async () => getSettings((await requireUser()).uid),
 
   "settings.set": async ({ settings }) => updateSettings((await requireUser()).uid, settings),
+
+  "watchlist.set": async ({ postId, tagId, watched }) => setWatched((await requireUser()).uid, postId, tagId, watched),
 };

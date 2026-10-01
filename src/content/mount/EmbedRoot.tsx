@@ -7,6 +7,7 @@ import PostEmbed from "../../components/layout/embed/post-embed/PostEmbed";
 import PostLoader from "../../components/layout/embed/post-loader/PostLoader";
 import { ErrorBoundary } from "../../components/layout/generic/error-boundary/ErrorBoundary";
 import { useAuthSync } from "../../hooks/auth-sync.hook";
+import { useWatchlistSync } from "../../hooks/watchlist-sync.hook";
 import { PlayerProvider } from "../player/PlayerProvider";
 import { emotionCache } from "./emotion-cache";
 
@@ -22,13 +23,14 @@ interface IEmbedRootProps {
 
 /**
  * @description
- * Mirrors the signed-in user. A component of its own so that, inside its
- * error boundary, a failure here cannot take the panels down.
+ * Mirrors the signed-in user and their watchlist. A component of its own so
+ * that, inside its error boundary, a failure here cannot take the panels down.
  *
  * @returns Nothing
  */
-function AuthSync(): null {
+function StateSync(): null {
   useAuthSync();
+  useWatchlistSync();
 
   return null;
 }
@@ -48,7 +50,7 @@ export function EmbedRoot(props: IEmbedRootProps): JSX.Element {
   return (
     <CacheProvider value={emotionCache}>
       <ErrorBoundary>
-        <AuthSync />
+        <StateSync />
       </ErrorBoundary>
 
       {embeds.map(embed => createPortal(
