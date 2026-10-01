@@ -1,7 +1,5 @@
 import { z } from "zod";
 
-import { EntrySchema } from "./entry/entry.schema";
-import { PostSchema } from "./post.schema";
 import { SettingsSchema } from "./settings.schema";
 
 
@@ -13,8 +11,9 @@ import { SettingsSchema } from "./settings.schema";
 export const CacheSchema = z.object({
   updateTime: z.number(),
   db: z.object({
-    posts: z.array(PostSchema),
-    entries: z.array(EntrySchema),
+    // Raw database values, validated when read by their repositories
+    posts: z.unknown(),
+    entries: z.unknown(),
     users: z.record(
       z.string(),
       z.object({

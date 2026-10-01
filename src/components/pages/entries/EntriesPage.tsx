@@ -1,5 +1,5 @@
-import type { Entry } from "../../../core/models/entry.model";
-import type { YouTube } from "../../../core/models/youtube.model";
+import type { Entry } from "../../../core/domain/entry";
+import type { YouTube } from "../../../core/domain/youtube";
 
 import { Avatar, Chip, CircularProgress, Divider, List, ListItem, ListItemAvatar, Tooltip } from "@mui/material";
 import { useNavigate } from "react-router";

@@ -1,4 +1,4 @@
-import type { ICache } from "../../../types/cache.type";
+import type { TCache as ICache } from "../../../schemas/cache.schema";
 
 import { get, ref, set } from "firebase/database";
 import { CacheHelper } from "../cache.helper";

@@ -1,5 +1,5 @@
-import type { Entry } from "../../models/entry.model";
-import type { IReaction } from "../reaction.type";
+import type { Entry } from "../../domain/entry";
+import type { IReaction } from "../../domain/hydrate";
 
 
 

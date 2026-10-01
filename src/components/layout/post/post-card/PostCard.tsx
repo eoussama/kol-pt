@@ -2,7 +2,7 @@ import type { IPostCardProps } from "../../../../core/types/props/post-card-prop
 
 import { Box, Card, CardContent, CardMedia, Chip, Tooltip, Typography } from "@mui/material";
 import { EViewMode } from "../../../../core/enums/view-mode.enum";
-import { NavigationHelper } from "../../../../core/helpers/navigator/navigation.helper";
+import { openPost } from "../../../../core/utils/links";
 
 import styles from "./PostCard.module.scss";
 
@@ -27,7 +27,7 @@ function PostCard(props: IPostCardProps): JSX.Element {
    * Opens the post in a new window when the card is clicked.
    */
   const goToPost = () => {
-    NavigationHelper.openPost(post.id);
+    openPost(post.id);
   };
 
   /**
@@ -41,7 +41,7 @@ function PostCard(props: IPostCardProps): JSX.Element {
     e.stopPropagation();
     e.preventDefault();
 
-    NavigationHelper.openReaction(post.id, reactionId);
+    openPost(post.id, reactionId);
   };
 
   return (

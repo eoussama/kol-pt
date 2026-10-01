@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { EEntryType } from "../../enums/entry-type.enum";
-import { EntrySchema } from "./entry.schema";
+import { BaseEntrySchema } from "./base-entry.schema";
 
 
 
@@ -8,9 +8,9 @@ import { EntrySchema } from "./entry.schema";
  * @description
  * Zod schema for a movie entry.
  */
-export const MovieEntrySchema = EntrySchema.extend({
+export const MovieEntrySchema = BaseEntrySchema.extend({
   type: z.literal(EEntryType.MOVIE),
-  rottentomatoesId: z.string(),
+  rottentomatoesId: z.string().optional(),
 });
 
 export type TMovieEntry = z.infer<typeof MovieEntrySchema>;

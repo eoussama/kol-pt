@@ -1,5 +1,5 @@
+import type { Post } from "../../domain/post";
 import type { TViewMode } from "../../enums/view-mode.enum";
-import type { Post } from "../../models/post.model";
 
 
 

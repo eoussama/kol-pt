@@ -1,4 +1,4 @@
-import type { Tag } from "../../../../core/models/tag.model";
+import type { Tag } from "../../../../core/domain/tag";
 import type { IPostReactionProps } from "../../../../core/types/props/post-reaction-props.type";
 
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
@@ -91,7 +91,7 @@ function PostReaction(props: IPostReactionProps): JSX.Element {
 
         <div className={styles.reaction__left}>
           <div className={styles.reaction__title}>
-            {tag.entry.title}
+            {tag.getTitle()}
             {isPlaying() && (
               <Chip
                 size="small"
@@ -102,13 +102,15 @@ function PostReaction(props: IPostReactionProps): JSX.Element {
           </div>
 
           <div className={styles.reaction__description}>
-            <span
-              className={styles.reaction__type}
-            >
-              {tag.entry.getTypeName()}
-            </span>
+            {tag.entry && (
+              <>
+                <span className={styles.reaction__type}>
+                  {tag.entry.getTypeName()}
+                </span>
 
-            {" — "}
+                {" — "}
+              </>
+            )}
             {tag.getDetailDescription()}
 
             <span className={styles.reaction__extra}>
@@ -154,25 +156,29 @@ function PostReaction(props: IPostReactionProps): JSX.Element {
             </Tooltip>
           )}
 
-          <Tooltip title="Detail">
-            <IconButton
-              size="small"
-              aria-label="detail"
-              onClick={() => onDetail(tag)}
-            >
-              <InfoOutlinedIcon />
-            </IconButton>
-          </Tooltip>
+          {tag.entry && (
+            <>
+              <Tooltip title="Detail">
+                <IconButton
+                  size="small"
+                  aria-label="detail"
+                  onClick={() => onDetail(tag)}
+                >
+                  <InfoOutlinedIcon />
+                </IconButton>
+              </Tooltip>
 
-          <Tooltip title="More">
-            <IconButton
-              size="small"
-              aria-label="more"
-              onClick={e => onMore(e, tag)}
-            >
-              <MoreVertIcon />
-            </IconButton>
-          </Tooltip>
+              <Tooltip title="More">
+                <IconButton
+                  size="small"
+                  aria-label="more"
+                  onClick={e => onMore(e, tag)}
+                >
+                  <MoreVertIcon />
+                </IconButton>
+              </Tooltip>
+            </>
+          )}
         </div>
       </li>
     </>

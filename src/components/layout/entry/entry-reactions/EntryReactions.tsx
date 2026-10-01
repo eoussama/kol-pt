@@ -1,9 +1,9 @@
+import type { IReaction } from "../../../../core/domain/hydrate";
 import type { IEntryPageReactionsSectionProps } from "../../../../core/types/props/entry-reactions.props.type";
-import type { IReaction } from "../../../../core/types/reaction.type";
 
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import { IconButton, Tooltip } from "@mui/material";
-import { NavigationHelper } from "../../../../core/helpers/navigator/navigation.helper";
+import { openPost } from "../../../../core/utils/links";
 
 import styles from "./EntryReactions.module.scss";
 
@@ -26,7 +26,7 @@ function EntryReactions(props: IEntryPageReactionsSectionProps): JSX.Element {
    * @param reaction The reaction to watch.
    */
   const onWatch = (reaction: IReaction) => {
-    NavigationHelper.openReaction(reaction.postId, reaction.tag.id);
+    openPost(reaction.postId, reaction.tag.id);
   };
 
   return (

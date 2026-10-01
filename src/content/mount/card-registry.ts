@@ -1,4 +1,4 @@
-import type { Post } from "../../core/models/post.model";
+import type { Post } from "../../core/domain/post";
 
 
 

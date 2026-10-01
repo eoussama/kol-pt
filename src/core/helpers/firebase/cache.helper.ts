@@ -1,5 +1,5 @@
 import type { TUnsafe } from "@eoussama/core";
-import type { ICache } from "../../types/cache.type";
+import type { TCache as ICache } from "../../schemas/cache.schema";
 
 import { CacheSchema } from "../../schemas/cache.schema";
 import { StorageHelper } from "../chrome/storage.helper";
@@ -41,11 +41,7 @@ export class CacheHelper {
         const expiryTime = cache.updateTime + CacheHelper.CACHE_LIFE;
         const value = cache.db[key];
 
-        return expiryTime > Date.now() && (
-          Array.isArray(value)
-            ? (value as Array<unknown>).length > 0
-            : Object.keys(value).length > 0
-        );
+        return expiryTime > Date.now() && value != null && typeof value === "object" && Object.keys(value).length > 0;
       }
 
       return false;

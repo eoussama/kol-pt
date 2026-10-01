@@ -1,6 +1,10 @@
-import type { IPost } from "../../../types/post.type";
+import type { IReaction } from "../../../domain/hydrate";
+import type { Post } from "../../../domain/post";
+import type { TEntry } from "../../../schemas/entry/entry.schema";
+import type { TPost } from "../../../schemas/post.schema";
 
-import { Post } from "../../../models/post.model";
+import { findReactions, hydratePosts } from "../../../domain/hydrate";
+import { PostListSchema } from "../../../schemas/post.schema";
 import { EntriesHelper } from "./entries.helper";
 import { RepositoryHelper } from "./repository.helper";
 
@@ -13,38 +17,48 @@ import { RepositoryHelper } from "./repository.helper";
 export class PostsHelper {
   /**
    * @description
-   * The name of the key that stors the posts
+   * The name of the key that stores the posts
    * on the realtime database
    */
   private static readonly DB_KEY = "posts";
 
   /**
    * @description
-   * Returns the list of all posts
+   * Returns the validated data of all posts, with the entries they refer to
+   *
+   * @param cache - Whether to use cache when needed
+   * @returns Promise resolving to the posts' and entries' data
+   */
+  static async loadData(cache: boolean = true): Promise<{ posts: Array<TPost>; entries: Array<TEntry> }> {
+    // Sequential: both update the same cache record
+    const posts = PostListSchema.parse(await RepositoryHelper.get<unknown>(this.DB_KEY, cache));
+    const entries = await EntriesHelper.loadData(cache);
+
+    return { posts, entries };
+  }
+
+  /**
+   * @description
+   * Returns the list of all posts, newest first
    *
    * @param cache - Whether to use cache when needed
    * @returns Promise resolving to an array of Post instances
    */
   static async load(cache: boolean = true): Promise<Array<Post>> {
-    const data = await RepositoryHelper.get<Array<IPost> | null>(this.DB_KEY, cache);
-    const posts: Array<Post> = [];
+    const { posts, entries } = await this.loadData(cache);
 
-    for (const model of data ?? []) {
-      const post = new Post(model);
+    return hydratePosts(posts, entries);
+  }
 
-      for (const [index, tag] of post.tags.entries()) {
-        const entryId = model.tags[index]?.entryId;
-        const entry = entryId ? await EntriesHelper.get(entryId, cache) : undefined;
-
-        if (entry) {
-          tag.entry = entry;
-        }
-      }
-
-      post.tags = post.tags.sort((a, b) => a.startTime - b.startTime);
-      posts.push(post);
-    }
-
-    return posts.sort((a: Post, b: Post) => b.creationDate.getTime() - a.creationDate.getTime());
+  /**
+   * @description
+   * Retrieves the reactions to an entry
+   *
+   * @param entryId - The ID of the entry
+   * @param cache - Whether to use cache when needed
+   * @returns Promise resolving to the reactions, newest first
+   */
+  static async getReactions(entryId: string, cache: boolean = true): Promise<Array<IReaction>> {
+    return findReactions(await this.load(cache), entryId);
   }
 }

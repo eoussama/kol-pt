@@ -1,6 +1,6 @@
 import type { IEntryViewProps } from "../../../core/types/props/entry-page-props.type";
 
-import { IconHelper } from "../../../core/helpers/asset/icon.helper";
+import { getPlaceholderUrl } from "../../../core/utils/assets";
 import { useCoverImage } from "../../../hooks/cover-image.hook";
 import { useEntry } from "../../../hooks/entry.hook";
 import EntryAka from "../../layout/entry/entry-aka/EntryAka";
@@ -40,7 +40,7 @@ function EntryView(props: IEntryViewProps): JSX.Element {
   return (
     <div
       className={classes}
-      style={{ backgroundImage: `url(${displayPhoto}), url(${IconHelper.getIcon("placeholder", "graphs")}` }}
+      style={{ backgroundImage: `url(${displayPhoto}), url(${getPlaceholderUrl()}` }}
     >
       <EntryHead
         entry={entry}

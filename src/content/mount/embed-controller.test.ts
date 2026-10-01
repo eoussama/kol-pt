@@ -1,4 +1,4 @@
-import type { Post } from "../../core/models/post.model";
+import type { Post } from "../../core/domain/post";
 
 import feed from "../patreon/__fixtures__/feed.html?raw";
 import { findCards } from "../patreon/post-card";

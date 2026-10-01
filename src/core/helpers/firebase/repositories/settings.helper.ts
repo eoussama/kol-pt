@@ -1,4 +1,4 @@
-import type { ISettings } from "../../../types/settings.type";
+import type { TSettings as ISettings } from "../../../schemas/settings.schema";
 
 import { EViewMode } from "../../../enums/view-mode.enum";
 import { RepositoryHelper } from "./repository.helper";

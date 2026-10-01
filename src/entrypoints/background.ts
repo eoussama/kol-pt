@@ -15,9 +15,9 @@ export default defineBackground(() => {
       case EMessageType.LOAD: {
         if (tab?.id) {
           // Answering with no posts on failure, so the page's loaders go away
-          const posts = await PostsHelper.load().catch(() => []);
+          const data = await PostsHelper.loadData().catch(() => ({ posts: [], entries: [] }));
 
-          MessageHelper.send(EMessageType.ATTACH, { posts }, tab.id);
+          MessageHelper.send(EMessageType.ATTACH, data, tab.id);
         }
 
         break;

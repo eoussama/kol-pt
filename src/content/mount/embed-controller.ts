@@ -1,4 +1,4 @@
-import type { Post } from "../../core/models/post.model";
+import type { Post } from "../../core/domain/post";
 import type { CardRegistry, ICardEmbed } from "./card-registry";
 
 import { findCards, getMountPoint, insertAt, resolveCards } from "../patreon/post-card";

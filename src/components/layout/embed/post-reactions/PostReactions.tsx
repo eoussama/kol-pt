@@ -6,8 +6,8 @@ import { useContext, useEffect, useState } from "react";
 import { usePlayer } from "../../../../content/player/PlayerProvider";
 import { PostContext } from "../../../../context/PostContext";
 import { ReactionOverlayContext } from "../../../../context/ReactionOverlayContext";
-import { IconHelper } from "../../../../core/helpers/asset/icon.helper";
-import { NavigationHelper } from "../../../../core/helpers/navigator/navigation.helper";
+import { getImageUrl } from "../../../../core/utils/assets";
+import { openPassione } from "../../../../core/utils/links";
 import { useAuthStore } from "../../../../state/auth.state";
 import EntryView from "../../../pages/entry/EntryView";
 import { PostAccordion } from "../post-accordion/PostAccordion";
@@ -73,7 +73,7 @@ function PostReactions(): JSX.Element {
     e.stopPropagation();
     e.preventDefault();
 
-    NavigationHelper.openPassione();
+    openPassione();
   };
 
   // Positioning the video at the reaction linked from the popup (?reactionId=)
@@ -137,7 +137,7 @@ function PostReactions(): JSX.Element {
                 onClick={onPassioneOpen}
                 className={`${styles.post__action} ${styles["post__action--discord"]}`}
               >
-                <img src={IconHelper.getIcon("discord", "platforms")} alt="Discord icon" />
+                <img src={getImageUrl("discord", "platforms")} alt="Discord icon" />
               </IconButton>
             </Tooltip>
           </div>

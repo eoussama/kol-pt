@@ -6,7 +6,7 @@ import { Button, IconButton, Tab, Tabs, Tooltip } from "@mui/material";
 import { useMemo } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { EPage } from "../../../../core/enums/page.enum";
-import { NavigationHelper } from "../../../../core/helpers/navigator/navigation.helper";
+import { openDiscord, openPatreon, openProject } from "../../../../core/utils/links";
 import { useAuth } from "../../../../hooks/auth.hook";
 import { usePostStore } from "../../../../state/posts.state";
 
@@ -76,7 +76,7 @@ function Header(): JSX.Element {
     <>
       <header
         className={styles.flair}
-        onClick={NavigationHelper.openProject}
+        onClick={openProject}
       >
         {`KOL PT — v${__APP_VERSION__}`}
       </header>
@@ -116,7 +116,7 @@ function Header(): JSX.Element {
           <Tooltip title="Open Discord">
             <IconButton
               aria-label="Opens KOl's Discord server"
-              onClick={NavigationHelper.openDiscord}
+              onClick={openDiscord}
               className={`${styles.header__button} ${styles["header__button--discord"]}`}
             >
               <img src="./images/platforms/discord.png" alt="Discord icon" />
@@ -126,7 +126,7 @@ function Header(): JSX.Element {
           <Tooltip title="Open Patreon">
             <IconButton
               aria-label="Open Patreon"
-              onClick={NavigationHelper.openPatreon}
+              onClick={openPatreon}
               className={`${styles.header__button} ${styles["header__button--patreon"]}`}
             >
               <img src="./images/platforms/patreon.png" alt="Patreon icon" />

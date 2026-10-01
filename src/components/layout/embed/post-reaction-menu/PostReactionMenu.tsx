@@ -1,5 +1,4 @@
 import type { IOption } from "../../../../core/types/option.type";
-import type { IEntryContext } from "../../../../core/types/tag/entry-context.type";
 
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import { Divider, Menu, MenuItem } from "@mui/material";
@@ -81,7 +80,7 @@ function PostReactionMenu(): JSX.Element {
         anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
       >
         {/* A flat list: Menu does not accept fragments as children */}
-        {(tag?.entry?.getOptions(tag.context as IEntryContext) ?? [])
+        {(tag?.entry?.getOptions(tag.context) ?? [])
           .filter(option => option.canShow())
           .flatMap(option => [
             <MenuItem
