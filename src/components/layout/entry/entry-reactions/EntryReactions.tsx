@@ -2,8 +2,10 @@ import type { IReaction } from "../../../../core/domain/hydrate";
 import type { IEntryPageReactionsSectionProps } from "../../../../core/types/props/entry-reactions.props.type";
 
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
-import { IconButton, Tooltip } from "@mui/material";
+import SearchIcon from "@mui/icons-material/Search";
+import { IconButton, InputAdornment, InputBase, Tooltip } from "@mui/material";
 import { openPost } from "../../../../core/utils/links";
+import { useSearch } from "../../../../hooks/search.hook";
 
 import styles from "./EntryReactions.module.scss";
 
@@ -11,13 +13,25 @@ import styles from "./EntryReactions.module.scss";
 
 /**
  * @description
- * Renders the entry related reactions.
+ * What a reaction is searched by: its description and its date.
+ *
+ * @param reaction - The reaction
+ * @returns The text to search in
+ */
+function toSearchText(reaction: IReaction): string {
+  return `${reaction.tag.getDetailDescription()} ${reaction.tag.label} ${reaction.date.toLocaleDateString()}`;
+}
+
+/**
+ * @description
+ * Renders the entry related reactions, searchable.
  *
  * @param props - The component's properties
  * @returns The rendered reactions list section
  */
 function EntryReactions(props: IEntryPageReactionsSectionProps): JSX.Element {
   const { reactions } = props;
+  const { search, filtered, onSearch } = useSearch(reactions, toSearchText);
 
   /**
    * @description
@@ -33,8 +47,27 @@ function EntryReactions(props: IEntryPageReactionsSectionProps): JSX.Element {
     <div className={styles["entry-reactions"]}>
       <div className={styles.title}>Reactions</div>
 
+      {reactions.length > 1 && (
+        <InputBase
+          type="search"
+          onChange={onSearch}
+          placeholder="Search reactions..."
+          className={styles.search}
+          inputProps={{ "aria-label": "Search reactions" }}
+          startAdornment={<InputAdornment position="start"><SearchIcon fontSize="small" /></InputAdornment>}
+        />
+      )}
+
+      {filtered.length === 0 && search.trim() && (
+        <div className={styles.empty}>
+          No reactions match
+          {" "}
+          <b>{search.trim()}</b>
+        </div>
+      )}
+
       <ul className={styles.reactions}>
-        {reactions.map((reaction, i) => (
+        {filtered.map((reaction, i) => (
           <li
             key={i}
             className={styles.reaction}
