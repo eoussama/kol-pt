@@ -25,7 +25,8 @@ export default defineConfig({
     disabled: true,
   },
   zip: {
-    includeSources: [".env.example", ".nvmrc"],
+    // Replaces the default ("**/*", which skips dotfiles), so it is restated
+    includeSources: ["**/*", ".env.example", ".nvmrc"],
     excludeSources: ["html.txt", "build/**", "coverage/**"],
   },
   vite: () => ({
