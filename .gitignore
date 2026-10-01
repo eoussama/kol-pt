@@ -23,12 +23,14 @@ tsconfig.tsbuildinfo
 
 # logs
 *.log
+html.txt
 
 # os
 .DS_Store
 Thumbs.db
 
 # editor
+.mcp.json
 .vscode/
 .idea/
 *.swp
