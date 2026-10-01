@@ -42,7 +42,7 @@ export default defineConfig({
       default_title: "KOL Patreon Tracker",
       default_icon: ICONS,
     },
-    permissions: ["storage", "webNavigation"],
+    permissions: ["storage"],
     host_permissions: [PATREON_MATCH],
     web_accessible_resources: [
       {

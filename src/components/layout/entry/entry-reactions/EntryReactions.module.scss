@@ -8,7 +8,7 @@
     font-weight: 600;
 
     margin-bottom: 15px;
-    color: var(--color-text);
+    color: var(--kolpt-color-text);
   }
 
   .reactions {
@@ -32,11 +32,11 @@
         font-weight: 400;
         font-family: 'Open Sans', Roboto, sans-serif;
 
-        color: var(--color-text);
+        color: var(--kolpt-color-text);
       }
 
       &__date {
-        color: rgba(var(--color-text-rgb), 0.6);
+        color: rgba(var(--kolpt-color-text-rgb), 0.6);
 
         font-size: 12px;
         font-weight: 300;

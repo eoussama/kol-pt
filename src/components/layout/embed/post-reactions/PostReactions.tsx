@@ -3,11 +3,11 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { AccordionDetails, AccordionSummary, Alert, Collapse, Dialog, DialogContent, DialogTitle, IconButton, Tooltip } from "@mui/material";
 import { useContext, useEffect, useState } from "react";
 
+import { usePlayer } from "../../../../content/player/PlayerProvider";
 import { PostContext } from "../../../../context/PostContext";
 import { ReactionOverlayContext } from "../../../../context/ReactionOverlayContext";
 import { IconHelper } from "../../../../core/helpers/asset/icon.helper";
 import { NavigationHelper } from "../../../../core/helpers/navigator/navigation.helper";
-import { usePlayer } from "../../../../hooks/player.hook";
 import { useAuthStore } from "../../../../state/auth.state";
 import EntryPage from "../../../pages/entry/EntryPage";
 import { PostAccordion } from "../post-accordion/PostAccordion";
@@ -26,7 +26,7 @@ import styles from "./PostReactions.module.scss";
  */
 function PostReactions(): JSX.Element {
   const { post } = useContext(PostContext);
-  const { player, playerReady } = usePlayer(post.id);
+  const { ready, cue } = usePlayer();
   const user = useAuthStore(e => e.user);
   const [alertOpen, setAlertOpen] = useState(false);
   const [expanded, setExpanded] = useState<boolean>(true);
@@ -76,27 +76,19 @@ function PostReactions(): JSX.Element {
     NavigationHelper.openPassione();
   };
 
+  // Positioning the video at the reaction linked from the popup (?reactionId=)
   useEffect(() => {
-    if (!player) {
+    if (!ready) {
       return;
     }
 
-    // Adding cue points
-    for (const tag of post.tags) {
-      player.addCuePoint(tag.startTime, { tag });
+    const reactionId = new URLSearchParams(window.location.search).get("reactionId");
+    const reaction = reactionId ? post.tags.find(tag => tag.id === reactionId) : undefined;
+
+    if (reaction) {
+      cue(reaction.startTime);
     }
-
-    // Auto playing reaction
-    const urlSearch = new URLSearchParams(window.location.search);
-    const reactionId = urlSearch.get("reactionId");
-    const canAutoPlay = (reactionId?.length ?? 0) > 0;
-
-    if (canAutoPlay) {
-      const reaction = post.tags.find(tag => tag.id === reactionId);
-
-      player.setCurrentTime(reaction?.startTime ?? 0);
-    }
-  }, [playerReady]);
+  }, [ready, cue, post]);
 
   useEffect(() => {
     setAlertOpen(!isLoggedIn());

@@ -37,9 +37,10 @@ export class MessageHelper {
    *
    * @param callback - The function to invoke on message
    * @param type - The type of message to invoke the function for, all types if omitted
+   * @returns A function that removes the listener
    */
-  static listen<T = unknown>(callback: (e: Imessage<T>, sender: Browser.runtime.MessageSender) => void, type?: TMessageType): void {
-    browser.runtime.onMessage.addListener((raw: unknown, sender: Browser.runtime.MessageSender) => {
+  static listen<T = unknown>(callback: (e: Imessage<T>, sender: Browser.runtime.MessageSender) => void, type?: TMessageType): () => void {
+    const listener = (raw: unknown, sender: Browser.runtime.MessageSender) => {
       const parsed = MessageSchema.safeParse(raw);
 
       if (!parsed.success || (type !== undefined && parsed.data.type !== type)) {
@@ -47,6 +48,10 @@ export class MessageHelper {
       }
 
       callback(parsed.data as Imessage<T>, sender);
-    });
+    };
+
+    browser.runtime.onMessage.addListener(listener);
+
+    return () => browser.runtime.onMessage.removeListener(listener);
   }
 }

@@ -10,7 +10,6 @@ import { EMessageType } from "../enums/message-type.enum";
 export const MessageSchema = z.object({
   tabId: z.number().optional(),
   type: z.union([
-    z.literal(EMessageType.INIT),
     z.literal(EMessageType.ATTACH),
     z.literal(EMessageType.LOAD),
     z.literal(EMessageType.SYNC_REQUEST),

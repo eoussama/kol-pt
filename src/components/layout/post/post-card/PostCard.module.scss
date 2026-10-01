@@ -21,7 +21,7 @@
 
   &__title,
   &__description {
-    color: var(--color-text) !important;
+    color: var(--kolpt-color-text) !important;
   }
 
   &__thumbnail {
@@ -74,7 +74,7 @@
       transition-property: background-color;
 
       &:hover {
-        background-color: rgba(var(--color-primary-rgb), 0.2);
+        background-color: rgba(var(--kolpt-color-primary-rgb), 0.2);
       }
     }
 
@@ -103,7 +103,7 @@
 
   &--compact {
     box-shadow: none !important;
-    border: 1px solid rgba(var(--color-text-rgb), 0.2);
+    border: 1px solid rgba(var(--kolpt-color-text-rgb), 0.2);
 
     .card__tags {
       font-size: 12px;
@@ -125,7 +125,7 @@
     }
 
     &:hover {
-      border: 1px solid rgba(var(--color-primary-rgb), 0.8);
+      border: 1px solid rgba(var(--kolpt-color-primary-rgb), 0.8);
     }
   }
 

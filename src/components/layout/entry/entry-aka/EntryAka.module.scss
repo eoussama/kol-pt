@@ -9,7 +9,7 @@
     font-size: 16px;
     font-weight: 600;
 
-    color: var(--color-text);
+    color: var(--kolpt-color-text);
   }
 
   .aliases {
@@ -22,7 +22,7 @@
       font-family: 'Open Sans', Roboto, sans-serif;
 
       margin-bottom: 2px;
-      color: rgba(var(--color-text-rgb), 0.8);
+      color: rgba(var(--kolpt-color-text-rgb), 0.8);
 
       &:last-of-type {
         margin-bottom: 0;

@@ -7,9 +7,8 @@ import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import ReplayIcon from "@mui/icons-material/Replay";
 import { Chip, IconButton, Tooltip } from "@mui/material";
 import { useContext, useState } from "react";
-import { PostContext } from "../../../../context/PostContext";
+import { usePlayer } from "../../../../content/player/PlayerProvider";
 import { ReactionOverlayContext } from "../../../../context/ReactionOverlayContext";
-import { usePlayer } from "../../../../hooks/player.hook";
 import { useAuthStore } from "../../../../state/auth.state";
 import { Checkbox } from "../../../styled/Checkbox";
 
@@ -27,9 +26,8 @@ import styles from "./PostReaction.module.scss";
 function PostReaction(props: IPostReactionProps): JSX.Element {
   const { tag } = props;
   const user = useAuthStore(e => e.user);
-  const { post } = useContext(PostContext);
   const [watched, setWatched] = useState(false);
-  const { playing, playback, onSkip } = usePlayer(post.id);
+  const { playing, currentTime, playFrom } = usePlayer();
   const { setAnchorOpened, setAnchorEl, setTag, setDialogOpened } = useContext(ReactionOverlayContext);
 
   /**
@@ -49,7 +47,7 @@ function PostReaction(props: IPostReactionProps): JSX.Element {
    * @returns True if the reaction is currently playing
    */
   const isPlaying = () => {
-    return tag.startTime <= playback && playback <= tag.endTime;
+    return currentTime > 0 && tag.startTime <= currentTime && currentTime <= tag.endTime;
   };
 
   /**
@@ -118,7 +116,7 @@ function PostReaction(props: IPostReactionProps): JSX.Element {
               {" "}
               <span
                 className={styles.reaction__highlight}
-                onClick={() => onSkip(tag.startTime)}
+                onClick={() => playFrom(tag.startTime)}
               >
                 {tag.getReadableStartTime()}
               </span>
@@ -136,7 +134,7 @@ function PostReaction(props: IPostReactionProps): JSX.Element {
                 size="small"
                 aria-label="skip to reaction"
                 className={styles.reaction__skip}
-                onClick={() => onSkip(tag.startTime)}
+                onClick={() => playFrom(tag.startTime)}
               >
                 <PlayArrowIcon />
               </IconButton>
@@ -149,7 +147,7 @@ function PostReaction(props: IPostReactionProps): JSX.Element {
                 size="small"
                 aria-label="restart reaction"
                 className={styles.reaction__skip}
-                onClick={() => onSkip(tag.startTime)}
+                onClick={() => playFrom(tag.startTime)}
               >
                 <ReplayIcon />
               </IconButton>

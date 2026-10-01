@@ -1,35 +1,22 @@
 import type { Imessage } from "../core/types/message.type";
 
-import { browser } from "wxt/browser";
 import { defineBackground } from "wxt/utils/define-background";
 import { EMessageType } from "../core/enums/message-type.enum";
 import { AuthHelper } from "../core/helpers/firebase/auth.helper";
 import { PostsHelper } from "../core/helpers/firebase/repositories/posts.helper";
 import { MessageHelper } from "../core/helpers/navigator/message.helper";
-import { URLHelper } from "../core/helpers/parse/url.helper";
 
 
 
 export default defineBackground(() => {
-  // On update
-  browser.webNavigation.onCompleted.addListener(async ({ tabId, url }) => {
-    // On patreon page update
-    if (URLHelper.isPatreon(url ?? "")) {
-      // Sending initialization message to content
-      MessageHelper.send(EMessageType.INIT, null, tabId);
-    }
-  });
-
-  // On load message received
   MessageHelper.listen(async (e: Imessage, { tab }) => {
     switch (e.type) {
       // If content script is requesting posts
       case EMessageType.LOAD: {
         if (tab?.id) {
-          // Fetching the posts
-          const posts = await PostsHelper.load();
+          // Answering with no posts on failure, so the page's loaders go away
+          const posts = await PostsHelper.load().catch(() => []);
 
-          // Forwarding the fetched posts over to active page
           MessageHelper.send(EMessageType.ATTACH, { posts }, tab.id);
         }
 

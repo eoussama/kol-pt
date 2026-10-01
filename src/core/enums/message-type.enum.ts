@@ -5,12 +5,6 @@
 export const EMessageType = {
   /**
    * @description
-   * Signifies page initialization.
-   */
-  INIT: 0,
-
-  /**
-   * @description
    * Dictate that the page needs to attach embeds to posts.
    */
   ATTACH: 1,

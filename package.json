@@ -49,6 +49,7 @@
     "prod": "pnpm audit && pnpm lint && pnpm typecheck && pnpm test && pnpm clean && pnpm zip:all"
   },
   "dependencies": {
+    "@emotion/cache": "^11.14.0",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@eoussama/core": "^0.0.4",
