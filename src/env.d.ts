@@ -1,5 +1,5 @@
 /// <reference types="vitest/globals" />
-/// <reference types="@testing-library/jest-dom" />
+/// <reference types="@testing-library/jest-dom/vitest" />
 
 declare const __APP_VERSION__: string;
 

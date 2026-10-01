@@ -28,7 +28,8 @@ function EntriesPage(): JSX.Element {
   const emptyMessage = entriesCount > 0
     ? (
         <>
-          No posts match
+          No entries match
+          {" "}
           <b>{search}</b>
         </>
       )

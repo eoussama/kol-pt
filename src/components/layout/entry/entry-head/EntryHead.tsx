@@ -3,9 +3,7 @@ import type { IEntryPageHeadSectionProps } from "../../../../core/types/props/en
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { Chip } from "@mui/material";
 import millify from "millify";
-import { useNavigate } from "react-router";
 import { EEntryType } from "../../../../core/enums/entry-type.enum";
-import { EPage } from "../../../../core/enums/page.enum";
 import Loader from "../../generic/loader/Loader";
 import TextExpand from "../../generic/text-expand/TextExpand";
 
@@ -21,23 +19,11 @@ import styles from "./EntryHead.module.scss";
  * @returns The rendered entry head section
  */
 function EntryHead(props: IEntryPageHeadSectionProps): JSX.Element {
-  const { entry, loading, viewCount, description, genres, isDialog } = props;
-
-  const navigate = isDialog ? () => { } : useNavigate();
-
-  /**
-   * @description
-   * Navigates back to the entries list.
-   */
-  const onBack = () => {
-    if (!isDialog) {
-      navigate(`${EPage.INDEX}${EPage.ENTRIES}`);
-    }
-  };
+  const { entry, loading, subscribers, description, genres, onBack } = props;
 
   return (
     <div className={styles["entry-head"]}>
-      {!isDialog
+      {onBack
         && (
           <div className={styles.head__back} onClick={onBack}>
             <ArrowBackIcon />
@@ -55,7 +41,7 @@ function EntryHead(props: IEntryPageHeadSectionProps): JSX.Element {
             && (
               <>
                 {" - "}
-                {millify(viewCount)}
+                {millify(subscribers)}
                 {" "}
                 subscribers
               </>

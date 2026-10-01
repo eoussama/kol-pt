@@ -16,6 +16,7 @@ export function useViewMode() {
   const user = useAuthStore(e => e.user);
   const viewMode = useSettingsStore(e => e.viewMode);
   const setViewMode = useSettingsStore(e => e.setViewMode);
+  const applyViewMode = useSettingsStore(e => e.applyViewMode);
 
   const compactViewColor: "primary" | "default" = viewMode === EViewMode.COMPACT ? "primary" : "default";
   const expandedViewColor: "primary" | "default" = viewMode === EViewMode.EXPANDED ? "primary" : "default";
@@ -24,9 +25,8 @@ export function useViewMode() {
     if (user) {
       SettingsHelper
         .get(user.uid, "viewMode")
-        .then((userViewMode) => {
-          setViewMode(userViewMode);
-        });
+        .then(applyViewMode)
+        .catch(() => undefined);
     }
   }, [user?.uid]);
 

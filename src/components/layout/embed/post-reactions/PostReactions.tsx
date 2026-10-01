@@ -9,7 +9,7 @@ import { ReactionOverlayContext } from "../../../../context/ReactionOverlayConte
 import { IconHelper } from "../../../../core/helpers/asset/icon.helper";
 import { NavigationHelper } from "../../../../core/helpers/navigator/navigation.helper";
 import { useAuthStore } from "../../../../state/auth.state";
-import EntryPage from "../../../pages/entry/EntryPage";
+import EntryView from "../../../pages/entry/EntryView";
 import { PostAccordion } from "../post-accordion/PostAccordion";
 import PostReactionMenu from "../post-reaction-menu/PostReactionMenu";
 import PostReaction from "../post-reaction/PostReaction";
@@ -175,7 +175,7 @@ function PostReactions(): JSX.Element {
         </DialogTitle>
 
         <DialogContent className={styles["post__dialog-content"]}>
-          <EntryPage entryId={tag?.entry.id ?? ""} />
+          <EntryView entryId={tag?.entry?.id ?? ""} isDialog={true} />
         </DialogContent>
       </Dialog>
     </>

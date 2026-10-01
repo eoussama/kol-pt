@@ -80,10 +80,12 @@ function PostReactionMenu(): JSX.Element {
         transformOrigin={{ horizontal: "right", vertical: "top" }}
         anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
       >
-        {tag?.entry.getOptions(tag.context as IEntryContext).filter(option => option.canShow()).map((option, i) => (
-          <>
+        {/* A flat list: Menu does not accept fragments as children */}
+        {(tag?.entry?.getOptions(tag.context as IEntryContext) ?? [])
+          .filter(option => option.canShow())
+          .flatMap(option => [
             <MenuItem
-              key={i}
+              key={option.label}
               className={styles["popover-item"]}
               onClick={() => onOptionClick(option)}
             >
@@ -94,12 +96,9 @@ function PostReactionMenu(): JSX.Element {
               />
               <span>{option.label}</span>
               <OpenInNewIcon />
-            </MenuItem>
-
-            {option.divider && <Divider />}
-          </>
-        ),
-        )}
+            </MenuItem>,
+            ...(option.divider ? [<Divider key={`${option.label}-divider`} />] : []),
+          ])}
       </Menu>
     </>
   );

@@ -38,4 +38,14 @@ export const useSettingsStore = create<ISettingsState>(set => ({
       SettingsHelper.set<TViewMode>(user.uid, "viewMode", viewMode);
     }
   },
+
+  /**
+   * @description
+   * Applies a view mode loaded from the user's settings.
+   *
+   * @param viewMode The loaded view mode.
+   */
+  applyViewMode(viewMode: TViewMode) {
+    set({ viewMode });
+  },
 }));

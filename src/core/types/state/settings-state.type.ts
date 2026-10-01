@@ -16,7 +16,13 @@ export interface ISettingsState {
 
   /**
    * @description
-   * Updates the view mode.
+   * Updates the view mode and saves it for the signed-in user.
    */
   setViewMode: (viewMode: TViewMode) => void;
+
+  /**
+   * @description
+   * Applies a view mode loaded from the user's settings, without saving it back.
+   */
+  applyViewMode: (viewMode: TViewMode) => void;
 }

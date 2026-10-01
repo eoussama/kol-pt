@@ -1,69 +1,24 @@
-import type { Entry } from "../../../core/models/entry.model";
-import type { IEntryPageProps } from "../../../core/types/props/entry-page-props.type";
-
-import { useMemo } from "react";
-import { useParams } from "react-router";
-import { IconHelper } from "../../../core/helpers/asset/icon.helper";
-import { useCoverImage } from "../../../hooks/cover-image.hook";
-import { useEntry } from "../../../hooks/entry.hook";
-import EntryAka from "../../layout/entry/entry-aka/EntryAka";
-import EntryHead from "../../layout/entry/entry-head/EntryHead";
-import EntryLinks from "../../layout/entry/entry-links/EntryLinks";
-import EntryReactions from "../../layout/entry/entry-reactions/EntryReactions";
-import Error from "../../layout/generic/error/Error";
-
-import styles from "./EntryPage.module.scss";
+import { useNavigate, useParams } from "react-router";
+import { EPage } from "../../../core/enums/page.enum";
+import EntryView from "./EntryView";
 
 
 
 /**
  * @description
- * The entry detail page
+ * The entry detail page of the popup.
  *
- * @param props - Optional entry page props
  * @returns The rendered entry detail page
  */
-function EntryPage(props?: IEntryPageProps): JSX.Element {
-  const params = useParams();
-  const entryId = useMemo(() => params.entryId ?? props?.entryId, [params, props?.entryId]);
-  const { loading, entry, description, photo, subscribers, altTitles, genres, reactions } = useEntry(entryId ?? "");
-  const coverDataUrl = useCoverImage(photo);
-  const displayPhoto = coverDataUrl ?? photo;
-
-  const dialogClass = props?.entryId ? styles["root--dialog"] : "";
-  const classes = `${styles.root} ${dialogClass}`;
+function EntryPage(): JSX.Element {
+  const { entryId } = useParams();
+  const navigate = useNavigate();
 
   return (
-    <Error error={!entry} message="Could not retrieve entry">
-      <div
-        className={classes}
-        style={{ backgroundImage: `url(${displayPhoto}), url(${IconHelper.getIcon("placeholder", "graphs")}` }}
-      >
-        <EntryHead
-          photo={displayPhoto}
-          genres={genres}
-          loading={loading}
-          entry={entry as Entry}
-          viewCount={subscribers}
-          description={description}
-          isDialog={Boolean(props?.entryId)}
-        />
-
-        <EntryAka
-          altTitles={altTitles}
-        />
-
-        <EntryLinks
-          entry={entry as Entry}
-          isDialog={Boolean(props?.entryId)}
-        />
-
-        <EntryReactions
-          reactions={reactions}
-          entry={entry as Entry}
-        />
-      </div>
-    </Error>
+    <EntryView
+      entryId={entryId ?? ""}
+      onBack={() => navigate(`${EPage.INDEX}${EPage.ENTRIES}`)}
+    />
   );
 }
 

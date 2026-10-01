@@ -28,6 +28,7 @@ function FeedPage(): JSX.Element {
     ? (
         <>
           No posts match
+          {" "}
           <b>{search}</b>
         </>
       )

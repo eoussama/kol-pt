@@ -103,7 +103,7 @@ function PostReaction(props: IPostReactionProps): JSX.Element {
 
           <div className={styles.reaction__description}>
             <span
-              className={`${styles.reaction__type} ${styles[`reaction__type--${tag.entry.type}`]}`}
+              className={styles.reaction__type}
             >
               {tag.entry.getTypeName()}
             </span>
