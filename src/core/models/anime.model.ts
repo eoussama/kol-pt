@@ -78,7 +78,7 @@ export class Anime extends Entry {
    * @param context - The parent tag's context, passed for extra context
    * @returns Array of menu option objects
    */
-  getOptions(context?: IAnimeContext): Array<IOption> {
+  override getOptions(context?: IAnimeContext): Array<IOption> {
     const options = super.getOptions(context);
 
     return [

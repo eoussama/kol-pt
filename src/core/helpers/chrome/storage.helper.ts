@@ -1,10 +1,11 @@
+import { browser } from "wxt/browser";
 import { Base64Helper } from "../parse/base64.helper";
 
 
 
 /**
  * @description
- * Helps with chrome storage
+ * Helps with extension storage
  */
 export class StorageHelper {
   /**
@@ -14,23 +15,11 @@ export class StorageHelper {
    * @param key - The key to get
    * @returns Promise resolving to the stored string value
    */
-  static get(key: string): Promise<string> {
-    return new Promise((resolve) => {
-      if (chrome?.storage) {
-        chrome.storage.local.get(key, (data) => {
-          const value = (data[key] ?? "") as string;
-          const output = Base64Helper.decrypt(value);
+  static async get(key: string): Promise<string> {
+    const data = await browser.storage.local.get(key);
+    const value = (data[key] ?? "") as string;
 
-          resolve(output);
-        });
-      }
-      else {
-        const data = localStorage.getItem(key) as string;
-        const output = Base64Helper.decrypt(data);
-
-        resolve(output);
-      }
-    });
+    return Base64Helper.decrypt(value);
   }
 
   /**
@@ -41,32 +30,18 @@ export class StorageHelper {
    * @param value - The value to set
    * @returns Promise that resolves when the value is stored
    */
-  static set(key: string, value: string): Promise<void> {
-    const input = Base64Helper.encrypt(value);
-
-    return new Promise((resolve) => {
-      if (chrome?.storage) {
-        chrome.storage.local.set({ [key]: input }, () => resolve());
-      }
-      else {
-        localStorage.setItem(key, input);
-        resolve();
-      }
-    });
+  static async set(key: string, value: string): Promise<void> {
+    await browser.storage.local.set({ [key]: Base64Helper.encrypt(value) });
   }
 
   /**
    * @description
-   * Clears the storage
+   * Removes a key from the storage
    *
-   * @param key - The root key to get rid of
+   * @param key - The key to remove
+   * @returns Promise that resolves when the key is removed
    */
-  static clear(key: string): void {
-    if (chrome?.storage) {
-      chrome.storage.local.clear();
-    }
-    else {
-      localStorage.removeItem(key);
-    }
+  static async clear(key: string): Promise<void> {
+    await browser.storage.local.remove(key);
   }
 }

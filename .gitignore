@@ -14,9 +14,13 @@ src/config/.env
 # production
 build/
 dist/
+.output/
+.wxt/
+web-ext.config.ts
 
 # testing
 coverage/
+.vitest/
 
 # typescript
 tsconfig.tsbuildinfo

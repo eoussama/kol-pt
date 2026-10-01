@@ -26,17 +26,18 @@ export class PostsHelper {
    * @returns Promise resolving to an array of Post instances
    */
   static async load(cache: boolean = true): Promise<Array<Post>> {
-    const data = await RepositoryHelper.get<Array<IPost>>(this.DB_KEY, cache);
+    const data = await RepositoryHelper.get<Array<IPost> | null>(this.DB_KEY, cache);
     const posts: Array<Post> = [];
 
-    for (let i = 0; i < data.length; i++) {
-      const post = new Post(data[i]);
+    for (const model of data ?? []) {
+      const post = new Post(model);
 
-      for (let j = 0; j < post.tags.length; j++) {
-        const entry = await EntriesHelper.get(data[i].tags[j].entryId, cache);
+      for (const [index, tag] of post.tags.entries()) {
+        const entryId = model.tags[index]?.entryId;
+        const entry = entryId ? await EntriesHelper.get(entryId, cache) : undefined;
 
         if (entry) {
-          post.tags[j].entry = entry;
+          tag.entry = entry;
         }
       }
 

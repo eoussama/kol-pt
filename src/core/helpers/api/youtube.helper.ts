@@ -1,5 +1,5 @@
 import type { TYouTubeInfo } from "../../schemas/api/youtube-info.schema";
-import { config } from "../../../config/env";
+import { getConfig } from "../../../config/env";
 import { YouTubeChannelResponseSchema } from "../../schemas/api/youtube-channel-response.schema";
 import { YouTubeVideoResponseSchema } from "../../schemas/api/youtube-video-response.schema";
 import { IconHelper } from "../asset/icon.helper";
@@ -29,7 +29,7 @@ export class YouTubeHelper {
    */
   static getChannelInfo(channelId: string): Promise<TYouTubeInfo> {
     return new Promise((resolve) => {
-      fetch(`${YOUTUBE_API_BASE}/channels?part=snippet%2Cstatistics&id=${channelId}&key=${config.youtubeApiKey}`)
+      fetch(`${YOUTUBE_API_BASE}/channels?part=snippet%2Cstatistics&id=${channelId}&key=${getConfig().youtubeApiKey}`)
         .then(e => e.json())
         .then(e => e.items[0])
         .then((raw: unknown) => {
@@ -62,7 +62,7 @@ export class YouTubeHelper {
    */
   static getVideoInfo(videoId: string): Promise<TYouTubeInfo> {
     return new Promise((resolve) => {
-      fetch(`${YOUTUBE_API_BASE}/videos?part=snippet%2Cstatistics&id=${videoId}&key=${config.youtubeApiKey}`)
+      fetch(`${YOUTUBE_API_BASE}/videos?part=snippet%2Cstatistics&id=${videoId}&key=${getConfig().youtubeApiKey}`)
         .then(e => e.json())
         .then(e => e.items[0])
         .then((raw: unknown) => {

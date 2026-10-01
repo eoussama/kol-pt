@@ -2,7 +2,7 @@ import type { NextOrObserver, User, UserCredential } from "firebase/auth";
 
 import { FiremittHelper } from "@eoussama/firemitt";
 import { GoogleAuthProvider, onAuthStateChanged, signInWithCredential, signOut } from "firebase/auth";
-import { config } from "../../../config/env";
+import { getConfig } from "../../../config/env";
 import { FirebaseHelper } from "./firebase.helper";
 
 
@@ -19,12 +19,12 @@ export class AuthHelper {
    * @returns Promise resolving to the user credential
    */
   static login(): Promise<UserCredential> {
-    if (!config.fireguardUrl) {
-      return Promise.reject(new Error("REACT_APP_FIREGUARD_URL is not configured."));
+    if (!getConfig().fireguardUrl) {
+      return Promise.reject(new Error("WXT_FIREGUARD_URL is not configured."));
     }
 
     return FiremittHelper.auth({
-      url: config.fireguardUrl,
+      url: getConfig().fireguardUrl,
       pos: {
         y: 50,
         x: Math.round(window.screen.width / 2 - 225),
@@ -42,13 +42,13 @@ export class AuthHelper {
           secondary: "#222833",
         },
         firebase: {
-          appId: config.appId,
-          apiKey: config.apiKey,
-          projectId: config.projectId,
-          authDomain: config.authDomain,
-          measurementId: config.measurementId,
-          storageBucket: config.storageBucket,
-          messagingSenderId: config.messagingSenderId,
+          appId: getConfig().appId,
+          apiKey: getConfig().apiKey,
+          projectId: getConfig().projectId,
+          authDomain: getConfig().authDomain,
+          measurementId: getConfig().measurementId,
+          storageBucket: getConfig().storageBucket,
+          messagingSenderId: getConfig().messagingSenderId,
         },
       },
     }).then((token) => {

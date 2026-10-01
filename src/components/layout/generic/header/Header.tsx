@@ -44,7 +44,7 @@ function Header(): JSX.Element {
    * @description
    * Condition to show/hide the tabs
    */
-  const canShowTabs = useMemo(() => ([EPage.FEED, EPage.ENTRIES] as Array<string>).includes(route), [route]);
+  const canShowTabs = useMemo(() => ([EPage.FEED, EPage.ENTRIES] as Array<string>).includes(route ?? ""), [route]);
 
   /**
    * @description

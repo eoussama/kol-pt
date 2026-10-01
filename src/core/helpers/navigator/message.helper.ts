@@ -1,6 +1,8 @@
+import type { Browser } from "wxt/browser";
 import type { TMessageType } from "../../enums/message-type.enum";
 import type { Imessage } from "../../types/message.type";
 
+import { browser } from "wxt/browser";
 import { MessageSchema } from "../../schemas/message.schema";
 
 
@@ -21,17 +23,12 @@ export class MessageHelper {
    * @returns The response
    */
   static send<T = unknown, U = unknown>(type: TMessageType, payload?: T, tabId?: number): Promise<U> {
-    if (tabId && Boolean(chrome.tabs)) {
-      return chrome.tabs.sendMessage(tabId, { type, payload });
-    }
-    else if (chrome.runtime) {
-      return new Promise(resolve => chrome.runtime.sendMessage({ tabId, type, payload }, resolve));
-    }
-    else {
-      window.postMessage(JSON.parse(JSON.stringify({ tabId, type, payload })), "*");
+    const request = tabId && browser.tabs
+      ? browser.tabs.sendMessage(tabId, { type, payload })
+      : browser.runtime.sendMessage({ tabId, type, payload });
 
-      return Promise.resolve(null as unknown as U);
-    }
+    // The receiving end may not exist (tab closed, no content script yet)
+    return (request as Promise<U>).catch(() => undefined as U);
   }
 
   /**
@@ -39,17 +36,17 @@ export class MessageHelper {
    * Listens to specific message and invokes user function.
    *
    * @param callback - The function to invoke on message
-   * @param _type - The type of message to invoke the function for
+   * @param type - The type of message to invoke the function for, all types if omitted
    */
-  static listen<T = unknown>(callback: (e: Imessage<T>, sender: chrome.runtime.MessageSender, sendResponse: (response?: unknown) => void) => void, _type?: TMessageType): void {
-    chrome.runtime.onMessage.addListener(async (raw: unknown, sender: chrome.runtime.MessageSender, sendResponse: (response?: unknown) => void) => {
+  static listen<T = unknown>(callback: (e: Imessage<T>, sender: Browser.runtime.MessageSender) => void, type?: TMessageType): void {
+    browser.runtime.onMessage.addListener((raw: unknown, sender: Browser.runtime.MessageSender) => {
       const parsed = MessageSchema.safeParse(raw);
 
-      if (!parsed.success) {
+      if (!parsed.success || (type !== undefined && parsed.data.type !== type)) {
         return;
       }
 
-      callback(parsed.data as Imessage<T>, sender, sendResponse);
+      callback(parsed.data as Imessage<T>, sender);
     });
   }
 }

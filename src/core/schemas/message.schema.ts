@@ -15,6 +15,8 @@ export const MessageSchema = z.object({
     z.literal(EMessageType.LOAD),
     z.literal(EMessageType.SYNC_REQUEST),
     z.literal(EMessageType.SYNC_RESPONSE),
+    z.literal(EMessageType.FETCH_IMAGE),
+    z.literal(EMessageType.FETCH_IMAGE_RESPONSE),
   ]),
   payload: z.unknown().optional(),
 });

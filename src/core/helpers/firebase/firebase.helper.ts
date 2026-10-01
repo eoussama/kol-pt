@@ -5,7 +5,7 @@ import type { Database } from "firebase/database";
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
 import { getDatabase } from "firebase/database";
-import { config } from "../../../config/env";
+import { getConfig } from "../../../config/env";
 
 
 
@@ -46,7 +46,7 @@ export class FirebaseHelper {
    */
   public static get app(): FirebaseApp {
     if (!this._app) {
-      this._app = initializeApp(config);
+      this._app = initializeApp(getConfig());
     }
 
     return this._app;

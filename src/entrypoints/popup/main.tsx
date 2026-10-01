@@ -2,9 +2,9 @@ import React from "react";
 
 import ReactDOM from "react-dom/client";
 import { RouterProvider } from "react-router-dom";
-import { router } from "./core/const/router.const";
+import { router } from "../../core/const/router.const";
 
-import "./styles/index.scss";
+import "../../styles/index.scss";
 
 
 

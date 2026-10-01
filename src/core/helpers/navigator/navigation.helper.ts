@@ -1,4 +1,4 @@
-import { config } from "../../../config/env";
+import { getConfig } from "../../../config/env";
 
 
 
@@ -46,7 +46,7 @@ export class NavigationHelper {
    * Opens the creator's Patreon page
    */
   static openPatreon(): void {
-    window.open(`${config.patreonUrl}/${config.creatorName}`, "_blank");
+    window.open(`${getConfig().patreonUrl}/${getConfig().creatorName}`, "_blank");
   }
 
   /**
@@ -56,7 +56,7 @@ export class NavigationHelper {
    * @param postId The post's ID
    */
   static openPost(postId: string): void {
-    window.open(`${config.patreonUrl}/posts/${postId}`, "_blank");
+    window.open(`${getConfig().patreonUrl}/posts/${postId}`, "_blank");
   }
 
   /**
@@ -67,7 +67,7 @@ export class NavigationHelper {
    * @param reactionId The reaction's ID
    */
   static openReaction(postId: string, reactionId: string): void {
-    window.open(`${config.patreonUrl}/posts/${postId}?reactionId=${reactionId}`, "_blank");
+    window.open(`${getConfig().patreonUrl}/posts/${postId}?reactionId=${reactionId}`, "_blank");
   }
 
   // #endregion

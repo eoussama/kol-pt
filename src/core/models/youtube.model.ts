@@ -65,7 +65,7 @@ export class YouTube extends Entry {
    * @param context - The parent tag's context, passed for extra context
    * @returns Array of menu option objects
    */
-  getOptions(context?: IYouTubeContext): Array<IOption> {
+  override getOptions(context?: IYouTubeContext): Array<IOption> {
     const options = super.getOptions();
 
     return [

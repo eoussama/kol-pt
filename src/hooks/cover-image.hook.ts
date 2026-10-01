@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { browser } from "wxt/browser";
 import { EMessageType } from "../core/enums/message-type.enum";
 import { MessageHelper } from "../core/helpers/navigator/message.helper";
 
@@ -34,15 +35,15 @@ export function useCoverImage(url: string | null | undefined): string | null {
       if (msg?.type === EMessageType.FETCH_IMAGE_RESPONSE) {
         settled = true;
         setDataUrl(msg.payload?.dataUrl ?? null);
-        chrome.runtime.onMessage.removeListener(handler);
+        browser.runtime.onMessage.removeListener(handler);
       }
     };
 
-    chrome.runtime.onMessage.addListener(handler);
+    browser.runtime.onMessage.addListener(handler);
     MessageHelper.send(EMessageType.FETCH_IMAGE, { url });
 
     return () => {
-      chrome.runtime.onMessage.removeListener(handler);
+      browser.runtime.onMessage.removeListener(handler);
     };
   }, [url]);
 

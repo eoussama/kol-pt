@@ -1,4 +1,4 @@
-import { config } from "../../../config/env";
+import { getConfig } from "../../../config/env";
 
 
 
@@ -7,12 +7,6 @@ import { config } from "../../../config/env";
  * Helps with URLs
  */
 export class URLHelper {
-  /**
-   * @description
-   * The patreon url regex pattern
-   */
-  private static readonly PATREON_URL_RGX = new RegExp(`${config.patreonUrl}/*`, "g");
-
   /**
    * @description
    * Decodes patreon embed link and returns raw vimeo src
@@ -24,8 +18,8 @@ export class URLHelper {
     // Getting the encoded patreon link
     const src = url?.split("=")[1]?.split("&")[0];
 
-    // Decoding the url
-    return decodeURIComponent(src);
+    // Decoding the url, leaving it untouched when there is nothing to decode
+    return src ? decodeURIComponent(src) : url;
   }
 
   /**
@@ -36,6 +30,11 @@ export class URLHelper {
    * @returns True if the URL is a Patreon URL
    */
   static isPatreon(url: string): boolean {
-    return this.PATREON_URL_RGX.test(url ?? "");
+    try {
+      return new URL(url).origin === new URL(getConfig().patreonUrl).origin;
+    }
+    catch {
+      return false;
+    }
   }
 }
