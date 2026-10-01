@@ -3,7 +3,7 @@ import type { IEntryPageHeadSectionProps } from "../../../../core/types/props/en
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { Chip } from "@mui/material";
 import millify from "millify";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { EEntryType } from "../../../../core/enums/entry-type.enum";
 import { EPage } from "../../../../core/enums/page.enum";
 import Loader from "../../generic/loader/Loader";

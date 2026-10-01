@@ -2,7 +2,7 @@ import type { Entry } from "../../../core/models/entry.model";
 import type { IEntryPageProps } from "../../../core/types/props/entry-page-props.type";
 
 import { useMemo } from "react";
-import { useParams } from "react-router-dom";
+import { useParams } from "react-router";
 import { IconHelper } from "../../../core/helpers/asset/icon.helper";
 import { useCoverImage } from "../../../hooks/cover-image.hook";
 import { useEntry } from "../../../hooks/entry.hook";

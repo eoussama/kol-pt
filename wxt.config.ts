@@ -50,6 +50,10 @@ export default defineConfig({
         matches: [PATREON_MATCH],
       },
     ],
+    // Material UI 9's browser baseline: Chrome/Edge 117, Firefox 121, Safari 17
+    ...((browser === "chrome" || browser === "edge") && {
+      minimum_chrome_version: "117",
+    }),
     ...(browser === "firefox" && {
       browser_specific_settings: {
         gecko: {

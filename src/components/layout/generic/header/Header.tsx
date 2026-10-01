@@ -4,7 +4,7 @@ import LoginIcon from "@mui/icons-material/Login";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { Button, IconButton, Tab, Tabs, Tooltip } from "@mui/material";
 import { useMemo, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router";
 import { EPage } from "../../../../core/enums/page.enum";
 import { NavigationHelper } from "../../../../core/helpers/navigator/navigation.helper";
 import { useAuth } from "../../../../hooks/auth.hook";

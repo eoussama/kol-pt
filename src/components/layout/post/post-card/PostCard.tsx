@@ -60,18 +60,18 @@ function PostCard(props: IPostCardProps): JSX.Element {
               {post.title}
             </Typography>
 
-            <Typography variant="subtitle1" color="text.secondary" className={styles.card__subtitle} component="div">
+            <Typography variant="subtitle1" sx={{ color: "text.secondary" }} className={styles.card__subtitle} component="div">
               {post.creationDate.toLocaleString()}
             </Typography>
 
-            <Typography variant="subtitle1" color="text.secondary" className={styles.card__description} component="div">
+            <Typography variant="subtitle1" sx={{ color: "text.secondary" }} className={styles.card__description} component="div">
               {post.description}
             </Typography>
           </div>
 
           <div className={styles.card__tags}>
             {post.tags.map(tag => (
-              <Box key={tag.id} ml={1}>
+              <Box key={tag.id} sx={{ ml: 1 }}>
                 <Tooltip title={tag.description}>
                   <Chip
                     size="small"
