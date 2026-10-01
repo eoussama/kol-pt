@@ -1,5 +1,6 @@
-import { FiremittHelper } from "@eoussama/firemitt";
-import { getFiremittOptions } from "../core/auth/fireguard";
+import type { PublicPath } from "wxt/browser";
+
+import { browser } from "wxt/browser";
 import { request } from "../core/messaging/client";
 import { useAuthStore } from "../state/auth.state";
 
@@ -10,6 +11,31 @@ import { useAuthStore } from "../state/auth.state";
  * The picture shown for users without a profile picture.
  */
 const DEFAULT_PHOTO = "./icons/icon128x128.png";
+
+/**
+ * @description
+ * The size of the login window, fitting the Fireguard card and a status line.
+ */
+const LOGIN_WINDOW = { width: 500, height: 400 } as const;
+
+/**
+ * @description
+ * Opens the login window. The toolbar popup closes as soon as it loses
+ * focus, so signing in happens in a window of its own. Browsers without
+ * windows (Firefox for Android, Safari on iOS) get a tab instead.
+ *
+ * @returns Promise that resolves once the window or tab is open
+ */
+async function openLoginWindow(): Promise<void> {
+  const url = browser.runtime.getURL("/auth.html" as PublicPath);
+
+  try {
+    await browser.windows.create({ url, type: "popup", focused: true, ...LOGIN_WINDOW });
+  }
+  catch {
+    await browser.tabs.create({ url });
+  }
+}
 
 /**
  * @description
@@ -24,13 +50,10 @@ export function useAuth() {
 
   /**
    * @description
-   * Signs in with Google through Fireguard, then hands the token to the
-   * background, which owns the Firebase session.
+   * Opens the login window.
    */
   const onLogin = () => {
-    FiremittHelper.auth({ ...getFiremittOptions(), mode: "popup", pos: { y: 50, x: Math.round(window.screen.width / 2 - 225) } })
-      .then(idToken => request("auth.signIn", { idToken }))
-      .catch(() => undefined);
+    openLoginWindow().catch(() => undefined);
   };
 
   /**

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sign in to KOL PT</title>
+</head>
+
+<body>
+  <main class="auth">
+    <div id="fireguard" class="auth__card"></div>
+
+    <p id="status" class="auth__status" role="status" aria-live="polite"></p>
+
+    <div id="actions" class="auth__actions" hidden>
+      <button id="retry" type="button" class="auth__button">Try again</button>
+      <button id="popup" type="button" class="auth__button auth__button--secondary">Use a popup window instead</button>
+    </div>
+  </main>
+
+  <script type="module" src="./main.ts"></script>
+</body>
+
+</html>
