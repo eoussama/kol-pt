@@ -1,6 +1,6 @@
 .reaction {
   padding: 10px 15px;
-  background-color: #ffffff;
+  background-color: var(--kolpt-color-surface);
 
   display: flex;
   align-items: center;
@@ -20,14 +20,25 @@
     animation-timing-function: ease-in-out;
   }
 
+  &__reports {
+    margin-left: 8px !important;
+    margin-top: -4px;
+    height: 20px !important;
+    font-size: 11px !important;
+
+    svg {
+      font-size: 14px !important;
+    }
+  }
+
   &__title {
     font-size: 14px;
-    color: #232630;
+    color: var(--kolpt-color-title);
     font-weight: 400;
   }
 
   &__description {
-    color: grey;
+    color: var(--kolpt-color-muted);
     font-size: 12px;
     font-weight: 300;
   }
@@ -36,7 +47,6 @@
     font-weight: 500;
   }
 
-  &__right,
   &__extra {
     opacity: 0;
 
@@ -47,9 +57,48 @@
   &__right {
     margin-left: auto;
 
+    display: flex;
+    align-items: center;
+
     button {
-      color: #b9b9b9;
+      color: var(--kolpt-color-icon);
     }
+
+    // The actions appear on hover. The heart is one of them but has its
+    // own animation, and stays once favorited.
+    > :not(.reaction__favorite) {
+      opacity: 0;
+
+      transition-duration: 0.2s;
+      transition-property: opacity;
+    }
+  }
+
+  // A favorite stays visible. At rest it takes the place of the three dots
+  // (one button over) and slides left into its own place on hover. An
+  // unfavorited heart is hidden at rest and just fades in on hover.
+  &__favorite {
+    opacity: 0;
+
+    transition-duration: 0.2s;
+    transition-property: opacity, transform;
+    transition-timing-function: ease;
+
+    button {
+      color: var(--kolpt-color-icon);
+    }
+
+    &--shifted {
+      transform: translateX(34px);
+    }
+
+    &--on {
+      opacity: 1;
+    }
+  }
+
+  &__heart {
+    color: #e0245e !important;
   }
 
   &__tracking {
@@ -74,15 +123,26 @@
     padding: 0 !important;
   }
 
+  // Same footprint as the checkbox, so the row does not shift while saving
+  &__saving {
+    display: block;
+    margin: 2px;
+  }
+
   &:not(:last-of-type) {
-    border-bottom: 1px solid #e1e1e1;
+    border-bottom: 1px solid var(--kolpt-color-border);
   }
 
   &:hover {
 
-    .reaction__right,
+    .reaction__right > :not(.reaction__favorite),
     .reaction__extra {
       opacity: 1;
+    }
+
+    .reaction__favorite {
+      opacity: 1;
+      transform: none;
     }
   }
 }

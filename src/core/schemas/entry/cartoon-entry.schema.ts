@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { EEntryType } from "../../enums/entry-type.enum";
-import { EntrySchema } from "./entry.schema";
+import { BaseEntrySchema } from "./base-entry.schema";
 
 
 
@@ -8,7 +8,7 @@ import { EntrySchema } from "./entry.schema";
  * @description
  * Zod schema for a cartoon entry.
  */
-export const CartoonEntrySchema = EntrySchema.extend({
+export const CartoonEntrySchema = BaseEntrySchema.extend({
   type: z.literal(EEntryType.CARTOON),
 });
 

@@ -1,0 +1,9 @@
+.moderation {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+
+  button {
+    color: var(--kolpt-color-icon);
+  }
+}

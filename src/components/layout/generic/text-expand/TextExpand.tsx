@@ -45,8 +45,7 @@ function TextExpand(props: ITextExpandProps): JSX.Element {
             onClick={onMoreToggle}
             className={styles.more}
           >
-            read
-            {expanded ? "less" : "more"}
+            {expanded ? "read less" : "read more"}
           </span>
         )}
     </>

@@ -13,9 +13,10 @@
   &__message {
     font-size: 16px;
     margin-top: 20px;
-    
+    text-align: center;
+
     font-weight: 400;
-    color: var(--color-text);
+    color: var(--kolpt-color-text);
 
     b {
       font-weight: 500;

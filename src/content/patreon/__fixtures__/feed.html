@@ -1,0 +1,128 @@
+<!--
+  Trimmed copy of a Patreon creator feed (/cw/<creator>/posts), October 2026.
+  Only the structure and the hooks the extension relies on (data-tag, id,
+  role, aria-label, href) are kept; ids, names and text are made up.
+
+  Cards:
+    1. Pinned post the viewer cannot access (no post links)
+    2. Video post 1001 (title, published-at link, tags, details, comment box)
+    3. Text post 1002 (no tags)
+    4. Post 1004 whose links have not rendered yet (comment box only)
+-->
+<main id="main-content" role="main">
+  <div data-tag="cw-post-stream-container">
+    <div>
+      <div data-tag="post-card">
+        <div><div><div>
+          <div>
+            <div><div>
+              <div><img data-tag="locked-image-thumbnail" src="https://example.invalid/locked.jpg" alt=""></div>
+            </div></div>
+            <div>
+              <div>
+                <div><div>
+                  <div><div><span data-tag="post-title">Locked pinned post</span></div></div>
+                  <div><span id="track-click"><p><span><span>Pinned</span></span></p></span></div>
+                </div>
+                <div><div><div><div data-tag="teaser-post-content"><div data-tag="paywall-blur"></div></div></div></div></div>
+                <div><div><div data-tag="post-details">
+                  <button data-tag="like-button" type="button" aria-label="Like post. 0 likes"></button>
+                  <button data-tag="locked-badge-button" type="button" aria-label="Icon indicating the post is locked"></button>
+                </div></div></div>
+              </div>
+            </div>
+          </div>
+        </div></div></div>
+      </div>
+    </div>
+
+    <div>
+      <div data-tag="post-card">
+        <div><div><div>
+          <div>
+            <div><div><div>
+              <div role="application">
+                <div>
+                  <video playsinline="" preload="none" src="blob:https://www.patreon.com/00000000-0000-0000-0000-000000000000"></video>
+                  <div><div>
+                    <img src="https://example.invalid/thumbnail.jpg" alt="">
+                    <div><button type="button" aria-label="Play"><span aria-hidden="true"><svg data-tag="IconPlaybackPlay"></svg></span></button></div>
+                  </div></div>
+                  <div role="status" data-tag="flash"></div>
+                  <div><div><div><button aria-label="Play"></button></div></div></div>
+                </div>
+              </div>
+            </div></div></div>
+            <div>
+              <div>
+                <div><div>
+                  <div><div><span data-tag="post-title"><a href="https://www.patreon.com/SomeCreator/posts/shows-anime-9-30-1001"><div>Shows &amp; Anime</div></a></span></div></div>
+                  <div><span id="track-click"><a data-tag="post-published-at" href="https://www.patreon.com/SomeCreator/posts/shows-anime-9-30-1001"><span>10 hours ago</span></a></span></div>
+                </div>
+                <div class="patreon-post-content">
+                  <div><div data-tag="post-content"><div data-tag="post-content-content"><p>Stream notes.</p></div></div></div>
+                </div>
+                <div data-tag="post-tags">
+                  <div><a data-tag="post-tag" href="https://www.patreon.com/SomeCreator/posts?filters%5Btag%5D=Anime"><p>Anime</p></a></div>
+                </div>
+                <div><div><div data-tag="post-details">
+                  <button data-tag="like-button" type="button" aria-label="Like post. 3 likes"></button>
+                  <button data-tag="comment-post-icon" type="button" aria-label="View 3 comments"></button>
+                </div></div></div>
+                <div id="content-card-comment-thread-container" data-tag="content-card-comment-thread-container">
+                  <label data-tag="comment-field-label" id="comment-section-input-1001-label" for="comment-section-input-1001"></label>
+                  <textarea id="comment-section-input-1001" data-tag="comment-field"></textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div></div></div>
+      </div>
+    </div>
+
+    <div>
+      <div data-tag="post-card">
+        <div><div><div>
+          <div>
+            <div>
+              <div>
+                <div><div>
+                  <div><div><span data-tag="post-title"><a href="https://www.patreon.com/SomeCreator/posts/discord-stream-1002"><div>Discord Stream</div></a></span></div></div>
+                  <div><span id="track-click"><a data-tag="post-published-at" href="https://www.patreon.com/SomeCreator/posts/discord-stream-1002"><span>11 hours ago</span></a></span></div>
+                </div>
+                <div class="patreon-post-content">
+                  <div><div data-tag="post-content"><div data-tag="post-content-content"><p>Live soon.</p></div></div></div>
+                </div>
+                <div><div><div data-tag="post-details">
+                  <button data-tag="like-button" type="button" aria-label="Like post. 1 like"></button>
+                </div></div></div>
+                <div id="content-card-comment-thread-container" data-tag="content-card-comment-thread-container">
+                  <label data-tag="comment-field-label" id="comment-section-input-1002-label" for="comment-section-input-1002"></label>
+                  <textarea id="comment-section-input-1002" data-tag="comment-field"></textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div></div></div>
+      </div>
+    </div>
+
+    <div>
+      <div data-tag="post-card">
+        <div><div><div>
+          <div>
+            <div>
+              <div>
+                <div class="patreon-post-content"><div><p>Still rendering.</p></div></div>
+                <div id="content-card-comment-thread-container" data-tag="content-card-comment-thread-container">
+                  <label data-tag="comment-field-label" id="comment-section-input-1004-label" for="comment-section-input-1004"></label>
+                  <textarea id="comment-section-input-1004" data-tag="comment-field"></textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div></div></div>
+      </div>
+    </div>
+  </div>
+</main>

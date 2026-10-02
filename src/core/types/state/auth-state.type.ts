@@ -1,29 +1,41 @@
-import type { TUnsafe } from "@eoussama/core";
-import type { User } from "firebase/auth";
+import type { IAuthUser } from "../auth-user.type";
 
 
 
 /**
  * @description
- * Interface representing the state of the user.
+ * The signed-in user, mirrored from extension storage.
  */
 export interface IAuthState {
 
   /**
    * @description
-   * The currently active user.
+   * The signed-in user, or null.
    */
-  user: TUnsafe<User>;
+  user: IAuthUser | null;
 
   /**
    * @description
-   * The login action
+   * Whether the stored sign-in has been read yet. Until then `user` is null
+   * only because nothing is known, not because nobody is signed in.
    */
-  login: (newUser: User) => void;
+  ready: boolean;
 
   /**
    * @description
-   * The logout action
+   * Whether the signed-in user is a moderator.
    */
-  logout: () => void;
+  moderator: boolean;
+
+  /**
+   * @description
+   * Records whether the signed-in user is a moderator.
+   */
+  setModerator: (moderator: boolean) => void;
+
+  /**
+   * @description
+   * Replaces the signed-in user, which also marks the sign-in as known.
+   */
+  setUser: (user: IAuthUser | null) => void;
 }

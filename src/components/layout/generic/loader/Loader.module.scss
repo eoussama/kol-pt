@@ -7,7 +7,7 @@
   overflow: hidden;
 
   border-radius: 10px;
-  background-color: #ececec;
+  background-color: var(--kolpt-color-skeleton);
 
   &--overlay {
     position: absolute;
@@ -30,7 +30,7 @@
     height: 100%;
 
     background-repeat: no-repeat;
-    background-image: linear-gradient(to right, transparent, #ffffff, transparent);
+    background-image: linear-gradient(to right, transparent, var(--kolpt-color-skeleton-shine), transparent);
 
     animation-duration: 2s;
     animation-fill-mode: forwards;

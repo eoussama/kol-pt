@@ -1,0 +1,44 @@
+{
+  "rules": {
+    "posts": {
+      ".read": true,
+      ".write": "auth != null && root.child('moderators').child(auth.uid).val() === true"
+    },
+    "entries": {
+      ".read": true,
+      ".write": "auth != null && root.child('moderators').child(auth.uid).val() === true"
+    },
+    "moderators": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid"
+      }
+    },
+    "reports": {
+      ".read": "auth != null && root.child('moderators').child(auth.uid).val() === true",
+      "$reportId": {
+        ".read": "auth != null && $reportId.endsWith('~' + auth.uid)",
+        ".write": "auth != null && ((!data.exists() && $reportId.endsWith('~' + auth.uid)) || (!newData.exists() && root.child('moderators').child(auth.uid).val() === true))",
+        ".validate": "newData.hasChildren(['id', 'kind', 'postId', 'reporterUid', 'createdAt']) && newData.child('id').val() === $reportId && newData.child('reporterUid').val() === auth.uid",
+        "id": { ".validate": "newData.isString()" },
+        "kind": { ".validate": "newData.isString() && newData.val().matches(/^(timestamp|entry|missing|untracked)$/)" },
+        "postId": { ".validate": "newData.isString() && newData.val().length <= 300" },
+        "postTitle": { ".validate": "newData.isString() && newData.val().length <= 300" },
+        "tagId": { ".validate": "newData.isString() && newData.val().length <= 100" },
+        "tagTitle": { ".validate": "newData.isString() && newData.val().length <= 300" },
+        "note": { ".validate": "newData.isString() && newData.val().length <= 500" },
+        "startTime": { ".validate": "newData.isNumber() && newData.val() >= 0" },
+        "endTime": { ".validate": "newData.isNumber() && newData.val() >= 0" },
+        "reporterUid": { ".validate": "newData.isString()" },
+        "reporterName": { ".validate": "newData.isString() && newData.val().length <= 100" },
+        "createdAt": { ".validate": "newData.isNumber() && newData.val() <= now" },
+        "$other": { ".validate": false }
+      }
+    },
+    "users": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid"
+      }
+    }
+  }
+}

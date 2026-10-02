@@ -1,10 +1,75 @@
+// Light theme. These are the extension's original colors.
 :root {
-  --color-text: #222833;
-  --color-text-rgb: 34, 40, 51;
+  --kolpt-color-text: #222833;
+  --kolpt-color-text-rgb: 34, 40, 51;
 
-  --color-primary: #1976d2;
-  --color-primary-rgb: 25, 118, 210;
+  --kolpt-color-primary: #1976d2;
+  --kolpt-color-primary-rgb: 25, 118, 210;
 
-  --color-background: #f7f7f7;
-  --color-background-rgb: 247, 247, 247;
+  --kolpt-color-background: #f7f7f7;
+  --kolpt-color-background-rgb: 247, 247, 247;
+
+  // Cards, list rows, link boxes
+  --kolpt-color-surface: #ffffff;
+  // The reactions panel
+  --kolpt-color-surface-alt: #f8f8f8;
+  --kolpt-color-surface-hover: #f5f5f5;
+  // Search field
+  --kolpt-color-input: #f1f1f1;
+  // White veil drawn over cover images, as "r, g, b"
+  --kolpt-color-veil-rgb: 255, 255, 255;
+
+  --kolpt-color-title: #232630;
+  --kolpt-color-muted: grey;
+
+  --kolpt-color-border: #e1e1e1;
+  --kolpt-color-border-soft: #ececec;
+  --kolpt-color-border-strong: #dadada;
+  --kolpt-color-divider: #f3f3f3;
+
+  --kolpt-color-icon: #b9b9b9;
+  --kolpt-color-icon-soft: #c4c4c4;
+  --kolpt-color-checkbox: #b2b2b2;
+  --kolpt-color-chip: #e4e4e4;
+
+  --kolpt-color-skeleton: #ececec;
+  --kolpt-color-skeleton-shine: #ffffff;
+
+  --kolpt-color-shadow-rgb: 0, 0, 0;
+}
+
+// Dark theme, after Patreon's own dark palette. Applied by setting
+// data-kolpt-theme="dark" on <html>.
+:root[data-kolpt-theme="dark"] {
+  color-scheme: dark;
+
+  --kolpt-color-text: #ffffff;
+  --kolpt-color-text-rgb: 255, 255, 255;
+
+  --kolpt-color-background: #121212;
+  --kolpt-color-background-rgb: 18, 18, 18;
+
+  --kolpt-color-surface: #272727;
+  --kolpt-color-surface-alt: #1f1f1f;
+  --kolpt-color-surface-hover: #303030;
+  --kolpt-color-input: #272727;
+  --kolpt-color-veil-rgb: 28, 28, 28;
+
+  --kolpt-color-title: #ffffff;
+  --kolpt-color-muted: #ffffffba;
+
+  --kolpt-color-border: #ffffff30;
+  --kolpt-color-border-soft: #ffffff1f;
+  --kolpt-color-border-strong: #ffffff30;
+  --kolpt-color-divider: #ffffff14;
+
+  --kolpt-color-icon: #ffffff80;
+  --kolpt-color-icon-soft: #ffffff66;
+  --kolpt-color-checkbox: #ffffff80;
+  --kolpt-color-chip: #ffffff1f;
+
+  --kolpt-color-skeleton: #272727;
+  --kolpt-color-skeleton-shine: #3a3a3a;
+
+  --kolpt-color-shadow-rgb: 0, 0, 0;
 }

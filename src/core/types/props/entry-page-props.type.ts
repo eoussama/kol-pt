@@ -1,13 +1,24 @@
 /**
  * @description
- * Properties passed down to the entry detail page.
- * This is only used when the page is opened in a modal context.
+ * Props for the entry detail view.
  */
-export interface IEntryPageProps {
+export interface IEntryViewProps {
 
   /**
    * @description
-   * The ID of the entry to display the info of.
+   * The ID of the entry to show.
    */
-  entryId?: string;
+  entryId: string;
+
+  /**
+   * @description
+   * Whether the view is shown in a dialog on Patreon rather than in the popup.
+   */
+  isDialog?: boolean;
+
+  /**
+   * @description
+   * Navigates back to the entries list. The back arrow is hidden without it.
+   */
+  onBack?: () => void;
 }

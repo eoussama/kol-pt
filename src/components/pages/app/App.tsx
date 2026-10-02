@@ -1,5 +1,9 @@
-import { Outlet } from "react-router-dom";
+import { Outlet } from "react-router";
 
+import { useAuthSync } from "../../../hooks/auth-sync.hook";
+import { useProgressSync } from "../../../hooks/progress-sync.hook";
+import { useReportsSync } from "../../../hooks/reports-sync.hook";
+import { useWatchlistSync } from "../../../hooks/watchlist-sync.hook";
 import Header from "../../layout/generic/header/Header";
 
 import styles from "./App.module.scss";
@@ -14,6 +18,11 @@ import styles from "./App.module.scss";
  * @returns {JSX.Element} The JSX representation of the component.
  */
 function App(): JSX.Element {
+  useAuthSync();
+  useWatchlistSync();
+  useProgressSync();
+  useReportsSync();
+
   return (
     <main className={styles.root}>
       <Header />

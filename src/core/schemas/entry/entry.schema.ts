@@ -1,23 +1,29 @@
 import { z } from "zod";
-import { EEntryType } from "../../enums/entry-type.enum";
+import { listOf } from "../primitives.schema";
+import { AnimeEntrySchema } from "./anime-entry.schema";
+import { CartoonEntrySchema } from "./cartoon-entry.schema";
+import { MovieEntrySchema } from "./movie-entry.schema";
+import { TvShowEntrySchema } from "./tv-show-entry.schema";
+import { YouTubeEntrySchema } from "./youtube-entry.schema";
 
 
 
 /**
  * @description
- * Zod schema for a generic entry.
+ * Zod schema for any entry, by type.
  */
-export const EntrySchema = z.looseObject({
-  id: z.string(),
-  imdbId: z.string().optional(),
-  altTitles: z.array(z.string()).optional(),
-  title: z.string(),
-  type: z.union([
-    z.literal(EEntryType.ANIME),
-    z.literal(EEntryType.MOVIE),
-    z.literal(EEntryType.CARTOON),
-    z.literal(EEntryType.YOUTUBE),
-  ]),
-});
+export const EntrySchema = z.discriminatedUnion("type", [
+  AnimeEntrySchema,
+  MovieEntrySchema,
+  TvShowEntrySchema,
+  CartoonEntrySchema,
+  YouTubeEntrySchema,
+]);
 
 export type TEntry = z.infer<typeof EntrySchema>;
+
+/**
+ * @description
+ * Zod schema for the entries list. Malformed entries are dropped individually.
+ */
+export const EntryListSchema = listOf(EntrySchema);

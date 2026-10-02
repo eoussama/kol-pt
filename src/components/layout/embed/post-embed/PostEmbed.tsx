@@ -1,13 +1,8 @@
-import type { User } from "firebase/auth";
-import type { Imessage } from "../../../../core/types/message.type";
 import type { IPostEmbedProps } from "../../../../core/types/props/post-embed-props.type";
 
-import { useEffect } from "react";
+import { ModerationProvider } from "../../../../context/ModerationContext";
 import { PostProvider } from "../../../../context/PostContext";
 import { ReactionOverlayProvider } from "../../../../context/ReactionOverlayContext";
-import { EMessageType } from "../../../../core/enums/message-type.enum";
-import { MessageHelper } from "../../../../core/helpers/navigator/message.helper";
-import { useAuthStore } from "../../../../state/auth.state";
 import PostReactions from "../post-reactions/PostReactions";
 
 import "./../../../../styles/embed.scss";
@@ -22,29 +17,14 @@ import "./../../../../styles/embed.scss";
  * @returns The rendered post embed
  */
 function PostEmbed(props: IPostEmbedProps): JSX.Element {
-  const login = useAuthStore(e => e.login);
-  const logout = useAuthStore(e => e.logout);
-
-  useEffect(() => {
-    MessageHelper.send(EMessageType.SYNC_REQUEST);
-    MessageHelper.listen<User>(async (e: Imessage<User>) => {
-      if (e.payload) {
-        login(e.payload);
-      }
-      else {
-        logout();
-      }
-    }, EMessageType.SYNC_RESPONSE);
-  }, []);
-
   return (
-    <>
-      <PostProvider post={props.post}>
-        <ReactionOverlayProvider>
+    <PostProvider post={props.post}>
+      <ReactionOverlayProvider>
+        <ModerationProvider post={props.post}>
           <PostReactions />
-        </ReactionOverlayProvider>
-      </PostProvider>
-    </>
+        </ModerationProvider>
+      </ReactionOverlayProvider>
+    </PostProvider>
   );
 }
 

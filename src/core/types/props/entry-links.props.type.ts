@@ -1,4 +1,4 @@
-import type { Entry } from "../../models/entry.model";
+import type { Entry } from "../../domain/entry";
 
 
 

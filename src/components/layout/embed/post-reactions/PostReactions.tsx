@@ -3,16 +3,20 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { AccordionDetails, AccordionSummary, Alert, Collapse, Dialog, DialogContent, DialogTitle, IconButton, Tooltip } from "@mui/material";
 import { useContext, useEffect, useState } from "react";
 
+import { usePlayer } from "../../../../content/player/PlayerProvider";
 import { PostContext } from "../../../../context/PostContext";
 import { ReactionOverlayContext } from "../../../../context/ReactionOverlayContext";
-import { IconHelper } from "../../../../core/helpers/asset/icon.helper";
-import { NavigationHelper } from "../../../../core/helpers/navigator/navigation.helper";
-import { usePlayer } from "../../../../hooks/player.hook";
+import { getImageUrl } from "../../../../core/utils/assets";
+import { openPassione } from "../../../../core/utils/links";
+import { useAutoWatch } from "../../../../hooks/auto-watch.hook";
+import { useProgressTracking } from "../../../../hooks/progress.hook";
 import { useAuthStore } from "../../../../state/auth.state";
-import EntryPage from "../../../pages/entry/EntryPage";
+import EntryView from "../../../pages/entry/EntryView";
 import { PostAccordion } from "../post-accordion/PostAccordion";
+import PostModeration from "../post-moderation/PostModeration";
 import PostReactionMenu from "../post-reaction-menu/PostReactionMenu";
 import PostReaction from "../post-reaction/PostReaction";
+import PostResume from "../post-resume/PostResume";
 
 import styles from "./PostReactions.module.scss";
 
@@ -26,21 +30,15 @@ import styles from "./PostReactions.module.scss";
  */
 function PostReactions(): JSX.Element {
   const { post } = useContext(PostContext);
-  const { player, playerReady } = usePlayer(post.id);
+  const { ready, cue } = usePlayer();
+
+  useAutoWatch(post);
+  useProgressTracking(post);
   const user = useAuthStore(e => e.user);
-  const [alertOpen, setAlertOpen] = useState(false);
+  const authReady = useAuthStore(e => e.ready);
+  const [dismissed, setDismissed] = useState(false);
   const [expanded, setExpanded] = useState<boolean>(true);
   const { tag, dialogOpened, setDialogOpened } = useContext(ReactionOverlayContext);
-
-  /**
-   * @description
-   * Checks if user is logged in
-   *
-   * @returns True if user is authenticated
-   */
-  const isLoggedIn = () => {
-    return Boolean(user);
-  };
 
   /**
    * @description
@@ -73,39 +71,40 @@ function PostReactions(): JSX.Element {
     e.stopPropagation();
     e.preventDefault();
 
-    NavigationHelper.openPassione();
+    openPassione();
   };
 
+  // Positioning the video where the popup's link says (?resumeAt= or ?reactionId=)
   useEffect(() => {
-    if (!player) {
+    if (!ready) {
       return;
     }
 
-    // Adding cue points
-    for (const tag of post.tags) {
-      player.addCuePoint(tag.startTime, { tag });
+    const params = new URLSearchParams(window.location.search);
+    const resumeAt = Number(params.get("resumeAt") ?? Number.NaN);
+    const reactionId = params.get("reactionId");
+    const reaction = reactionId ? post.tags.find(tag => tag.id === reactionId) : undefined;
+
+    if (Number.isFinite(resumeAt) && resumeAt >= 0) {
+      cue(resumeAt);
     }
-
-    // Auto playing reaction
-    const urlSearch = new URLSearchParams(window.location.search);
-    const reactionId = urlSearch.get("reactionId");
-    const canAutoPlay = (reactionId?.length ?? 0) > 0;
-
-    if (canAutoPlay) {
-      const reaction = post.tags.find(tag => tag.id === reactionId);
-
-      player.setCurrentTime(reaction?.startTime ?? 0);
+    else if (reaction) {
+      cue(reaction.startTime);
     }
-  }, [playerReady]);
+  }, [ready, cue, post]);
 
+  // A dismissed callout comes back after signing out and in again
   useEffect(() => {
-    setAlertOpen(!isLoggedIn());
+    setDismissed(false);
   }, [user?.uid]);
+
+  // Only once the stored sign-in is known, so it never shows just to vanish
+  const alertOpen = authReady && !user && !dismissed;
 
   return (
     <>
 
-      <div className={styles.post__auth}>
+      <div>
         <Collapse in={alertOpen}>
           <Alert
             severity="info"
@@ -114,7 +113,7 @@ function PostReactions(): JSX.Element {
               <IconButton
                 size="small"
                 aria-label="Login in notice"
-                onClick={() => setAlertOpen(false)}
+                onClick={() => setDismissed(true)}
               >
                 <CloseIcon />
               </IconButton>
@@ -139,19 +138,25 @@ function PostReactions(): JSX.Element {
           <div className={styles["post__head-wrapper"]}>
             <h3 className={styles.post__title}>{getReactionsTitle()}</h3>
 
-            <Tooltip title="Open Passione Club Channel">
-              <IconButton
-                aria-label="Opens KOl's Discord server"
-                onClick={onPassioneOpen}
-                className={`${styles.post__action} ${styles["post__action--discord"]}`}
-              >
-                <img src={IconHelper.getIcon("discord", "platforms")} alt="Discord icon" />
-              </IconButton>
-            </Tooltip>
+            <span className={styles.post__actions}>
+              <PostModeration />
+
+              <Tooltip title="Open Passione Club Channel">
+                <IconButton
+                  aria-label="Opens KOl's Discord server"
+                  onClick={onPassioneOpen}
+                  className={`${styles.post__action} ${styles["post__action--discord"]}`}
+                >
+                  <img src={getImageUrl("discord", "platforms")} alt="Discord icon" />
+                </IconButton>
+              </Tooltip>
+            </span>
           </div>
         </AccordionSummary>
 
         <AccordionDetails className={styles.post__body}>
+          <PostResume />
+
           <ul className={styles.reactions}>
             {post.tags.map(tag => <PostReaction key={tag.id} tag={tag} />)}
           </ul>
@@ -183,7 +188,7 @@ function PostReactions(): JSX.Element {
         </DialogTitle>
 
         <DialogContent className={styles["post__dialog-content"]}>
-          <EntryPage entryId={tag?.entry.id ?? ""} />
+          <EntryView entryId={tag?.entry?.id ?? ""} isDialog={true} />
         </DialogContent>
       </Dialog>
     </>

@@ -1,5 +1,5 @@
 import type { TUnsafe } from "@eoussama/core";
-import type { Tag } from "../core/models/tag.model";
+import type { Tag } from "../core/domain/tag";
 import type { IReactionOverlayContext } from "../core/types/context/reaction-overlay-context.type";
 import type { IReactionOverlayProviderProps } from "../core/types/providers/reaction-overlay-provider.props";
 

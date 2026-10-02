@@ -1,4 +1,4 @@
-import type { Tag } from "../../models/tag.model";
+import type { Tag } from "../../domain/tag";
 
 
 

@@ -1,17 +1,17 @@
 import { z } from "zod";
 import { EEntryType } from "../../enums/entry-type.enum";
-import { EntrySchema } from "./entry.schema";
+import { BaseEntrySchema } from "./base-entry.schema";
 
 
 
 /**
  * @description
- * Zod schema for a YouTube entry.
+ * Zod schema for a YouTube channel entry.
  */
-export const YouTubeEntrySchema = EntrySchema.extend({
+export const YouTubeEntrySchema = BaseEntrySchema.extend({
   type: z.literal(EEntryType.YOUTUBE),
-  handle: z.string(),
-  channelId: z.string(),
+  handle: z.string().optional(),
+  channelId: z.string().optional(),
 });
 
 export type TYouTubeEntry = z.infer<typeof YouTubeEntrySchema>;

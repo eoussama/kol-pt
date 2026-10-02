@@ -1,4 +1,4 @@
-import type { Entry } from "../../models/entry.model";
+import type { Entry } from "../../domain/entry";
 
 
 
@@ -7,12 +7,6 @@ import type { Entry } from "../../models/entry.model";
  * Props of the entry head component.
  */
 export interface IEntryPageHeadSectionProps {
-
-  /**
-   * @description
-   * If the dialog page is loaded as a dialog.
-   */
-  isDialog: boolean;
 
   /**
    * @description
@@ -28,15 +22,9 @@ export interface IEntryPageHeadSectionProps {
 
   /**
    * @description
-   * The photo url of the entry.
+   * The channel's subscriber count (YouTube entries only).
    */
-  photo: string;
-
-  /**
-   * @description
-   * The view count of the entry (Applciable to YouTube entries only).
-   */
-  viewCount: number;
+  subscribers: number;
 
   /**
    * @description
@@ -49,4 +37,10 @@ export interface IEntryPageHeadSectionProps {
    * The list of entry genres (Not applicable to all types).
    */
   genres: Array<string>;
+
+  /**
+   * @description
+   * Navigates back to the entries list. The back arrow is hidden without it.
+   */
+  onBack?: () => void;
 }

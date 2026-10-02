@@ -23,10 +23,12 @@ A clear and concise description of what you expected to happen.
 **Screenshots**
 If applicable, add screenshots to help explain your problem.
 
-**Desktop (please complete the following information):**
- - OS: [e.g. iOS]
- - Browser [e.g. chrome, safari]
- - Version [e.g. 22]
+**Environment (please complete the following information):**
+ - Extension version: [shown at the top of the extension's popup, e.g. 0.1.0]
+ - Browser and version: [e.g. Chrome 140, Edge 140, Firefox 143, Safari 18]
+ - OS: [e.g. Windows 11, macOS 15]
+ - Patreon page: [e.g. the posts feed, a single post]
+ - Signed in to the extension: [yes / no]
 
 **Additional context**
 Add any other context about the problem here.

@@ -1,7 +1,8 @@
 import type { IEntriesState } from "../core/types/state/entries-state.type";
 
 import { create } from "zustand";
-import { EntriesHelper } from "../core/helpers/firebase/repositories/entries.helper";
+import { createEntry } from "../core/domain/hydrate";
+import { request } from "../core/messaging/client";
 
 
 
@@ -42,9 +43,9 @@ export const useEntriesStore = create<IEntriesState>(set => ({
       set({ error: false });
       set({ loading: true });
 
-      const data = await EntriesHelper.load(cache);
+      const entries = await request("entries.list", { force: !cache });
 
-      set(() => ({ entries: data }));
+      set({ entries: entries.map(createEntry) });
     }
     catch {
       set({ error: true });

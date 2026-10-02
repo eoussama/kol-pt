@@ -9,7 +9,7 @@
 
   opacity: 1;
   color: #ffffff;
-  background-color: rgba(var(--color-primary-rgb), 0.9);
+  background-color: rgba(var(--kolpt-color-primary-rgb), 0.9);
 
   transition-duration: 0.2s;
   transition-property: opacity;
@@ -30,7 +30,7 @@
   flex-direction: row;
 
   padding: 4px 8px 4px 12px;
-  background-color: var(--color-primary);
+  background-color: var(--kolpt-color-primary);
 
   &__branding {
     flex: 1;
@@ -48,6 +48,9 @@
   &__login {
     font-family: 'Open Sans';
     background-color: #ffffff !important;
+    // The header stays blue in both themes, so the button keeps the brand blue
+    color: var(--kolpt-color-primary) !important;
+    border-color: rgba(var(--kolpt-color-primary-rgb), 0.5) !important;
   }
 
   &__logout {
@@ -115,5 +118,10 @@
         width: 21px;
       }
     }
+  }
+}
+.header__badge {
+  :global(.MuiBadge-badge) {
+    right: -10px;
   }
 }

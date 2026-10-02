@@ -1,8 +1,8 @@
-import type { Entry } from "../../../core/models/entry.model";
-import type { YouTube } from "../../../core/models/youtube.model";
+import type { Entry } from "../../../core/domain/entry";
+import type { YouTube } from "../../../core/domain/youtube";
 
 import { Avatar, Chip, CircularProgress, Divider, List, ListItem, ListItemAvatar, Tooltip } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { EEntryType } from "../../../core/enums/entry-type.enum";
 import { EPage } from "../../../core/enums/page.enum";
 import { useEntries } from "../../../hooks/entries.hook";
@@ -28,7 +28,8 @@ function EntriesPage(): JSX.Element {
   const emptyMessage = entriesCount > 0
     ? (
         <>
-          No posts match
+          No entries match
+          {" "}
           <b>{search}</b>
         </>
       )

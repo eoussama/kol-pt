@@ -14,21 +14,27 @@ src/config/.env
 # production
 build/
 dist/
+.output/
+.wxt/
+web-ext.config.ts
 
 # testing
 coverage/
+.vitest/
 
 # typescript
 tsconfig.tsbuildinfo
 
 # logs
 *.log
+html.txt
 
 # os
 .DS_Store
 Thumbs.db
 
 # editor
+.mcp.json
 .vscode/
 .idea/
 *.swp

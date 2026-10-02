@@ -13,6 +13,6 @@ export const ListItemText = styled(ListItemTextMui)<{ component?: React.ElementT
     overflow: "hidden",
     whiteSpace: "nowrap",
     textOverflow: "ellipsis",
-    color: "var(--color-text)",
+    color: "var(--kolpt-color-text)",
   },
 });

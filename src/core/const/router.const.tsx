@@ -1,8 +1,10 @@
-import { createHashRouter, Navigate } from "react-router-dom";
+import { createHashRouter, Navigate } from "react-router";
 import App from "../../components/pages/app/App";
 import EntriesPage from "../../components/pages/entries/EntriesPage";
 import EntryPage from "../../components/pages/entry/EntryPage";
 import FeedPage from "../../components/pages/feed/FeedPage";
+import HistoryPage from "../../components/pages/history/HistoryPage";
+import ReportsPage from "../../components/pages/reports/ReportsPage";
 import { EPage } from "../enums/page.enum";
 
 
@@ -23,6 +25,14 @@ export const router = createHashRouter([
       {
         path: EPage.ENTRIES,
         element: <EntriesPage />,
+      },
+      {
+        path: EPage.HISTORY,
+        element: <HistoryPage />,
+      },
+      {
+        path: EPage.REPORTS,
+        element: <ReportsPage />,
       },
       {
         path: `${EPage.ENTRY}/:entryId`,

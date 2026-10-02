@@ -7,5 +7,5 @@ import { Checkbox as CheckboxMui, styled } from "@mui/material";
  * Overrides basic Mui UI checkbox component's styles.
  */
 export const Checkbox = styled(CheckboxMui)(() => ({
-  color: "#b2b2b2",
+  color: "var(--kolpt-color-checkbox)",
 }));

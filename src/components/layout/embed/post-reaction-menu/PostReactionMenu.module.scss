@@ -9,7 +9,7 @@
     svg {
       opacity: 0;
       font-size: 18px;
-      color: #c4c4c4;
+      color: var(--kolpt-color-icon-soft);
 
       margin-left: auto;
       padding-left: 10px;
@@ -24,5 +24,13 @@
     &:hover svg {
       opacity: 1;
     }
+  }
+}
+.popover-action {
+  svg {
+    font-size: 18px;
+    margin-right: 10px;
+    color: inherit;
+    opacity: 0.8;
   }
 }

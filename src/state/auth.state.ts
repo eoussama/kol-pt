@@ -1,4 +1,3 @@
-import type { User } from "firebase/auth";
 import type { IAuthState } from "../core/types/state/auth-state.type";
 
 import { create } from "zustand";
@@ -7,27 +6,18 @@ import { create } from "zustand";
 
 /**
  * @description
- * State management store for authentication.
+ * The signed-in user. Kept in sync with extension storage by `useAuthSync`.
  */
 export const useAuthStore = create<IAuthState>(set => ({
-
-  /**
-   * @description
-   * The logged in user
-   */
   user: null,
+  ready: false,
+  moderator: false,
 
-  /**
-   * @description
-   * Logs user in
-   *
-   * @param newUser - The authenticated user
-   */
-  login(newUser: User): void { set({ user: newUser }); },
+  setUser(user) {
+    set({ user, ready: true });
+  },
 
-  /**
-   * @description
-   * Logs user out
-   */
-  logout(): void { set({ user: null }); },
+  setModerator(moderator) {
+    set({ moderator });
+  },
 }));

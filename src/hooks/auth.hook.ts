@@ -1,8 +1,41 @@
-import { useEffect, useState } from "react";
-import { AuthHelper } from "../core/helpers/firebase/auth.helper";
+import type { PublicPath } from "wxt/browser";
+
+import { browser } from "wxt/browser";
+import { request } from "../core/messaging/client";
 import { useAuthStore } from "../state/auth.state";
 
 
+
+/**
+ * @description
+ * The picture shown for users without a profile picture.
+ */
+const DEFAULT_PHOTO = "./icons/icon128x128.png";
+
+/**
+ * @description
+ * The size of the login window, fitting the Fireguard card and a status line.
+ */
+const LOGIN_WINDOW = { width: 500, height: 400 } as const;
+
+/**
+ * @description
+ * Opens the login window. The toolbar popup closes as soon as it loses
+ * focus, so signing in happens in a window of its own. Browsers without
+ * windows (Firefox for Android, Safari on iOS) get a tab instead.
+ *
+ * @returns Promise that resolves once the window or tab is open
+ */
+async function openLoginWindow(): Promise<void> {
+  const url = browser.runtime.getURL("/auth.html" as PublicPath);
+
+  try {
+    await browser.windows.create({ url, type: "popup", focused: true, ...LOGIN_WINDOW });
+  }
+  catch {
+    await browser.tabs.create({ url });
+  }
+}
 
 /**
  * @description
@@ -11,45 +44,31 @@ import { useAuthStore } from "../state/auth.state";
  * @returns Auth state and handlers
  */
 export function useAuth() {
-  const [email, setEmail] = useState("");
-  const login = useAuthStore(e => e.login);
-  const logout = useAuthStore(e => e.logout);
-  const connectedUser = useAuthStore(e => e.user);
-  const [photo, setPhoto] = useState("./icons/icon128x128.png");
+  const user = useAuthStore(e => e.user);
 
-  const isLoggedIn = () => Boolean(connectedUser);
+  const isLoggedIn = () => Boolean(user);
 
   /**
    * @description
-   * Logs user in
+   * Opens the login window.
    */
   const onLogin = () => {
-    AuthHelper.login();
+    openLoginWindow().catch(() => undefined);
   };
 
   /**
    * @description
-   * Logs user out
+   * Signs out
    */
   const onLogout = () => {
-    AuthHelper.logout();
+    request("auth.signOut", {}).catch(() => undefined);
   };
 
-  useEffect(() => {
-    setEmail(connectedUser?.email ?? "");
-    setPhoto(connectedUser?.photoURL ?? "./icons/icon128x128.png");
-  }, [connectedUser?.uid]);
-
-  useEffect(() => {
-    AuthHelper.onChange((user) => {
-      if (user) {
-        login(user);
-      }
-      else {
-        logout();
-      }
-    });
-  }, []);
-
-  return { email, photo, onLogin, onLogout, isLoggedIn };
+  return {
+    email: user?.email ?? "",
+    photo: user?.photoURL ?? DEFAULT_PHOTO,
+    onLogin,
+    onLogout,
+    isLoggedIn,
+  };
 }

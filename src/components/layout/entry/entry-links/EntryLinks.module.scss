@@ -20,8 +20,8 @@
       display: flex;
       align-items: center;
 
-      background-color: #ffffff;
-      border: 1px solid #ececec;
+      background-color: var(--kolpt-color-surface);
+      border: 1px solid var(--kolpt-color-border-soft);
 
       transition-duration: 0.2s;
       transition-property: border-color;
@@ -52,7 +52,7 @@
       &__nav {
         opacity: 0;
         font-size: 18px;
-        color: #b8b8b8;
+        color: var(--kolpt-color-icon);
 
         margin-left: auto;
 
@@ -61,7 +61,7 @@
       }
 
       &:hover {
-        border-color: rgba(var(--color-primary-rgb), 0.4);
+        border-color: rgba(var(--kolpt-color-primary-rgb), 0.4);
 
         .link__nav {
           opacity: 0.5;

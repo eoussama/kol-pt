@@ -2,13 +2,15 @@ import type { TPage } from "../../../../core/enums/page.enum";
 
 import LoginIcon from "@mui/icons-material/Login";
 import LogoutIcon from "@mui/icons-material/Logout";
-import { Button, IconButton, Tab, Tabs, Tooltip } from "@mui/material";
-import { useMemo, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Badge, Button, IconButton, Tab, Tabs, Tooltip } from "@mui/material";
+import { useMemo } from "react";
+import { useLocation, useNavigate } from "react-router";
 import { EPage } from "../../../../core/enums/page.enum";
-import { NavigationHelper } from "../../../../core/helpers/navigator/navigation.helper";
+import { openDiscord, openPatreon, openProject } from "../../../../core/utils/links";
 import { useAuth } from "../../../../hooks/auth.hook";
+import { useAuthStore } from "../../../../state/auth.state";
 import { usePostStore } from "../../../../state/posts.state";
+import { useReportsStore } from "../../../../state/reports.state";
 
 import styles from "./Header.module.scss";
 
@@ -24,9 +26,11 @@ import styles from "./Header.module.scss";
 function Header(): JSX.Element {
   const location = useLocation();
   const navigate = useNavigate();
-  const [tab, setTag] = useState(0);
   const loadPosts = usePostStore(e => e.loadPosts);
   const { photo, email, onLogin, onLogout, isLoggedIn } = useAuth();
+  const moderator = useAuthStore(e => e.moderator);
+  const reportCount = useReportsStore(e => e.reports.length);
+  const tabs: Array<string> = moderator ? [EPage.FEED, EPage.ENTRIES, EPage.HISTORY, EPage.REPORTS] : [EPage.FEED, EPage.ENTRIES, EPage.HISTORY];
 
   /**
    * @description
@@ -44,7 +48,14 @@ function Header(): JSX.Element {
    * @description
    * Condition to show/hide the tabs
    */
-  const canShowTabs = useMemo(() => ([EPage.FEED, EPage.ENTRIES] as Array<string>).includes(route), [route]);
+  const canShowTabs = ([EPage.FEED, EPage.ENTRIES, EPage.HISTORY, EPage.REPORTS] as Array<string>).includes(route ?? "");
+
+  /**
+   * @description
+   * The selected tab, derived from the route so it stays in sync with
+   * navigation that does not go through the tabs
+   */
+  const tab = Math.max(0, tabs.indexOf(route ?? ""));
 
   /**
    * @description
@@ -52,17 +63,6 @@ function Header(): JSX.Element {
    */
   const onRefresh = () => {
     loadPosts(false);
-  };
-
-  /**
-   * @description
-   * Handles navigation change on the tabs
-   *
-   * @param _ - The synthetic event (unused)
-   * @param tab - The new tab index
-   */
-  const onNavigate = (_: React.SyntheticEvent, tab: number) => {
-    setTag(tab);
   };
 
   /**
@@ -81,7 +81,7 @@ function Header(): JSX.Element {
     <>
       <header
         className={styles.flair}
-        onClick={NavigationHelper.openProject}
+        onClick={openProject}
       >
         {`KOL PT — v${__APP_VERSION__}`}
       </header>
@@ -121,7 +121,7 @@ function Header(): JSX.Element {
           <Tooltip title="Open Discord">
             <IconButton
               aria-label="Opens KOl's Discord server"
-              onClick={NavigationHelper.openDiscord}
+              onClick={openDiscord}
               className={`${styles.header__button} ${styles["header__button--discord"]}`}
             >
               <img src="./images/platforms/discord.png" alt="Discord icon" />
@@ -131,7 +131,7 @@ function Header(): JSX.Element {
           <Tooltip title="Open Patreon">
             <IconButton
               aria-label="Open Patreon"
-              onClick={NavigationHelper.openPatreon}
+              onClick={openPatreon}
               className={`${styles.header__button} ${styles["header__button--patreon"]}`}
             >
               <img src="./images/platforms/patreon.png" alt="Patreon icon" />
@@ -159,11 +159,17 @@ function Header(): JSX.Element {
           <Tabs
             value={tab}
             variant="fullWidth"
-            onChange={onNavigate}
             aria-label="Main navigation tabs"
           >
             <Tab label="Feed" onClick={e => onTabClick(e, EPage.FEED)} />
             <Tab label="Entries" onClick={e => onTabClick(e, EPage.ENTRIES)} />
+            <Tab label="History" onClick={e => onTabClick(e, EPage.HISTORY)} />
+            {moderator && (
+              <Tab
+                onClick={e => onTabClick(e, EPage.REPORTS)}
+                label={<Badge color="warning" badgeContent={reportCount} max={99} className={styles.header__badge}>Reports</Badge>}
+              />
+            )}
           </Tabs>
         </nav>
       )}

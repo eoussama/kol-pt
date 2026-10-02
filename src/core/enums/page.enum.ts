@@ -26,6 +26,18 @@ export const EPage = {
    * The entry detail page.
    */
   ENTRY: "entry",
+
+  /**
+   * @description
+   * The watch history page.
+   */
+  HISTORY: "history",
+
+  /**
+   * @description
+   * Open reports, for moderators.
+   */
+  REPORTS: "reports",
 } as const;
 
 export type TPage = (typeof EPage)[keyof typeof EPage];

@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { EEntryType } from "../../enums/entry-type.enum";
-import { EntrySchema } from "./entry.schema";
+import { NumberLikeSchema, TextSchema } from "../primitives.schema";
+import { BaseEntrySchema } from "./base-entry.schema";
 
 
 
@@ -8,11 +9,11 @@ import { EntrySchema } from "./entry.schema";
  * @description
  * Zod schema for an anime entry.
  */
-export const AnimeEntrySchema = EntrySchema.extend({
+export const AnimeEntrySchema = BaseEntrySchema.extend({
   type: z.literal(EEntryType.ANIME),
-  malId: z.number(),
-  anilistId: z.number(),
-  kitsuId: z.string(),
+  malId: NumberLikeSchema.optional(),
+  anilistId: NumberLikeSchema.optional(),
+  kitsuId: TextSchema.optional(),
 });
 
 export type TAnimeEntry = z.infer<typeof AnimeEntrySchema>;
