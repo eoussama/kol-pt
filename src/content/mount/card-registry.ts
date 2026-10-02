@@ -37,6 +37,13 @@ export interface ICardEmbed {
    * The tracked post, or null while posts are loading.
    */
   post: Post | null;
+
+  /**
+   * @description
+   * Whether the post is known not to be tracked: a video post of the creator
+   * that moderators could track.
+   */
+  untracked: boolean;
 }
 
 /**

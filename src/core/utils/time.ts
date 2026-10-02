@@ -37,3 +37,28 @@ export function formatDuration(seconds: number): string {
 
   return text || "0 seconds";
 }
+
+/**
+ * @description
+ * Reads a timestamp typed by a person: `h:mm:ss`, `m:ss` or plain seconds.
+ *
+ * @param text - The typed timestamp
+ * @returns The number of seconds, or null if it is not a timestamp
+ */
+export function parseTimestamp(text: string): number | null {
+  const match = /^\s*(?:(\d+):)?(?:(\d+):)?(\d+(?:\.\d+)?)\s*$/.exec(text);
+
+  if (!match) {
+    return null;
+  }
+
+  const [, first, second, last] = match;
+  const [hours, minutes] = second === undefined ? [0, Number(first ?? 0)] : [Number(first), Number(second)];
+  const seconds = Number(last);
+
+  if ((first !== undefined && seconds >= 60) || (second !== undefined && minutes >= 60)) {
+    return null;
+  }
+
+  return hours * 3600 + minutes * 60 + seconds;
+}

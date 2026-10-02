@@ -68,6 +68,11 @@ export const PatreonSelectors = {
    * Legacy embedded (Vimeo) players.
    */
   iframe: "iframe",
+
+  // Anything that shows the card holds a video
+  media: "video, [data-tag=\"IconPlaybackPlay\"], iframe",
+
+  title: "[data-tag=\"post-title\"]",
 } as const;
 
 /**

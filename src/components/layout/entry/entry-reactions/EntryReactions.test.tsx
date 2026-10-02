@@ -33,4 +33,10 @@ describe("entryReactions search", () => {
 
     expect(screen.queryByRole("searchbox")).not.toBeInTheDocument();
   });
+
+  it("shows no heading for an entry without reactions", () => {
+    renderList([]);
+
+    expect(screen.queryByText("Reactions")).not.toBeInTheDocument();
+  });
 });

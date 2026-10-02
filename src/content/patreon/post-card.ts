@@ -31,18 +31,7 @@ export interface IMountPoint {
   position: TMountPosition;
 }
 
-/**
- * @description
- * Reduces a stored post id to Patreon's numeric post id, which is what the
- * page exposes. The database stores posts by their URL slug
- * (`anime-tonight-2-78568944`); bare numeric ids are kept as they are.
- *
- * @param id - The stored post id
- * @returns The numeric post id, or the id unchanged if it has none
- */
-export function toNumericPostId(id: string): string {
-  return /(?:^|-)(\d+)$/.exec(id)?.[1] ?? id;
-}
+export { toNumericPostId } from "../../core/utils/post-id";
 
 /**
  * @description
@@ -96,8 +85,30 @@ export function isLocked(card: Element): boolean {
 
 /**
  * @description
+ * Finds the element to place the panel before, for a like/comment row: its
+ * outermost wrapper that holds nothing else. The row itself sits in nested
+ * single-child wrappers, and putting the panel inside them lays it over the
+ * row's buttons.
+ *
+ * @param details - The like/comment row
+ * @param card - The post card element
+ * @returns The element to insert before
+ */
+function outermostWrapper(details: Element, card: Element): Element {
+  let element = details;
+
+  while (element.parentElement && element.parentElement !== card && element.parentElement.children.length === 1) {
+    element = element.parentElement;
+  }
+
+  return element;
+}
+
+/**
+ * @description
  * Finds where the reactions panel goes inside a card: below the post's tags,
- * otherwise above the like/comment row, otherwise below the post body.
+ * otherwise below the post body, otherwise above the card's last like/comment
+ * row (a card has another beside its title), otherwise at the end.
  *
  * @param card - The post card element
  * @returns The anchor and position, always inside the card
@@ -111,16 +122,16 @@ export function getMountPoint(card: Element): IMountPoint {
     return { anchor: tagsEl, position: "after" };
   }
 
-  const detailsEl = card.querySelector(details);
-
-  if (detailsEl) {
-    return { anchor: detailsEl, position: "before" };
-  }
-
   const contentEl = card.querySelector(content);
 
   if (contentEl) {
     return { anchor: contentEl, position: "after" };
+  }
+
+  const detailsEl = Array.from(card.querySelectorAll(details)).at(-1);
+
+  if (detailsEl) {
+    return { anchor: outermostWrapper(detailsEl, card), position: "before" };
   }
 
   return { anchor: card, position: "append" };
@@ -197,4 +208,77 @@ export function resolveCards(cards: Array<HTMLElement>, pageUrl: string): Map<HT
   }
 
   return resolved;
+}
+
+/**
+ * @description
+ * Whether a card holds a video, or a player that will load one.
+ *
+ * @param card - The post card
+ * @returns True if it shows a video
+ */
+export function hasVideo(card: Element): boolean {
+  return card.querySelector(PatreonSelectors.media) !== null;
+}
+
+/**
+ * @description
+ * Whether a card is the given creator's post: it links to the creator's
+ * page, or the page itself is theirs.
+ *
+ * @param card - The post card
+ * @param creator - The creator's Patreon handle
+ * @param pageUrl - The page's URL
+ * @returns True for the creator's posts
+ */
+export function isCreatorPost(card: Element, creator: string, pageUrl: string): boolean {
+  const handle = creator.toLowerCase();
+  const isCreatorPath = (url: string): boolean => {
+    try {
+      const [first, second] = new URL(url, pageUrl).pathname.toLowerCase().split("/").filter(Boolean);
+
+      return first === handle || ((first === "c" || first === "cw") && second === handle);
+    }
+    catch {
+      return false;
+    }
+  };
+
+  return isCreatorPath(pageUrl) || Array.from(card.querySelectorAll("a[href]")).some(link => isCreatorPath(link.getAttribute("href") ?? ""));
+}
+
+/**
+ * @description
+ * Reads what a card shows about its post, to start tracking it from.
+ *
+ * @param card - The post card
+ * @param postId - Patreon's numeric id of the post
+ * @param pageUrl - The page's URL, which names the post on its own page
+ * @returns The post's id (its URL slug when known), title and description
+ */
+export function readPostDetails(card: Element, postId: string, pageUrl = ""): { id: string; title: string; description: string } {
+  const links = [
+    ...PatreonSelectors.postLinks.map(selector => card.querySelector(selector)?.getAttribute("href")),
+    pageUrl,
+  ];
+  const slug = links
+    .map(href => href ? /\/posts\/([^/?#]+)/.exec(href)?.[1] : undefined)
+    .find(segment => segment !== undefined && getPostIdFromUrl(`/posts/${segment}`) === postId);
+
+  // innerText keeps paragraphs apart; jsdom only has textContent
+  const text = (selector: string, keepLines = false) => {
+    const element = card.querySelector<HTMLElement>(selector);
+    // eslint-disable-next-line unicorn/prefer-dom-node-text-content -- textContent runs paragraphs together
+    const raw = (keepLines ? element?.innerText : undefined) ?? element?.textContent ?? "";
+
+    return keepLines
+      ? raw.split("\n").map(line => line.replace(/\s+/g, " ").trim()).filter(Boolean).join("\n")
+      : raw.replace(/\s+/g, " ").trim();
+  };
+
+  return {
+    id: slug ? decodeURIComponent(slug) : postId,
+    title: text(PatreonSelectors.title),
+    description: text(PatreonSelectors.anchors.content, true).slice(0, 5000),
+  };
 }

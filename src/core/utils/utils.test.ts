@@ -1,5 +1,5 @@
 import { shortest } from "./array";
-import { formatDuration, formatTimestamp } from "./time";
+import { formatDuration, formatTimestamp, parseTimestamp } from "./time";
 
 
 
@@ -38,5 +38,25 @@ describe("shortest", () => {
   it("falls back when there is nothing to choose from", () => {
     expect(shortest([], "fallback")).toBe("fallback");
     expect(shortest([""], "fallback")).toBe("fallback");
+  });
+});
+
+describe("parseTimestamp", () => {
+  it.each([
+    ["1:02:03", 3723],
+    ["2:03", 123],
+    ["45", 45],
+    [" 0:00:07 ", 7],
+    ["1:2:3", 3723],
+  ])("reads %s", (text, expected) => {
+    expect(parseTimestamp(text)).toBe(expected);
+  });
+
+  it.each(["", "abc", "1:60", "1:60:00", "1::2", "-5"])("refuses %j", (text) => {
+    expect(parseTimestamp(text)).toBeNull();
+  });
+
+  it("reads back what it formats", () => {
+    expect(parseTimestamp(formatTimestamp(4321))).toBe(4321);
   });
 });

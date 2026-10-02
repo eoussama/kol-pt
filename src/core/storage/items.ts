@@ -1,4 +1,5 @@
 import type { TEntry } from "../schemas/entry/entry.schema";
+import type { TReport } from "../schemas/moderation.schema";
 import type { TPost } from "../schemas/post.schema";
 import type { TPatreonColorMode } from "../theme/color-mode";
 import type { IAuthUser } from "../types/auth-user.type";
@@ -99,6 +100,19 @@ export interface IStoredProgress {
  * background; the popup and every Patreon tab watch it.
  */
 export const progressItem = storage.defineItem<IStoredProgress | null>("local:progress", { fallback: null });
+
+/**
+ * @description
+ * Whether the signed-in user is a moderator. Written by the background on
+ * sign-in and on request.
+ */
+export const moderatorItem = storage.defineItem<{ uid: string; moderator: boolean } | null>("local:moderator", { fallback: null });
+
+/**
+ * @description
+ * The open reports, for moderators only. Written by the background.
+ */
+export const reportsItem = storage.defineItem<{ uid: string; reports: Array<TReport> } | null>("local:reports", { fallback: null });
 
 /**
  * @description

@@ -106,4 +106,22 @@ describe("embedController", () => {
     expect(registry.getSnapshot()).toHaveLength(0);
     expect(findCards(document).every(card => card.style.boxShadow === "")).toBe(true);
   });
+
+  it("keeps a panel on the creator's untracked video posts, marked untracked", () => {
+    controller = new EmbedController(registry, document, () => FEED_URL, "SomeCreator");
+    controller.setPosts([post("1002")]);
+
+    expect(registry.getSnapshot().map(e => [e.postId, e.untracked])).toEqual([["1001", true], ["1002", false]]);
+
+    controller.setPosts([post("1001"), post("1002")]);
+
+    expect(registry.getSnapshot().map(e => [e.postId, e.untracked, e.post?.id])).toEqual([["1001", false, "1001"], ["1002", false, "1002"]]);
+  });
+
+  it("leaves other creators' untracked posts alone", () => {
+    controller = new EmbedController(registry, document, () => "https://www.patreon.com/home", "AnotherCreator");
+    controller.setPosts([]);
+
+    expect(hosts()).toHaveLength(0);
+  });
 });

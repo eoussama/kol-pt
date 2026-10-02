@@ -25,6 +25,14 @@ function stubHandlers(overrides: Partial<THandlers> = {}): THandlers {
     "watchlist.set": fail,
     "favorites.set": fail,
     "progress.set": fail,
+    "moderation.refresh": fail,
+    "posts.save": fail,
+    "posts.delete": fail,
+    "tags.save": fail,
+    "tags.delete": fail,
+    "entries.save": fail,
+    "reports.create": fail,
+    "reports.resolve": fail,
     ...overrides,
   };
 }

@@ -1,9 +1,14 @@
 import type { IOption } from "../../../../core/types/option.type";
 
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutlined";
+import EditIcon from "@mui/icons-material/Edit";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+import OutlinedFlagIcon from "@mui/icons-material/OutlinedFlag";
 import { Divider, Menu, MenuItem } from "@mui/material";
 import { useContext } from "react";
+import { useModeration } from "../../../../context/ModerationContext";
 import { ReactionOverlayContext } from "../../../../context/ReactionOverlayContext";
+import { useAuthStore } from "../../../../state/auth.state";
 
 import styles from "./PostReactionMenu.module.scss";
 
@@ -17,6 +22,26 @@ import styles from "./PostReactionMenu.module.scss";
  */
 function PostReactionMenu(): JSX.Element {
   const { tag, anchorEl, anchorOpened, setAnchorOpened } = useContext(ReactionOverlayContext);
+  const user = useAuthStore(e => e.user);
+  const moderator = useAuthStore(e => e.moderator);
+  const moderation = useModeration();
+  const links = (tag?.entry?.getOptions(tag.context) ?? []).filter(option => option.canShow());
+
+  /**
+   * @description
+   * What signed-in viewers and moderators can do with the reaction.
+   */
+  const actions: Array<{ label: string; icon: JSX.Element; danger?: boolean; action: () => void }> = !tag || !user
+    ? []
+    : [
+        { label: "Report a problem", icon: <OutlinedFlagIcon />, action: () => moderation.report("timestamp", tag) },
+        ...(moderator
+          ? [
+              { label: "Edit reaction", icon: <EditIcon />, action: () => moderation.editTag(tag) },
+              { label: "Delete reaction", icon: <DeleteOutlineIcon />, danger: true, action: () => moderation.deleteTag(tag) },
+            ]
+          : []),
+      ];
 
   /**
    * @description
@@ -80,8 +105,7 @@ function PostReactionMenu(): JSX.Element {
         anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
       >
         {/* A flat list: Menu does not accept fragments as children */}
-        {(tag?.entry?.getOptions(tag.context) ?? [])
-          .filter(option => option.canShow())
+        {links
           .flatMap(option => [
             <MenuItem
               key={option.label}
@@ -98,6 +122,21 @@ function PostReactionMenu(): JSX.Element {
             </MenuItem>,
             ...(option.divider ? [<Divider key={`${option.label}-divider`} />] : []),
           ])}
+        {links.length > 0 && actions.length > 0 && <Divider key="actions-divider" />}
+        {actions.map(item => (
+          <MenuItem
+            key={item.label}
+            className={styles["popover-action"]}
+            sx={item.danger ? { color: "error.main" } : undefined}
+            onClick={() => {
+              onClose();
+              item.action();
+            }}
+          >
+            {item.icon}
+            <span>{item.label}</span>
+          </MenuItem>
+        ))}
       </Menu>
     </>
   );

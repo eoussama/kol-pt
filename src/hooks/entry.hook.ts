@@ -126,10 +126,13 @@ export function useEntry(entryId: string): IEntryState {
         const data = entries.find(candidate => candidate.id === entryId);
         const entry = data ? createEntry(data) : null;
 
-        update({ entry, reactions: findReactions(hydratePosts(posts, entries), entryId) });
+        update({ entry, reactions: findReactions(hydratePosts(posts, entries), entryId), ...(entry?.cover ? { photo: entry.cover } : {}) });
 
         if (entry) {
-          update(await loadDetails(entry));
+          const { photo, ...details } = await loadDetails(entry);
+
+          // An entry's own cover wins over the one a third party provides
+          update(entry.cover ? details : { ...details, ...(photo ? { photo } : {}) });
         }
       })()
         .catch(() => undefined)

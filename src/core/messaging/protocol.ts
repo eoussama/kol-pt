@@ -1,6 +1,7 @@
 import type { TAnimeInfo } from "../schemas/api/anime-info.schema";
 import type { TYouTubeInfo } from "../schemas/api/youtube-info.schema";
 import type { TEntry } from "../schemas/entry/entry.schema";
+import type { TEntryInput, TPostInput, TReportInput, TTagInput } from "../schemas/moderation.schema";
 import type { TPost } from "../schemas/post.schema";
 import type { TSettings } from "../schemas/settings.schema";
 import type { IAuthUser } from "../types/auth-user.type";
@@ -129,6 +130,80 @@ export interface IRequestMap {
    */
   "progress.set": {
     payload: { postId: string; time: number | null };
+    response: null;
+  };
+
+  /**
+   * @description
+   * Checks again whether the signed-in user is a moderator, and for
+   * moderators reloads the open reports.
+   */
+  "moderation.refresh": {
+    payload: Record<never, never>;
+    response: { moderator: boolean };
+  };
+
+  /**
+   * @description
+   * Tracks a post or updates its details. Moderators only.
+   * Responds with the fresh content.
+   */
+  "posts.save": {
+    payload: { post: TPostInput };
+    response: { posts: Array<TPost>; entries: Array<TEntry> };
+  };
+
+  /**
+   * @description
+   * Stops tracking a post. Moderators only.
+   */
+  "posts.delete": {
+    payload: { postId: string };
+    response: { posts: Array<TPost>; entries: Array<TEntry> };
+  };
+
+  /**
+   * @description
+   * Adds or replaces a reaction of a tracked post. Moderators only.
+   */
+  "tags.save": {
+    payload: { postId: string; tag: TTagInput };
+    response: { posts: Array<TPost>; entries: Array<TEntry> };
+  };
+
+  /**
+   * @description
+   * Removes a reaction. Moderators only.
+   */
+  "tags.delete": {
+    payload: { postId: string; tagId: string };
+    response: { posts: Array<TPost>; entries: Array<TEntry> };
+  };
+
+  /**
+   * @description
+   * Adds or replaces an entry. Moderators only.
+   */
+  "entries.save": {
+    payload: { entry: TEntryInput };
+    response: { posts: Array<TPost>; entries: Array<TEntry> };
+  };
+
+  /**
+   * @description
+   * Files a report about a reaction or a post. Signed-in users only.
+   */
+  "reports.create": {
+    payload: { report: TReportInput };
+    response: null;
+  };
+
+  /**
+   * @description
+   * Closes a report. Moderators only.
+   */
+  "reports.resolve": {
+    payload: { reportId: string };
     response: null;
   };
 }

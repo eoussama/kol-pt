@@ -16,7 +16,7 @@ describe("embedRoot", () => {
     // The root container is detached, like in the content script
     render(<EmbedRoot registry={registry} />, { container: document.createElement("div") });
 
-    act(() => registry.set({ key: "1001-1", card, host, postId: "1001", post: null }));
+    act(() => registry.set({ key: "1001-1", card, host, postId: "1001", post: null, untracked: false }));
 
     expect(host.textContent).toContain("Loading post info...");
 

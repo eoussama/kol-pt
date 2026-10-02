@@ -20,6 +20,17 @@
     animation-timing-function: ease-in-out;
   }
 
+  &__reports {
+    margin-left: 8px !important;
+    margin-top: -4px;
+    height: 20px !important;
+    font-size: 11px !important;
+
+    svg {
+      font-size: 14px !important;
+    }
+  }
+
   &__title {
     font-size: 14px;
     color: var(--kolpt-color-title);

@@ -1,5 +1,6 @@
 import { createRoot } from "react-dom/client";
 import { defineContentScript } from "wxt/utils/define-content-script";
+import { appConfig } from "../../config/app";
 import { CardRegistry } from "../../content/mount/card-registry";
 import { EmbedController } from "../../content/mount/embed-controller";
 import { EmbedRoot } from "../../content/mount/EmbedRoot";
@@ -7,7 +8,7 @@ import { watchCards } from "../../content/patreon/card-watcher";
 import { watchPatreonTheme } from "../../content/patreon/theme-watcher";
 import { hydratePosts } from "../../core/domain/hydrate";
 import { request } from "../../core/messaging/client";
-import { patreonColorModeItem } from "../../core/storage/items";
+import { patreonColorModeItem, postsCacheItem } from "../../core/storage/items";
 import { applyThemeAttribute } from "../../core/theme/color-mode";
 import { useThemeStore } from "../../state/theme.state";
 
@@ -28,7 +29,7 @@ export default defineContentScript({
     });
 
     const registry = new CardRegistry();
-    const controller = new EmbedController(registry);
+    const controller = new EmbedController(registry, document, () => window.location.href, appConfig.creatorName);
 
     // Panels render into their cards through portals, so the root itself
     // never needs to be attached to the page
@@ -70,7 +71,11 @@ export default defineContentScript({
       loadPosts();
     });
 
+    // A moderator's change, made in any tab, refreshes the cached posts
+    const unwatchPosts = postsCacheItem.watch(() => loadPosts());
+
     ctx.onInvalidated(() => {
+      unwatchPosts();
       applyThemeAttribute("light");
       controller.dispose();
       root.unmount();

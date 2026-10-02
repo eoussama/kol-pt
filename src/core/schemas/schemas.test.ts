@@ -77,3 +77,15 @@ describe("entryListSchema", () => {
     expect(EntryListSchema.parse([{ id: "x", title: "?", type: 42 }])).toEqual([]);
   });
 });
+
+describe("entries with covers and TV shows", () => {
+  it("reads TV show entries and any entry's own cover", () => {
+    const [show, movie] = EntryListSchema.parse([
+      { id: "e1", type: EEntryType.TV_SHOW, title: "Severance", cover: "https://image.tmdb.org/t/p/w500/a.jpg" },
+      { id: "e2", type: EEntryType.MOVIE, title: "Heat" },
+    ]);
+
+    expect(show).toMatchObject({ type: EEntryType.TV_SHOW, cover: "https://image.tmdb.org/t/p/w500/a.jpg" });
+    expect(movie).not.toHaveProperty("cover");
+  });
+});

@@ -5,10 +5,12 @@ import { useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 import PostEmbed from "../../components/layout/embed/post-embed/PostEmbed";
 import PostLoader from "../../components/layout/embed/post-loader/PostLoader";
+import UntrackedPost from "../../components/layout/embed/untracked-post/UntrackedPost";
 import { ErrorBoundary } from "../../components/layout/generic/error-boundary/ErrorBoundary";
 import { ThemeRoot } from "../../components/theme/ThemeRoot";
 import { useAuthSync } from "../../hooks/auth-sync.hook";
 import { useProgressSync } from "../../hooks/progress-sync.hook";
+import { useReportsSync } from "../../hooks/reports-sync.hook";
 import { useWatchlistSync } from "../../hooks/watchlist-sync.hook";
 import { PlayerProvider } from "../player/PlayerProvider";
 import { emotionCache } from "./emotion-cache";
@@ -25,7 +27,8 @@ interface IEmbedRootProps {
 
 /**
  * @description
- * Mirrors the signed-in user, their watchlist and saved positions. A component of its own so
+ * Mirrors the signed-in user, their watchlist, saved positions and, for
+ * moderators, the open reports. A component of its own so
  * that, inside its error boundary, a failure here cannot take the panels down.
  *
  * @returns Nothing
@@ -34,6 +37,7 @@ function StateSync(): null {
   useAuthSync();
   useWatchlistSync();
   useProgressSync();
+  useReportsSync();
 
   return null;
 }
@@ -65,7 +69,9 @@ export function EmbedRoot(props: IEmbedRootProps): JSX.Element {
                     <PostEmbed post={embed.post} />
                   </PlayerProvider>
                 )
-              : <PostLoader />}
+              : embed.untracked
+                ? <UntrackedPost card={embed.card} postId={embed.postId} />
+                : <PostLoader />}
           </ErrorBoundary>,
           embed.host,
           embed.key,

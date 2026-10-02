@@ -2,13 +2,15 @@ import type { TPage } from "../../../../core/enums/page.enum";
 
 import LoginIcon from "@mui/icons-material/Login";
 import LogoutIcon from "@mui/icons-material/Logout";
-import { Button, IconButton, Tab, Tabs, Tooltip } from "@mui/material";
+import { Badge, Button, IconButton, Tab, Tabs, Tooltip } from "@mui/material";
 import { useMemo } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { EPage } from "../../../../core/enums/page.enum";
 import { openDiscord, openPatreon, openProject } from "../../../../core/utils/links";
 import { useAuth } from "../../../../hooks/auth.hook";
+import { useAuthStore } from "../../../../state/auth.state";
 import { usePostStore } from "../../../../state/posts.state";
+import { useReportsStore } from "../../../../state/reports.state";
 
 import styles from "./Header.module.scss";
 
@@ -26,6 +28,9 @@ function Header(): JSX.Element {
   const navigate = useNavigate();
   const loadPosts = usePostStore(e => e.loadPosts);
   const { photo, email, onLogin, onLogout, isLoggedIn } = useAuth();
+  const moderator = useAuthStore(e => e.moderator);
+  const reportCount = useReportsStore(e => e.reports.length);
+  const tabs: Array<string> = moderator ? [EPage.FEED, EPage.ENTRIES, EPage.HISTORY, EPage.REPORTS] : [EPage.FEED, EPage.ENTRIES, EPage.HISTORY];
 
   /**
    * @description
@@ -43,14 +48,14 @@ function Header(): JSX.Element {
    * @description
    * Condition to show/hide the tabs
    */
-  const canShowTabs = useMemo(() => ([EPage.FEED, EPage.ENTRIES, EPage.HISTORY] as Array<string>).includes(route ?? ""), [route]);
+  const canShowTabs = ([EPage.FEED, EPage.ENTRIES, EPage.HISTORY, EPage.REPORTS] as Array<string>).includes(route ?? "");
 
   /**
    * @description
    * The selected tab, derived from the route so it stays in sync with
    * navigation that does not go through the tabs
    */
-  const tab = Math.max(0, ([EPage.FEED, EPage.ENTRIES, EPage.HISTORY] as Array<string>).indexOf(route ?? ""));
+  const tab = Math.max(0, tabs.indexOf(route ?? ""));
 
   /**
    * @description
@@ -159,6 +164,12 @@ function Header(): JSX.Element {
             <Tab label="Feed" onClick={e => onTabClick(e, EPage.FEED)} />
             <Tab label="Entries" onClick={e => onTabClick(e, EPage.ENTRIES)} />
             <Tab label="History" onClick={e => onTabClick(e, EPage.HISTORY)} />
+            {moderator && (
+              <Tab
+                onClick={e => onTabClick(e, EPage.REPORTS)}
+                label={<Badge color="warning" badgeContent={reportCount} max={99} className={styles.header__badge}>Reports</Badge>}
+              />
+            )}
           </Tabs>
         </nav>
       )}

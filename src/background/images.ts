@@ -1,39 +1,14 @@
-/**
- * @description
- * Hosts cover images may be fetched from: MyAnimeList's CDN and YouTube's
- * image servers. Anything else is refused, so the background cannot be used
- * to fetch arbitrary URLs.
- */
-const ALLOWED_IMAGE_HOSTS = [
-  "cdn.myanimelist.net",
-  "ggpht.com",
-  "googleusercontent.com",
-  "ytimg.com",
-];
+import { isAllowedImageUrl } from "../core/utils/image-hosts";
+
+
+
+export { isAllowedImageUrl };
 
 /**
  * @description
  * The largest image accepted, in bytes.
  */
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
-
-/**
- * @description
- * Whether an image URL may be fetched.
- *
- * @param url - The image URL
- * @returns True for https URLs on an allowed host or one of its subdomains
- */
-export function isAllowedImageUrl(url: string): boolean {
-  try {
-    const { protocol, hostname } = new URL(url);
-
-    return protocol === "https:" && ALLOWED_IMAGE_HOSTS.some(host => hostname === host || hostname.endsWith(`.${host}`));
-  }
-  catch {
-    return false;
-  }
-}
 
 /**
  * @description

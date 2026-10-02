@@ -1,5 +1,5 @@
 import feed from "./__fixtures__/feed.html?raw";
-import { findCards, getMountPoint, getPostId, getPostIdFromUrl, insertAt, isLocked, resolveCards, toNumericPostId } from "./post-card";
+import { findCards, getMountPoint, getPostId, getPostIdFromUrl, hasVideo, insertAt, isCreatorPost, isLocked, readPostDetails, resolveCards, toNumericPostId } from "./post-card";
 
 
 
@@ -59,7 +59,7 @@ describe("post cards in the current feed markup", () => {
     expect(cards.map(getPostId)).toEqual([null, "1001", "1002", "1004"]);
   });
 
-  it("mounts below the tags, else above the like row, else below the body", () => {
+  it("mounts below the tags, else below the body", () => {
     const [, video, text, rendering] = loadFeed() as [HTMLElement, HTMLElement, HTMLElement, HTMLElement];
 
     const videoPoint = getMountPoint(video);
@@ -68,8 +68,8 @@ describe("post cards in the current feed markup", () => {
 
     expect(videoPoint.position).toBe("after");
     expect(videoPoint.anchor.getAttribute("data-tag")).toBe("post-tags");
-    expect(textPoint.position).toBe("before");
-    expect(textPoint.anchor.getAttribute("data-tag")).toBe("post-details");
+    expect(textPoint.position).toBe("after");
+    expect(textPoint.anchor.classList.contains("patreon-post-content")).toBe(true);
     expect(renderingPoint.position).toBe("after");
     expect(renderingPoint.anchor.classList.contains("patreon-post-content")).toBe(true);
   });
@@ -128,5 +128,50 @@ describe("resolveCards on a post page", () => {
     const second = card("<p></p>");
 
     expect(resolveCards([first, second], "https://www.patreon.com/posts/x-555").size).toBe(0);
+  });
+});
+
+describe("untracked post details", () => {
+  it("tells video cards and the creator's posts apart", () => {
+    const [, video, discord] = loadFeed();
+
+    expect(hasVideo(video!)).toBe(true);
+    expect(hasVideo(discord!)).toBe(false);
+    expect(isCreatorPost(discord!, "somecreator", "https://www.patreon.com/home")).toBe(true);
+    expect(isCreatorPost(discord!, "Other", "https://www.patreon.com/home")).toBe(false);
+    expect(isCreatorPost(discord!, "Other", "https://www.patreon.com/cw/Other/posts")).toBe(true);
+  });
+
+  it("reads the post's slug and title to track it", () => {
+    const [, video] = loadFeed();
+
+    expect(readPostDetails(video!, "1001")).toMatchObject({ id: "shows-anime-9-30-1001", title: "Shows & Anime" });
+    expect(readPostDetails(video!, "9999").id).toBe("9999");
+    expect(readPostDetails(video!, "9999", "https://www.patreon.com/posts/some-post-9999?x=1").id).toBe("some-post-9999");
+  });
+});
+
+describe("getMountPoint without tags", () => {
+  it("goes below the body and above the card's last like row, never over a header row", () => {
+    document.body.innerHTML = `
+      <div data-tag="post-card" id="c">
+        <div class="header"><div><div data-tag="post-details"><button>like</button></div></div></div>
+        <div class="patreon-post-content"><p>Body</p></div>
+        <div class="footer"><div><div data-tag="post-details"><button>like</button></div></div></div>
+        <div id="comments"></div>
+      </div>
+      <div data-tag="post-card" id="d">
+        <div class="header"><div><div data-tag="post-details"><button>like</button></div></div></div>
+        <div class="footer"><div><div data-tag="post-details"><button>like</button></div></div></div>
+        <div id="comments"></div>
+      </div>`;
+
+    const withBody = getMountPoint(document.getElementById("c")!);
+    const bodyless = getMountPoint(document.getElementById("d")!);
+
+    expect(withBody.position).toBe("after");
+    expect(withBody.anchor.classList.contains("patreon-post-content")).toBe(true);
+    expect(bodyless.position).toBe("before");
+    expect(bodyless.anchor.classList.contains("footer")).toBe(true);
   });
 });

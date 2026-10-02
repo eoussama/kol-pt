@@ -1,7 +1,7 @@
 import type { TTag } from "../schemas/tag/tag.schema";
 import type { Entry } from "./entry";
 
-import { EEntryType } from "../enums/entry-type.enum";
+import { EEntryType, hasEpisodes } from "../enums/entry-type.enum";
 import { shortest } from "../utils/array";
 import { formatDuration, formatTimestamp } from "../utils/time";
 import { readYouTubeContext } from "./context";
@@ -96,9 +96,11 @@ export class Tag {
    * @returns A string representing the entry's title and the tag's label
    */
   getShortTitle(): string {
-    switch (this.entry?.type) {
-      case EEntryType.ANIME: return `${this.entry.shortTitle} - ${this.label}`;
+    if (this.entry && hasEpisodes(this.entry.type)) {
+      return `${this.entry.shortTitle} - ${this.label}`;
+    }
 
+    switch (this.entry?.type) {
       case EEntryType.YOUTUBE: return shortest(readYouTubeContext(this.context).altTitles ?? [], this.label);
 
       default: return this.label;
@@ -112,7 +114,7 @@ export class Tag {
    * @returns A string describing the tag and the episode it corresponds to
    */
   getDetailDescription(): string {
-    return this.entry?.type === EEntryType.ANIME ? `Episode ${this.label}` : this.label;
+    return hasEpisodes(this.entry?.type) ? `Episode ${this.label}` : this.label;
   }
 
   /**

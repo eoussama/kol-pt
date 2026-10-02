@@ -3,7 +3,9 @@ import { defineBackground } from "wxt/utils/define-background";
 import { watchAuthState } from "../background/auth";
 import { handlers } from "../background/handlers";
 import { serve } from "../background/messaging/server";
+import { refreshModerator } from "../background/repositories/moderation";
 import { clearProgress, loadProgress } from "../background/repositories/progress";
+import { clearReports, loadReports } from "../background/repositories/reports";
 import { clearWatchlist, favorites, loadWatchlist } from "../background/repositories/watchlist";
 import { LEGACY_STORAGE_KEYS } from "../core/storage/items";
 
@@ -21,6 +23,12 @@ export default defineBackground(() => {
       }
 
       (user ? loadProgress(user.uid) : clearProgress()).catch(() => undefined);
+
+      refreshModerator(user?.uid ?? null)
+        .then(async (moderator) => {
+          await (moderator && user ? loadReports(user.uid) : clearReports());
+        })
+        .catch(() => undefined);
     });
   }
   catch (error) {

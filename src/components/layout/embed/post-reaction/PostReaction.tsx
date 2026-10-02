@@ -3,6 +3,7 @@ import type { IPostReactionProps } from "../../../../core/types/props/post-react
 
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import FlagIcon from "@mui/icons-material/Flag";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
@@ -10,10 +11,12 @@ import ReplayIcon from "@mui/icons-material/Replay";
 import { Chip, CircularProgress, IconButton, Tooltip } from "@mui/material";
 import { useContext } from "react";
 import { usePlayer } from "../../../../content/player/PlayerProvider";
+import { useModeration } from "../../../../context/ModerationContext";
 import { PostContext } from "../../../../context/PostContext";
 import { ReactionOverlayContext } from "../../../../context/ReactionOverlayContext";
 import { useAuthStore } from "../../../../state/auth.state";
 import { useFavoritesStore, usePostFavorites } from "../../../../state/favorites.state";
+import { selectReports, useReportsStore } from "../../../../state/reports.state";
 import { usePostWatchlist, useWatchlistStore } from "../../../../state/watchlist.state";
 import { Checkbox } from "../../../styled/Checkbox";
 
@@ -41,6 +44,13 @@ function PostReaction(props: IPostReactionProps): JSX.Element {
   const toggleWatched = useWatchlistStore(e => e.toggle);
   const { playing, currentTime, playFrom } = usePlayer();
   const { setAnchorOpened, setAnchorEl, setTag, setDialogOpened } = useContext(ReactionOverlayContext);
+  const moderator = useAuthStore(e => e.moderator);
+  const allReports = useReportsStore(e => e.reports);
+  const reports = moderator ? selectReports(allReports, post.id, tag.id) : [];
+  const { review } = useModeration();
+
+  // Signed-in viewers can always report, so the menu is there for them
+  const hasMore = Boolean(tag.entry) || Boolean(user);
 
   /**
    * @description
@@ -119,6 +129,17 @@ function PostReaction(props: IPostReactionProps): JSX.Element {
                 className={styles.reaction__playing}
               />
             )}
+            {reports.length > 0 && (
+              <Chip
+                size="small"
+                color="warning"
+                icon={<FlagIcon />}
+                label={reports.length}
+                aria-label={`${reports.length} open reports`}
+                className={styles.reaction__reports}
+                onClick={() => review(tag.id)}
+              />
+            )}
           </div>
 
           <div className={styles.reaction__description}>
@@ -189,7 +210,7 @@ function PostReaction(props: IPostReactionProps): JSX.Element {
           )}
 
           {isLoggedIn() && (
-            <div className={[styles.reaction__favorite, favorite && styles["reaction__favorite--on"], favorite && tag.entry && styles["reaction__favorite--shifted"]].filter(Boolean).join(" ")}>
+            <div className={[styles.reaction__favorite, favorite && styles["reaction__favorite--on"], favorite && hasMore && styles["reaction__favorite--shifted"]].filter(Boolean).join(" ")}>
               {favorites.isSaving(tag.id)
                 ? <CircularProgress size={18} aria-label="Saving" className={styles.reaction__saving} />
                 : (
@@ -211,7 +232,7 @@ function PostReaction(props: IPostReactionProps): JSX.Element {
             </div>
           )}
 
-          {tag.entry && (
+          {hasMore && (
             <Tooltip title="More">
               <IconButton
                 size="small"

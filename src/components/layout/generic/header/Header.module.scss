@@ -120,3 +120,8 @@
     }
   }
 }
+.header__badge {
+  :global(.MuiBadge-badge) {
+    right: -10px;
+  }
+}

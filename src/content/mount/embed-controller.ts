@@ -1,7 +1,7 @@
 import type { Post } from "../../core/domain/post";
 import type { CardRegistry, ICardEmbed } from "./card-registry";
 
-import { findCards, getMountPoint, insertAt, resolveCards, toNumericPostId } from "../patreon/post-card";
+import { findCards, getMountPoint, hasVideo, insertAt, isCreatorPost, resolveCards, toNumericPostId } from "../patreon/post-card";
 import { HOST_ATTRIBUTE } from "../patreon/selectors";
 
 
@@ -19,6 +19,8 @@ const TRACKED_CARD_STYLE = {
  * @description
  * Keeps one reactions panel in every Patreon card whose post is tracked.
  * While the tracked posts are loading, every unlocked card shows a loader.
+ * The creator's video posts that are not tracked get a panel too, marked
+ * untracked, so they can be reported or tracked.
  */
 export class EmbedController {
   private posts: Map<string, Post> | null = null;
@@ -32,11 +34,13 @@ export class EmbedController {
    * @param registry - Where mounted panels are published for React
    * @param root - Where to look for cards
    * @param getPageUrl - Returns the current page URL
+   * @param creator - The creator whose untracked video posts get a panel, none if empty
    */
   constructor(
     private readonly registry: CardRegistry,
     private readonly root: ParentNode = document,
     private readonly getPageUrl: () => string = () => window.location.href,
+    private readonly creator: string = "",
   ) { }
 
   /**
@@ -56,26 +60,28 @@ export class EmbedController {
    * Brings the mounted panels in line with the cards on the page.
    */
   sync(): void {
-    const resolved = resolveCards(findCards(this.root), this.getPageUrl());
+    const pageUrl = this.getPageUrl();
+    const resolved = resolveCards(findCards(this.root), pageUrl);
 
     for (const embed of this.registry.values()) {
       const postId = resolved.get(embed.card);
 
-      if (!embed.card.isConnected || postId !== embed.postId || this.isUntracked(postId)) {
+      if (!embed.card.isConnected || postId !== embed.postId || !this.wantsPanel(embed.card, postId, pageUrl)) {
         this.unmount(embed);
       }
     }
 
     for (const [card, postId] of resolved) {
-      if (this.isUntracked(postId)) {
+      if (!this.wantsPanel(card, postId, pageUrl)) {
         continue;
       }
 
       const post = this.posts?.get(postId) ?? null;
+      const untracked = this.posts !== null && post === null;
       const existing = this.registry.get(card);
 
       if (!existing) {
-        this.mount(card, postId, post);
+        this.mount(card, postId, post, untracked);
 
         continue;
       }
@@ -85,8 +91,8 @@ export class EmbedController {
         insertAt(getMountPoint(card), existing.host);
       }
 
-      if (existing.post !== post) {
-        this.registry.set({ ...existing, post });
+      if (existing.post !== post || existing.untracked !== untracked) {
+        this.registry.set({ ...existing, post, untracked });
         this.styleCard(card, post !== null);
       }
     }
@@ -102,14 +108,24 @@ export class EmbedController {
 
   /**
    * @description
-   * Whether a post is known not to be tracked. Before posts have loaded,
-   * nothing is.
+   * Whether a card gets a panel: every card while posts load, then tracked
+   * posts, and the creator's untracked video posts.
    *
-   * @param postId - The post id
-   * @returns True if posts have loaded and this one is not among them
+   * @param card - The post card
+   * @param postId - The post id, if found
+   * @param pageUrl - The page's URL
+   * @returns True if the card gets a panel
    */
-  private isUntracked(postId: string | undefined): boolean {
-    return postId === undefined || (this.posts !== null && !this.posts.has(postId));
+  private wantsPanel(card: HTMLElement, postId: string | undefined, pageUrl: string): boolean {
+    if (postId === undefined) {
+      return false;
+    }
+
+    if (this.posts === null || this.posts.has(postId)) {
+      return true;
+    }
+
+    return this.creator !== "" && hasVideo(card) && isCreatorPost(card, this.creator, pageUrl);
   }
 
   /**
@@ -118,9 +134,10 @@ export class EmbedController {
    *
    * @param card - The post card
    * @param postId - The post id
-   * @param post - The tracked post, or null while loading
+   * @param post - The tracked post, or null while loading or untracked
+   * @param untracked - Whether the post is known not to be tracked
    */
-  private mount(card: HTMLElement, postId: string, post: Post | null): void {
+  private mount(card: HTMLElement, postId: string, post: Post | null, untracked: boolean): void {
     const host = document.createElement("div");
 
     host.setAttribute(HOST_ATTRIBUTE, "");
@@ -128,7 +145,7 @@ export class EmbedController {
     insertAt(getMountPoint(card), host);
 
     this.styleCard(card, post !== null);
-    this.registry.set({ key: `${postId}-${++this.sequence}`, card, host, postId, post });
+    this.registry.set({ key: `${postId}-${++this.sequence}`, card, host, postId, post, untracked });
   }
 
   /**

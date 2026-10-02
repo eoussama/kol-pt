@@ -15,6 +15,7 @@ const ENTRY_TYPE_NAMES: Record<TEntryType, string> = {
   [EEntryType.MOVIE]: "Movie",
   [EEntryType.CARTOON]: "Cartoon",
   [EEntryType.YOUTUBE]: "YouTube",
+  [EEntryType.TV_SHOW]: "TV Show",
 };
 
 /**
@@ -22,6 +23,12 @@ const ENTRY_TYPE_NAMES: Record<TEntryType, string> = {
  * Represents a media entry, such as a movie, anime, cartoon or YouTube channel.
  */
 export class Entry implements ISearch {
+  /**
+   * @description
+   * The entry's data, as stored, for editing.
+   */
+  readonly model: TEntry;
+
   /**
    * @description
    * The unique ID of the entry.
@@ -33,6 +40,13 @@ export class Entry implements ISearch {
    * The ID of the entry on IMDb, if available.
    */
   readonly imdbId: string;
+
+  /**
+   * @description
+   * The link to the entry's cover image, or an empty string. Entries without
+   * a cover of their own use the one MyAnimeList or YouTube provide.
+   */
+  readonly cover: string;
 
   /**
    * @description
@@ -54,7 +68,7 @@ export class Entry implements ISearch {
 
   /**
    * @description
-   * The type of the entry (Anime, Movie, Cartoon, YouTube).
+   * The type of the entry (Anime, Movie, TV Show, Cartoon, YouTube).
    */
   readonly type: TEntryType;
 
@@ -65,10 +79,12 @@ export class Entry implements ISearch {
    * @param model - The entry's data
    */
   constructor(model: TEntry) {
+    this.model = model;
     this.id = model.id;
     this.type = model.type;
     this.title = model.title;
     this.imdbId = model.imdbId ?? "";
+    this.cover = model.cover ?? "";
     this.altTitles = model.altTitles ?? [];
     this.shortTitle = shortest(this.altTitles, this.title);
   }

@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { MESSAGE_CHANNEL } from "../../core/messaging/protocol";
+import { EntryInputSchema, PostInputSchema, ReportInputSchema, TagInputSchema } from "../../core/schemas/moderation.schema";
 import { SettingsSchema } from "../../core/schemas/settings.schema";
 
 
@@ -24,6 +25,14 @@ export const RequestSchema = z.discriminatedUnion("type", [
   message("watchlist.set").extend({ postId: z.string().min(1), tagId: z.string().min(1), watched: z.boolean() }),
   message("favorites.set").extend({ postId: z.string().min(1), tagId: z.string().min(1), favorite: z.boolean() }),
   message("progress.set").extend({ postId: z.string().min(1), time: z.number().nonnegative().max(86400).nullable() }),
+  message("moderation.refresh"),
+  message("posts.save").extend({ post: PostInputSchema }),
+  message("posts.delete").extend({ postId: z.string().min(1) }),
+  message("tags.save").extend({ postId: z.string().min(1), tag: TagInputSchema }),
+  message("tags.delete").extend({ postId: z.string().min(1), tagId: z.string().min(1) }),
+  message("entries.save").extend({ entry: EntryInputSchema }),
+  message("reports.create").extend({ report: ReportInputSchema }),
+  message("reports.resolve").extend({ reportId: z.string().min(1) }),
 ]);
 
 /**

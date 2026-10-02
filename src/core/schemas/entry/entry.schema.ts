@@ -3,6 +3,7 @@ import { listOf } from "../primitives.schema";
 import { AnimeEntrySchema } from "./anime-entry.schema";
 import { CartoonEntrySchema } from "./cartoon-entry.schema";
 import { MovieEntrySchema } from "./movie-entry.schema";
+import { TvShowEntrySchema } from "./tv-show-entry.schema";
 import { YouTubeEntrySchema } from "./youtube-entry.schema";
 
 
@@ -14,6 +15,7 @@ import { YouTubeEntrySchema } from "./youtube-entry.schema";
 export const EntrySchema = z.discriminatedUnion("type", [
   AnimeEntrySchema,
   MovieEntrySchema,
+  TvShowEntrySchema,
   CartoonEntrySchema,
   YouTubeEntrySchema,
 ]);

@@ -32,6 +32,12 @@ export const EPage = {
    * The watch history page.
    */
   HISTORY: "history",
+
+  /**
+   * @description
+   * Open reports, for moderators.
+   */
+  REPORTS: "reports",
 } as const;
 
 export type TPage = (typeof EPage)[keyof typeof EPage];

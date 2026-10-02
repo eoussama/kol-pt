@@ -12,6 +12,8 @@ This extension shows what each stream reacts to, and when, so you can jump strai
 - **Jump to a reaction:** start the post's video at any reaction from the panel.
 - **Details and links:** see a show's synopsis, genres and alternative titles, and open it on MyAnimeList, AniList, Kitsu, IMDb or YouTube.
 - **Watched reactions:** sign in to tick off the reactions you have watched, kept across devices and browser tabs.
+- **Report problems:** signed-in viewers can flag a wrong timestamp, a wrong show or episode, a missing reaction, or a video post that is not tracked yet.
+- **Moderation:** moderators add, edit and remove reactions and shows from the panel under each post, track new posts, and work through reports from the popup's Reports tab.
 - **Browse from the toolbar:** the extension's popup lists every tracked stream and every show, searchable, and opens a stream at a given reaction.
 
 ## Usage
@@ -68,6 +70,18 @@ cp .env.example .env   # then fill in the Firebase and YouTube values
 | `WXT_FIREGUARD_URL` | The Fireguard sign-in page |
 
 Variables are read at build time. Only the background script receives the Firebase configuration and the YouTube key; the script running on Patreon receives neither.
+
+### Database rules and moderators
+
+[`database.rules.json`](database.rules.json) holds the Realtime Database rules the extension expects. Merge them into your project's rules (Firebase console, Realtime Database, Rules):
+
+- Anyone can read `posts` and `entries`; only moderators can change them.
+- Each user reads and writes only their own `users/{uid}` (settings, watched, favorites, resume positions).
+- Signed-in users can file one open report per reaction or post under `reports`; only moderators can read reports and close them.
+
+To make someone a moderator, set `moderators/{their uid}` to `true` in the database. Their uid is listed under Authentication, Users. They get the moderation tools after signing in again or reopening the popup.
+
+The first change a moderator makes rewrites `posts` and `entries` from arrays into objects keyed by id, so later changes touch one item at a time. The extension reads both shapes.
 
 ## How it works
 

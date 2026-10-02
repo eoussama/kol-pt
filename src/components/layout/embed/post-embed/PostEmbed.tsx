@@ -1,5 +1,6 @@
 import type { IPostEmbedProps } from "../../../../core/types/props/post-embed-props.type";
 
+import { ModerationProvider } from "../../../../context/ModerationContext";
 import { PostProvider } from "../../../../context/PostContext";
 import { ReactionOverlayProvider } from "../../../../context/ReactionOverlayContext";
 import PostReactions from "../post-reactions/PostReactions";
@@ -19,7 +20,9 @@ function PostEmbed(props: IPostEmbedProps): JSX.Element {
   return (
     <PostProvider post={props.post}>
       <ReactionOverlayProvider>
-        <PostReactions />
+        <ModerationProvider post={props.post}>
+          <PostReactions />
+        </ModerationProvider>
       </ReactionOverlayProvider>
     </PostProvider>
   );

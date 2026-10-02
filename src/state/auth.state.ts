@@ -11,8 +11,13 @@ import { create } from "zustand";
 export const useAuthStore = create<IAuthState>(set => ({
   user: null,
   ready: false,
+  moderator: false,
 
   setUser(user) {
     set({ user, ready: true });
+  },
+
+  setModerator(moderator) {
+    set({ moderator });
   },
 }));

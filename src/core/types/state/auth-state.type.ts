@@ -23,6 +23,18 @@ export interface IAuthState {
 
   /**
    * @description
+   * Whether the signed-in user is a moderator.
+   */
+  moderator: boolean;
+
+  /**
+   * @description
+   * Records whether the signed-in user is a moderator.
+   */
+  setModerator: (moderator: boolean) => void;
+
+  /**
+   * @description
    * Replaces the signed-in user, which also marks the sign-in as known.
    */
   setUser: (user: IAuthUser | null) => void;

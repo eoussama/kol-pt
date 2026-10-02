@@ -1,0 +1,53 @@
+.reports {
+  overflow: hidden;
+  border-radius: 10px;
+
+  padding: 0 !important;
+  margin: 20px 15px !important;
+
+  &__error {
+    margin-bottom: 10px;
+  }
+
+  &__loader {
+    margin: 60px 10px;
+    text-align: center;
+    color: var(--kolpt-color-primary);
+  }
+
+  .item {
+    cursor: pointer;
+    background-color: var(--kolpt-color-surface);
+
+    padding: 0 40px 0 15px;
+
+    transition-duration: 0.2s;
+    transition-property: background-color;
+
+    &__kind {
+      margin-right: 6px;
+      height: 20px !important;
+      font-size: 11px !important;
+    }
+
+    &__line {
+      display: block;
+
+      font-size: 12px;
+      font-weight: 100;
+
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+
+      &--note {
+        font-style: italic;
+        white-space: normal;
+      }
+    }
+
+    &:hover {
+      background-color: var(--kolpt-color-surface-hover);
+    }
+  }
+}

@@ -9,6 +9,8 @@ describe("isAllowedImageUrl", () => {
     "https://yt3.ggpht.com/abc=s240",
     "https://yt3.googleusercontent.com/abc",
     "https://i.ytimg.com/vi/abc/hqdefault.jpg",
+    "https://image.tmdb.org/t/p/w500/a.jpg",
+    "https://m.media-amazon.com/images/M/a.jpg",
   ])("allows %s", (url) => {
     expect(isAllowedImageUrl(url)).toBe(true);
   });

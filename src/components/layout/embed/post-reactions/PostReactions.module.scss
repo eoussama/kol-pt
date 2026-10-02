@@ -2,12 +2,8 @@
   overflow: hidden;
   box-shadow: none !important;
   border-radius: 10px !important;
-  margin: 10px 0 18px 0 !important;
+  margin: 0 !important;
   background-color: var(--kolpt-color-surface-alt) !important;
-
-  &__auth {
-    margin-top: 22px !important;
-  }
 
   &__login {
     position: relative;
@@ -58,6 +54,12 @@
 
     font-size: 16px;
     font-weight: 500;
+  }
+
+  &__actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
   }
 
   &__action img {

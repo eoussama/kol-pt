@@ -13,6 +13,7 @@ import { useProgressTracking } from "../../../../hooks/progress.hook";
 import { useAuthStore } from "../../../../state/auth.state";
 import EntryView from "../../../pages/entry/EntryView";
 import { PostAccordion } from "../post-accordion/PostAccordion";
+import PostModeration from "../post-moderation/PostModeration";
 import PostReactionMenu from "../post-reaction-menu/PostReactionMenu";
 import PostReaction from "../post-reaction/PostReaction";
 import PostResume from "../post-resume/PostResume";
@@ -103,7 +104,7 @@ function PostReactions(): JSX.Element {
   return (
     <>
 
-      <div className={styles.post__auth}>
+      <div>
         <Collapse in={alertOpen}>
           <Alert
             severity="info"
@@ -137,15 +138,19 @@ function PostReactions(): JSX.Element {
           <div className={styles["post__head-wrapper"]}>
             <h3 className={styles.post__title}>{getReactionsTitle()}</h3>
 
-            <Tooltip title="Open Passione Club Channel">
-              <IconButton
-                aria-label="Opens KOl's Discord server"
-                onClick={onPassioneOpen}
-                className={`${styles.post__action} ${styles["post__action--discord"]}`}
-              >
-                <img src={getImageUrl("discord", "platforms")} alt="Discord icon" />
-              </IconButton>
-            </Tooltip>
+            <span className={styles.post__actions}>
+              <PostModeration />
+
+              <Tooltip title="Open Passione Club Channel">
+                <IconButton
+                  aria-label="Opens KOl's Discord server"
+                  onClick={onPassioneOpen}
+                  className={`${styles.post__action} ${styles["post__action--discord"]}`}
+                >
+                  <img src={getImageUrl("discord", "platforms")} alt="Discord icon" />
+                </IconButton>
+              </Tooltip>
+            </span>
           </div>
         </AccordionSummary>
 

@@ -27,9 +27,9 @@ function toSearchText(reaction: IReaction): string {
  * Renders the entry related reactions, searchable.
  *
  * @param props - The component's properties
- * @returns The rendered reactions list section
+ * @returns The rendered reactions list section, or nothing when the entry has no reactions
  */
-function EntryReactions(props: IEntryPageReactionsSectionProps): JSX.Element {
+function EntryReactions(props: IEntryPageReactionsSectionProps): JSX.Element | null {
   const { reactions } = props;
   const { search, filtered, onSearch } = useSearch(reactions, toSearchText);
 
@@ -42,6 +42,10 @@ function EntryReactions(props: IEntryPageReactionsSectionProps): JSX.Element {
   const onWatch = (reaction: IReaction) => {
     openPost(reaction.postId, reaction.tag.id);
   };
+
+  if (reactions.length === 0) {
+    return null;
+  }
 
   return (
     <div className={styles["entry-reactions"]}>

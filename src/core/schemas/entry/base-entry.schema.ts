@@ -11,5 +11,6 @@ export const BaseEntrySchema = z.looseObject({
   id: IdSchema,
   title: TextSchema,
   imdbId: TextSchema.optional(),
+  cover: TextSchema.optional(),
   altTitles: listOf(TextSchema),
 });
