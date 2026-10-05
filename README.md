@@ -99,6 +99,10 @@ See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 The KOL Patreon Tracker extension is not affiliated with or endorsed by KingOfLightning or Patreon. It is an independent project developed by fans for fans to enhance the experience of tracking KOL's reactions on Patreon.
 
+## Privacy
+
+See the [privacy policy](PRIVACY.md). It is also published at <https://github.com/EOussama/kol-pt/blob/main/PRIVACY.md>.
+
 ## Feedback and Support
 
 If you have any feedback, questions, or issues with the KOL Patreon Tracker extension, please [open an issue](https://github.com/EOussama/kol-pt/issues/new/choose) on the project's GitHub repository.
