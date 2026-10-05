@@ -37,8 +37,6 @@ export interface IOption {
   /**
    * @description
    * The action to trigger on click
-   *
-   * @param onClose Closing handler for the menu
    */
   action: () => void;
 }

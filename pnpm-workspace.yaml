@@ -1,8 +1,6 @@
-allowBuilds:
-  "@firebase/util": true
-  "@parcel/watcher": true
-  esbuild: true
-  protobufjs: true
+minimumReleaseAgeExcludePrune: true
+trustPolicy: no-downgrade
+shellEmulator: true
 
 overrides:
   # Firestore (unused, but part of the `firebase` package) pins an old gRPC
@@ -11,3 +9,9 @@ overrides:
   # @wxt-dev/module-react accepts v4-v6; keep a single copy that supports Vite 8.
   "@vitejs/plugin-react": ^6.1.1
   protobufjs: ^7.6.5
+
+allowBuilds:
+  "@firebase/util": true
+  "@parcel/watcher": true
+  esbuild: true
+  protobufjs: true
