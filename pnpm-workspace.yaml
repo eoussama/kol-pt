@@ -8,6 +8,8 @@ overrides:
   "@grpc/grpc-js": ^1.14.5
   # @wxt-dev/module-react accepts v4-v6; keep a single copy that supports Vite 8.
   "@vitejs/plugin-react": ^6.1.1
+  # Only used by the linter's markdown math parsing, which still pins 0.16.
+  katex: ^0.19.0
   protobufjs: ^7.6.5
 
 allowBuilds:
