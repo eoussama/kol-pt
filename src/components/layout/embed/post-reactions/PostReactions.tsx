@@ -40,6 +40,9 @@ function PostReactions(): JSX.Element {
   const [expanded, setExpanded] = useState<boolean>(true);
   const { tag, dialogOpened, setDialogOpened } = useContext(ReactionOverlayContext);
 
+  // Nothing to show, so the panel stays closed
+  const empty = post.tags.length === 0;
+
   /**
    * @description
    * Generates proper title for the accordion
@@ -48,7 +51,7 @@ function PostReactions(): JSX.Element {
    */
   const getReactionsTitle = () => {
     const reactionCount = post.tags.length;
-    const reactionText = reactionCount > 1 ? "reactions" : "reaction";
+    const reactionText = reactionCount === 1 ? "reaction" : "reactions";
 
     return `${reactionCount} ${reactionText}`;
   };
@@ -130,11 +133,15 @@ function PostReactions(): JSX.Element {
       </div>
 
       <PostAccordion
-        expanded={expanded}
+        expanded={expanded && !empty}
         className={styles.post}
-        onChange={() => setExpanded(!expanded)}
+        onChange={() => !empty && setExpanded(!expanded)}
       >
-        <AccordionSummary className={styles.post__head} expandIcon={<ExpandMoreIcon />}>
+        <AccordionSummary
+          className={styles.post__head}
+          expandIcon={empty ? undefined : <ExpandMoreIcon />}
+          sx={empty ? { cursor: "default !important" } : undefined}
+        >
           <div className={styles["post__head-wrapper"]}>
             <h3 className={styles.post__title}>{getReactionsTitle()}</h3>
 

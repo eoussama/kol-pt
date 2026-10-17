@@ -30,6 +30,20 @@ const callout = () => screen.getByText(/in order to track your progress/).closes
 const expectShown = () => waitFor(() => expect(callout()).not.toHaveClass("MuiCollapse-hidden"));
 const expectHidden = () => waitFor(() => expect(callout()).toHaveClass("MuiCollapse-hidden"));
 
+describe("empty reactions panel", () => {
+  it("stays closed with no toggle", () => {
+    renderPanel();
+
+    const summary = screen.getByText("0 reactions").closest(".MuiAccordionSummary-root")!;
+
+    expect(summary).toHaveAttribute("aria-expanded", "false");
+    expect(summary.querySelector(".MuiAccordionSummary-expandIconWrapper")).toBeNull();
+
+    fireEvent.click(summary);
+    expect(summary).toHaveAttribute("aria-expanded", "false");
+  });
+});
+
 describe("login callout", () => {
   beforeEach(() => {
     useAuthStore.setState({ user: null, ready: false });

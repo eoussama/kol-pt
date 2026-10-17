@@ -6,6 +6,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import { Alert, Autocomplete, Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Stack, TextField, Tooltip } from "@mui/material";
 import { useEffect, useMemo, useState } from "react";
 import { readYouTubeContext } from "../../../core/domain/context";
+import { describeReaction } from "../../../core/domain/tag";
 import { EEntryType, hasEpisodes } from "../../../core/enums/entry-type.enum";
 import { request } from "../../../core/messaging/client";
 import { TagInputSchema } from "../../../core/schemas/moderation.schema";
@@ -81,7 +82,8 @@ function ReactionEditorDialog(props: IReactionEditorDialogProps): JSX.Element {
   const loadEntries = useEntriesStore(e => e.loadEntries);
   const [entryId, setEntryId] = useState<string | null>(null);
   const [label, setLabel] = useState("");
-  const [description, setDescription] = useState("");
+  // Null follows the entry and episode picked, until typed over
+  const [description, setDescription] = useState<string | null>(null);
   const [startTime, setStartTime] = useState<number | null>(null);
   const [endTime, setEndTime] = useState<number | null>(null);
   const [videoTitle, setVideoTitle] = useState("");
@@ -93,6 +95,7 @@ function ReactionEditorDialog(props: IReactionEditorDialogProps): JSX.Element {
   const entry = useMemo(() => entries.find(candidate => candidate.id === entryId) ?? null, [entries, entryId]);
   const isYouTube = entry?.type === EEntryType.YOUTUBE;
   const timesInvalid = startTime !== null && endTime !== null && endTime <= startTime;
+  const hoverText = description ?? (entry ? describeReaction(entry, label.trim()) : "");
 
   useEffect(() => {
     if (!open) {
@@ -104,7 +107,7 @@ function ReactionEditorDialog(props: IReactionEditorDialogProps): JSX.Element {
     loadEntries();
     setEntryId(tag?.entryId ?? null);
     setLabel(tag?.label ?? "");
-    setDescription(tag?.description ?? "");
+    setDescription(tag ? tag.description : null);
     setStartTime(initial?.startTime ?? tag?.startTime ?? null);
     setEndTime(initial?.endTime ?? tag?.endTime ?? null);
     setVideoTitle(context.title ?? "");
@@ -117,7 +120,7 @@ function ReactionEditorDialog(props: IReactionEditorDialogProps): JSX.Element {
       id: tag?.id ?? crypto.randomUUID(),
       entryId: entryId ?? "",
       label,
-      description,
+      description: hoverText,
       startTime: startTime ?? Number.NaN,
       endTime: endTime ?? Number.NaN,
       context: isYouTube
@@ -191,6 +194,15 @@ function ReactionEditorDialog(props: IReactionEditorDialogProps): JSX.Element {
               onChange={e => setLabel(e.target.value)}
             />
 
+            <TextField
+              size="small"
+              label="Hover text"
+              helperText="Shown when hovering the reaction's chip"
+              placeholder={entry ? describeReaction(entry, label.trim()) : "e.g. Episode 7 of FROM"}
+              value={hoverText}
+              onChange={e => setDescription(e.target.value)}
+            />
+
             {isYouTube && (
               <Stack direction="row" spacing={1}>
                 <TextField fullWidth size="small" label="Video title" value={videoTitle} onChange={e => setVideoTitle(e.target.value)} />
@@ -202,8 +214,6 @@ function ReactionEditorDialog(props: IReactionEditorDialogProps): JSX.Element {
               <TimeField label="Starts at" required value={startTime} onChange={setStartTime} />
               <TimeField label="Ends at" required value={endTime} onChange={setEndTime} error={timesInvalid ? "Must be after the start" : undefined} />
             </Stack>
-
-            <TextField multiline minRows={2} size="small" label="Description" value={description} onChange={e => setDescription(e.target.value)} />
 
             {error && <Alert severity="error">{error}</Alert>}
           </Stack>

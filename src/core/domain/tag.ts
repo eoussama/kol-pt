@@ -10,6 +10,21 @@ import { readYouTubeContext } from "./context";
 
 /**
  * @description
+ * The default hover text of a reaction: the episode and what it is from,
+ * or just its name when it has no episode.
+ *
+ * @param entry - What the reaction is about, if known
+ * @param label - The reaction's label, e.g. the episode number
+ * @returns e.g. "Episode 7 of FROM", or "FROM"
+ */
+export function describeReaction(entry: Entry | null, label: string): string {
+  const title = entry?.title ?? label;
+
+  return hasEpisodes(entry?.type) && label ? `Episode ${label} of ${title}` : title;
+}
+
+/**
+ * @description
  * A reaction inside a post: what KOL reacted to and when, in seconds.
  */
 export class Tag {
@@ -105,6 +120,16 @@ export class Tag {
 
       default: return this.label;
     }
+  }
+
+  /**
+   * @description
+   * The text shown when hovering the reaction
+   *
+   * @returns The tag's description, or a default one when it has none
+   */
+  getHoverText(): string {
+    return this.description.trim() || describeReaction(this.entry, this.label.trim());
   }
 
   /**

@@ -72,7 +72,7 @@ function PostCard(props: IPostCardProps): JSX.Element {
           <div className={styles.card__tags}>
             {post.tags.map(tag => (
               <Box key={tag.id} sx={{ ml: 1 }}>
-                <Tooltip title={tag.description}>
+                <Tooltip title={tag.getHoverText()}>
                   <Chip
                     size="small"
                     className={styles.tag}
