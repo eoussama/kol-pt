@@ -49,7 +49,7 @@ Please read and follow our [Code of Conduct](CODE_OF_CONDUCT.md) before contribu
 
 1. Ensure your code follows our [Coding Standards](#coding-standards)
 2. Update the README.md with details of changes if applicable
-3. Make sure everything passes before submitting: `pnpm prod` (audit, lint, type-check, tests and builds for every browser)
+3. Make sure everything passes before submitting: `pnpm check` (audit, lint, type-check, tests and builds for every browser)
 4. If you touched the content script, try it on KOL's Patreon in at least one Chromium browser and Firefox
 5. Your pull request will be reviewed by maintainers
 6. Once approved, your pull request will be merged

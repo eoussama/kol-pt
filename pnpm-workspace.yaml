@@ -1,4 +1,9 @@
 minimumReleaseAgeExcludePrune: true
+minimumReleaseAgeExclude:
+  - "@eoussama/core@0.1.2"
+  - "@eoussama/dx@0.1.3"
+  - "@eoussama/firemitt@0.1.9"
+
 trustPolicy: no-downgrade
 shellEmulator: true
 

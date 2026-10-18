@@ -52,7 +52,7 @@ cp .env.example .env   # then fill in the Firebase and YouTube values
 | `pnpm build:all` | All four builds |
 | `pnpm zip:all` | Store-ready zips in `.output`, plus the Firefox sources zip |
 | `pnpm test` / `pnpm lint` / `pnpm typecheck` | Checks |
-| `pnpm prod` | Audit, lint, type-check, test and zip everything |
+| `pnpm check` | Audit, lint, type-check, test and zip everything |
 
 ### Loading the build
 
