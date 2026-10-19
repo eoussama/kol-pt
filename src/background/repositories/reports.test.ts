@@ -1,7 +1,7 @@
 import { fakeBrowser } from "wxt/testing/fake-browser";
 import { reportsItem } from "../../core/storage/items";
 import { readValue, writeValue } from "../database";
-import { createReport, loadReports, reportKey, resolveReport } from "./reports";
+import { clearReports, createReport, loadReports, reportKey, resolveReport } from "./reports";
 
 
 
@@ -40,6 +40,14 @@ describe("reports repository", () => {
     });
   });
 
+  it("files a report from someone without a name, and cuts long names", async () => {
+    await createReport({ ...user, displayName: null }, { kind: "missing", postId: "p", postTitle: "", note: "" }, () => 1);
+    await createReport({ ...user, uid: "u2", displayName: "x".repeat(150) }, { kind: "missing", postId: "p", postTitle: "", note: "" }, () => 1);
+
+    expect(writeValue).toHaveBeenNthCalledWith(1, "reports/p~missing~u1", expect.objectContaining({ reporterName: "" }));
+    expect(writeValue).toHaveBeenNthCalledWith(2, "reports/p~missing~u2", expect.objectContaining({ reporterName: "x".repeat(100) }));
+  });
+
   it("refuses a second open report on the same target", async () => {
     vi.mocked(readValue).mockResolvedValue({ id: "x" });
 
@@ -59,5 +67,23 @@ describe("reports repository", () => {
 
     expect(writeValue).toHaveBeenCalledWith("reports/b", null);
     expect((await reportsItem.getValue())?.reports.map(report => report.id)).toEqual(["a"]);
+  });
+
+  it("forgets the reports on sign out", async () => {
+    await reportsItem.setValue({ uid: "m1", reports: [] });
+    await clearReports();
+
+    await expect(reportsItem.getValue()).resolves.toBeNull();
+  });
+
+  it("does not carry another moderator's reports over when closing one", async () => {
+    await reportsItem.setValue({ uid: "m2", reports: [{ id: "a", kind: "missing", postId: "p", reporterUid: "u2", reporterName: "", postTitle: "", note: "", createdAt: 1 }] });
+
+    await resolveReport("m1", "a");
+    await expect(reportsItem.getValue()).resolves.toEqual({ uid: "m1", reports: [] });
+
+    await reportsItem.setValue(null);
+    await resolveReport("m3", "a");
+    await expect(reportsItem.getValue()).resolves.toEqual({ uid: "m3", reports: [] });
   });
 });

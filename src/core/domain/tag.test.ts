@@ -39,3 +39,35 @@ describe("tag hover text", () => {
     expect(tag.getHoverText()).toBe("This was big");
   });
 });
+
+describe("tag timing", () => {
+  it("reads the start time as a timestamp", () => {
+    const tag = new Tag({ id: "t1", entryId: "e1", label: "1", description: "", startTime: 3725, endTime: 3800, context: {} }, null);
+
+    expect(tag.getReadableStartTime()).toBe("1:02:05");
+  });
+
+  it("reads the duration in words", () => {
+    const tag = new Tag({ id: "t1", entryId: "e1", label: "1", description: "", startTime: 3725, endTime: 3800, context: {} }, null);
+
+    expect(tag.getReadableDuration()).toBe("1 minute 15 seconds");
+  });
+});
+
+describe("reactions without an entry", () => {
+  it("names the reaction after its label", () => {
+    const tag = new Tag({ id: "t1", entryId: "missing", label: "7", description: "", startTime: 0, endTime: 60, context: {} }, null);
+
+    expect(tag.getHoverText()).toBe("7");
+    expect(tag.getDetailDescription()).toBe("7");
+  });
+});
+
+describe("youTube reactions without alternative titles", () => {
+  it("keeps the label", () => {
+    const entry = createEntry({ id: "e1", type: EEntryType.YOUTUBE, title: "Some Channel" } as never);
+    const tag = new Tag({ id: "t1", entryId: "e1", label: "A video", description: "", startTime: 0, endTime: 60, context: {} }, entry);
+
+    expect(tag.getShortTitle()).toBe("A video");
+  });
+});

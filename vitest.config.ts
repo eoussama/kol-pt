@@ -22,8 +22,20 @@ export default defineConfig({
     coverage: {
       provider: "v8",
       include: ["src/**/*.{ts,tsx}"],
-      exclude: ["src/**/*.test.{ts,tsx}", "src/test/**", "src/**/__fixtures__/**", "src/**/*.d.ts", "src/core/types/**"],
+      exclude: [
+        "src/**/*.test.{ts,tsx}",
+        "src/test/**",
+        "src/**/__fixtures__/**",
+        "src/**/*.d.ts",
+        "src/core/types/**",
+        // Vendored shadcn/ui components: third-party code, covered through the components that use them
+        "src/components/ui/**",
+        // Wiring that only connects the tested modules to the browser (WXT entry points)
+        "src/entrypoints/**",
+      ],
       reporter: ["text-summary", "html", "lcov"],
+      // Coverage may not drop: new code comes with its tests
+      thresholds: { statements: 100, branches: 100, functions: 100, lines: 100 },
       reportsDirectory: "coverage",
     },
   },

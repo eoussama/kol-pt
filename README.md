@@ -52,7 +52,7 @@ cp .env.example .env   # then fill in the Firebase and YouTube values
 | `pnpm build:all` | All four builds |
 | `pnpm zip:all` | Store-ready zips in `.output`, plus the Firefox sources zip |
 | `pnpm test` | Unit tests, then the same tests with coverage |
-| `pnpm test:unit` / `pnpm test:coverage` | Unit tests alone, or with a coverage report in `coverage/` |
+| `pnpm test:unit` / `pnpm test:coverage` | Unit tests alone, or with a coverage report in `coverage/`. Coverage must stay at 100%; the vendored `src/components/ui/` and the WXT entry points in `src/entrypoints/` are excluded |
 | `pnpm test:mutation` | Mutation tests (Stryker), report in `reports/mutation/` |
 | `pnpm lint` / `pnpm typecheck` | Checks |
 | `pnpm check` | Audit, lint, type-check, test and zip everything |

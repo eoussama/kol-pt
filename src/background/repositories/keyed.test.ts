@@ -17,6 +17,18 @@ describe("keyed lists", () => {
     });
   });
 
+  it("drops items that are not objects", () => {
+    expect(toKeyed(["text", 5, [{ id: "nested-in-array" }], { id: "a" }])).toEqual({ a: { id: "a" } });
+  });
+
+  it("leaves items without the nested list as they are", () => {
+    expect(toKeyed([{ id: "post-1", title: "One" }, { id: "post-2", tags: null }], "tags")).toEqual({
+      "post-1": { id: "post-1", title: "One" },
+      "post-2": { id: "post-2", tags: null },
+    });
+    expect(isKeyed({ "post-1": { id: "post-1" } }, "tags")).toBe(true);
+  });
+
   it("tells keyed lists from arrays and misplaced items", () => {
     expect(isKeyed(posts, "tags")).toBe(false);
     expect(isKeyed(toKeyed(posts, "tags"), "tags")).toBe(true);

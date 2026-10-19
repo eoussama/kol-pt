@@ -125,3 +125,31 @@ describe("embedController", () => {
     expect(hosts()).toHaveLength(0);
   });
 });
+
+describe("embedController defaults", () => {
+  afterEach(() => {
+    window.history.pushState({}, "", "/");
+  });
+
+  it("looks at the page it runs in, and its URL", () => {
+    document.body.innerHTML = "<div data-tag=\"post-card\"></div>";
+    window.history.pushState({}, "", "/posts/lone-post-9999");
+
+    const registry = new CardRegistry();
+
+    new EmbedController(registry).sync();
+
+    expect(registry.getSnapshot().map(e => e.postId)).toEqual(["9999"]);
+  });
+
+  it("gives no panel to untracked posts without a creator", () => {
+    document.body.innerHTML = feed;
+
+    const registry = new CardRegistry();
+    const controller = new EmbedController(registry);
+
+    controller.setPosts([]);
+
+    expect(registry.getSnapshot()).toEqual([]);
+  });
+});

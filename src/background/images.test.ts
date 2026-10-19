@@ -54,6 +54,36 @@ describe("fetchImageAsDataUrl", () => {
     expect(fetchSpy).not.toHaveBeenCalled();
   });
 
+  it("refuses images over five megabytes, and accepts those just within", async () => {
+    vi.stubGlobal("fetch", vi.fn(async () => new Response(new Uint8Array(5 * 1024 * 1024 + 1), { headers: { "content-type": "image/png" } })));
+    await expect(fetchImageAsDataUrl("https://cdn.myanimelist.net/a.png")).resolves.toBeNull();
+
+    vi.stubGlobal("fetch", vi.fn(async () => new Response(new Uint8Array(5 * 1024 * 1024), { headers: { "content-type": "image/png" } })));
+    await expect(fetchImageAsDataUrl("https://cdn.myanimelist.net/a.png")).resolves.toMatch(/^data:image\/png;base64,/);
+  });
+
+  it("refuses failed responses, and has nothing when the request fails", async () => {
+    vi.stubGlobal("fetch", vi.fn(async () => new Response(new Uint8Array([1]), { status: 404, headers: { "content-type": "image/png" } })));
+    await expect(fetchImageAsDataUrl("https://cdn.myanimelist.net/a.png")).resolves.toBeNull();
+
+    vi.stubGlobal("fetch", vi.fn(async () => {
+      throw new TypeError("Network error");
+    }));
+    await expect(fetchImageAsDataUrl("https://cdn.myanimelist.net/a.png")).resolves.toBeNull();
+  });
+
+  it("refuses responses without a content type", async () => {
+    vi.stubGlobal("fetch", vi.fn(async () => {
+      const response = new Response(new Uint8Array([1]));
+
+      response.headers.delete("content-type");
+
+      return response;
+    }));
+
+    await expect(fetchImageAsDataUrl("https://cdn.myanimelist.net/a.png")).resolves.toBeNull();
+  });
+
   it("refuses responses that are not images", async () => {
     vi.stubGlobal("fetch", vi.fn(async () => new Response("<html>", { headers: { "content-type": "text/html" } })));
 

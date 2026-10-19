@@ -56,3 +56,48 @@ describe("postResume", () => {
     expect(renderResume().container).toBeEmptyDOMElement();
   });
 });
+
+describe("postResume distance", () => {
+  beforeEach(() => {
+    Object.assign(player, { ready: true, playing: false, currentTime: 0 });
+    useAuthStore.setState({ user: { uid: "u1", email: null, displayName: null, photoURL: null } });
+    useProgressStore.setState({ posts: new Map([["p1", { time: 150, updatedAt: 1 }]]) });
+  });
+
+  it.each([
+    ["exactly 5 seconds after", 155],
+    ["exactly 5 seconds before", 145],
+  ])("does not offer to resume when the playhead is %s the saved position", (_where, time) => {
+    player.currentTime = time;
+
+    expect(renderResume().container).toBeEmptyDOMElement();
+  });
+
+  it.each([
+    ["after", 156],
+    ["before", 144],
+  ])("offers to resume when the playhead is more than 5 seconds %s the saved position", (_where, time) => {
+    player.currentTime = time;
+    renderResume();
+
+    expect(screen.getByRole("button", { name: "Resume" })).toBeInTheDocument();
+  });
+
+  it("stays hidden until the player is found", () => {
+    player.ready = false;
+
+    expect(renderResume().container).toBeEmptyDOMElement();
+  });
+
+  it("offers to resume a post without reactions, without naming one", () => {
+    const { container } = render(
+      <PostContext.Provider value={{ post: { id: "p1", tags: [] } as never }}>
+        <PostResume />
+      </PostContext.Provider>,
+    );
+
+    expect(container).toHaveTextContent("Continue watching");
+    expect(container).toHaveTextContent("left off at 0:02:30");
+    expect(container).not.toHaveTextContent("·");
+  });
+});

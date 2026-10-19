@@ -101,3 +101,43 @@ describe("watchCards", () => {
     expect(onChange).not.toHaveBeenCalled();
   });
 });
+
+describe("watchCards with a signal that is already aborted", () => {
+  it("does not scan or watch the page", async () => {
+    vi.useFakeTimers();
+
+    const onChange = vi.fn();
+    const controller = new AbortController();
+
+    controller.abort();
+    watchCards({ onChange, signal: controller.signal });
+    document.body.append(document.createElement("div"));
+    await flushMutations();
+    vi.advanceTimersByTime(2000);
+
+    expect(onChange).not.toHaveBeenCalled();
+    vi.useRealTimers();
+  });
+});
+
+describe("watchCards on a root that is not an element", () => {
+  it("rescans when nodes are added to it", async () => {
+    vi.useFakeTimers();
+
+    const onChange = vi.fn();
+    const controller = new AbortController();
+    const fragment = document.createDocumentFragment();
+
+    watchCards({ onChange, signal: controller.signal, root: fragment, debounceMs: 100 });
+    onChange.mockClear();
+
+    fragment.append(document.createElement("div"));
+    await flushMutations();
+    vi.advanceTimersByTime(100);
+
+    expect(onChange).toHaveBeenCalledTimes(1);
+
+    controller.abort();
+    vi.useRealTimers();
+  });
+});

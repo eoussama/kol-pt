@@ -96,10 +96,7 @@ export function watchCards(options: ICardWatcherOptions): void {
   const flush = () => {
     timer = undefined;
     firstPendingAt = null;
-
-    if (!signal.aborted) {
-      onChange();
-    }
+    onChange();
   };
 
   const schedule = () => {

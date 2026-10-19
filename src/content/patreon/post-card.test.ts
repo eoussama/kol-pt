@@ -175,3 +175,32 @@ describe("getMountPoint without tags", () => {
     expect(bodyless.anchor.classList.contains("footer")).toBe(true);
   });
 });
+
+describe("getMountPoint without anything to anchor to", () => {
+  it("appends the panel to the card", () => {
+    document.body.innerHTML = "<div data-tag=\"post-card\" id=\"c\"><p>Only text</p></div>";
+
+    const card = document.getElementById("c")!;
+    const point = getMountPoint(card);
+    const panel = document.createElement("section");
+
+    expect(point).toEqual({ anchor: card, position: "append" });
+
+    insertAt(point, panel);
+
+    expect(card.lastElementChild).toBe(panel);
+    expect(card.children).toHaveLength(2);
+  });
+});
+
+describe("isCreatorPost with a page URL that cannot be read", () => {
+  it("matches no card, whatever its links", () => {
+    document.body.innerHTML = `
+      <div data-tag="post-card" id="relative"><a href="/someone/posts">Profile</a></div>
+      <div data-tag="post-card" id="absolute"><a href="https://www.patreon.com/someone">Profile</a></div>`;
+
+    expect(isCreatorPost(document.getElementById("relative")!, "someone", "not a url")).toBe(false);
+    expect(isCreatorPost(document.getElementById("absolute")!, "someone", "not a url")).toBe(false);
+    expect(isCreatorPost(document.getElementById("absolute")!, "someone", "https://www.patreon.com/home")).toBe(true);
+  });
+});

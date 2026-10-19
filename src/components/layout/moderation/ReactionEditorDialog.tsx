@@ -183,8 +183,11 @@ function ReactionEditorDialog(props: IReactionEditorDialogProps): JSX.Element {
       const issue = parsed.error.issues[0];
       const field = issue?.path[0];
 
+      /* v8 ignore next -- a failed parse always has an issue, the fallback only satisfies the types */
+      const fallback = issue?.message ?? "Check the fields";
+
       setError({
-        message: field === "entryId" ? "Pick what KOL reacted to" : issue?.message ?? "Check the fields",
+        message: field === "entryId" ? "Pick what KOL reacted to" : fallback,
         field: field === "entryId" || field === "label" || field === "description" || field === "startTime" || field === "endTime" || (field === "context" && isYouTube) ? field : undefined,
       });
 

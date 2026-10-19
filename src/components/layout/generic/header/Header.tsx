@@ -58,8 +58,8 @@ function Header(): JSX.Element {
    * Memorizes the current route
    */
   const route = useMemo(() => {
-    const path = location.pathname ?? "";
-    const frags = path.split("/") ?? [];
+    const path = location.pathname;
+    const frags = path.split("/");
     const sanitizedFrags = frags.filter(e => e.trim().length > 0);
 
     return sanitizedFrags[0];

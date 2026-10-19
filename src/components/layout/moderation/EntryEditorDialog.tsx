@@ -117,7 +117,10 @@ export function toEntryInput(id: string, form: TEntryForm): { entry: TEntryInput
   const issue = parsed.error.issues[0];
   const field = issue?.path[0];
 
-  return { error: issue?.message ?? "Check the fields", field: typeof field === "string" && field in form ? field as keyof TEntryForm : undefined };
+  /* v8 ignore next -- a failed parse always has an issue, the fallback only satisfies the types */
+  const message = issue?.message ?? "Check the fields";
+
+  return { error: message, field: typeof field === "string" && field in form ? field as keyof TEntryForm : undefined };
 }
 
 /**
@@ -268,6 +271,7 @@ function EntryEditorDialog(props: IEntryEditorDialogProps): JSX.Element {
                     items={TYPE_ITEMS}
                     value={form.type}
                     onValueChange={(value) => {
+                      /* v8 ignore else -- the picker has no empty option, so it never yields null */
                       if (value !== null) {
                         setForm(current => ({ ...current, type: value }));
                       }

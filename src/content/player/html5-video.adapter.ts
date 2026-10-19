@@ -198,15 +198,12 @@ export class Html5VideoAdapter implements IPlayerAdapter {
     this.removeGuard?.();
 
     let timer: ReturnType<typeof setTimeout> | undefined;
-    let removeListener = (): void => undefined;
+    let removeListener: () => void;
 
     const remove = () => {
       clearTimeout(timer);
       removeListener();
-
-      if (this.removeGuard === remove) {
-        this.removeGuard = null;
-      }
+      this.removeGuard = null;
     };
 
     removeListener = this.listen("playing", () => {

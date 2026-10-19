@@ -1,4 +1,4 @@
-import { applyThemeClass, isDarkColor, resolveThemeMode, toPatreonColorMode } from "./color-mode";
+import { applyThemeClass, DARK_SCHEME_QUERY, isDarkColor, isSystemDark, resolveThemeMode, toPatreonColorMode } from "./color-mode";
 
 
 
@@ -73,5 +73,26 @@ describe("applyThemeClass", () => {
     expect(observer.takeRecords()).toEqual([]);
     observer.disconnect();
     applyThemeClass("light");
+  });
+});
+
+describe("isSystemDark", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it.each([true, false])("follows the dark scheme query when it matches: %s", (matches) => {
+    const matchMedia = vi.fn().mockReturnValue({ matches });
+
+    vi.stubGlobal("matchMedia", matchMedia);
+
+    expect(isSystemDark()).toBe(matches);
+    expect(matchMedia).toHaveBeenCalledWith(DARK_SCHEME_QUERY);
+  });
+
+  it("counts as light where media queries are unavailable", () => {
+    vi.stubGlobal("matchMedia", undefined);
+
+    expect(isSystemDark()).toBe(false);
   });
 });

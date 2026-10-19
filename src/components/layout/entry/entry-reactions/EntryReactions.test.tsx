@@ -40,3 +40,54 @@ describe("entryReactions search", () => {
     expect(screen.queryByText("Reactions")).not.toBeInTheDocument();
   });
 });
+
+describe("entryReactions list", () => {
+  let open: ReturnType<typeof vi.spyOn>;
+
+  beforeEach(() => {
+    open = vi.spyOn(window, "open").mockImplementation(() => null);
+  });
+
+  afterEach(() => {
+    open.mockRestore();
+  });
+
+  it("counts the reactions and shows each one's date", () => {
+    renderList();
+
+    expect(screen.getByRole("heading", { name: /Reactions/ })).toHaveTextContent("Reactions3");
+    expect(screen.getAllByRole("listitem").map(item => item.textContent)).toEqual([
+      `Opening${new Date(2024, 0, 1).toLocaleDateString()}`,
+      `Finale${new Date(2025, 0, 1).toLocaleDateString()}`,
+      `Opening 2${new Date(2025, 0, 1).toLocaleDateString()}`,
+    ]);
+  });
+
+  it("opens the post at the reaction", () => {
+    renderList();
+
+    fireEvent.click(screen.getAllByRole("button", { name: "restart reaction" })[1]!);
+
+    const url = new URL(open.mock.calls[0]![0] as string);
+
+    expect(url.pathname).toBe("/posts/pFinale");
+    expect(url.searchParams.get("reactionId")).toBe("Finale");
+  });
+
+  it("finds reactions by their date", () => {
+    renderList([reaction("Opening", 2024), reaction("Finale", 2025)]);
+
+    fireEvent.change(screen.getByRole("searchbox", { name: "Search reactions" }), { target: { value: new Date(2025, 0, 1).toLocaleDateString() } });
+
+    expect(screen.getAllByRole("listitem").map(item => item.textContent)).toEqual([`Finale${new Date(2025, 0, 1).toLocaleDateString()}`]);
+  });
+
+  it("shows the whole list for a blank search", () => {
+    renderList();
+
+    fireEvent.change(screen.getByRole("searchbox", { name: "Search reactions" }), { target: { value: "   " } });
+
+    expect(screen.getAllByRole("listitem")).toHaveLength(3);
+    expect(screen.queryByText(/No reactions match/)).not.toBeInTheDocument();
+  });
+});

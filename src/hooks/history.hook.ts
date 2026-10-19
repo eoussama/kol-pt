@@ -85,7 +85,7 @@ export function buildHistory(
  * @returns The posts to continue
  */
 export function buildContinueList(posts: ReadonlyArray<Post>, progress: ReadonlyMap<string, IProgress>): Array<IHistoryItem> {
-  const items = posts.flatMap((post): Array<IHistoryItem> => {
+  const items = posts.flatMap((post): Array<{ item: IHistoryItem; updatedAt: number }> => {
     const saved = progress.get(toDatabaseKey(post.id));
     const tag = saved ? findReactionAt(post.tags, saved.time) : null;
 
@@ -96,10 +96,10 @@ export function buildContinueList(posts: ReadonlyArray<Post>, progress: Readonly
     const end = Math.max(...post.tags.map(candidate => candidate.endTime));
     const left = { reaction: Math.max(0, tag.endTime - Math.max(saved.time, tag.startTime)), post: Math.max(0, end - saved.time) };
 
-    return [{ post, tag, markedAt: new Date(saved.updatedAt), resumeAt: saved.time, left }];
+    return [{ item: { post, tag, markedAt: new Date(saved.updatedAt), resumeAt: saved.time, left }, updatedAt: saved.updatedAt }];
   });
 
-  return items.sort((a, b) => (b.markedAt?.getTime() ?? 0) - (a.markedAt?.getTime() ?? 0));
+  return items.sort((a, b) => b.updatedAt - a.updatedAt).map(({ item }) => item);
 }
 
 /**

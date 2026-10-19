@@ -83,6 +83,7 @@ describe("isExtensionPage", () => {
     expect(isExtensionPage({ id, url: "https://www.patreon.com/cw/SomeCreator/posts" })).toBe(false);
     expect(isExtensionPage({ id: "another-extension", url: page })).toBe(false);
     expect(isExtensionPage({})).toBe(false);
+    expect(isExtensionPage({ id })).toBe(false);
   });
 });
 
@@ -93,5 +94,24 @@ describe("handleRequest", () => {
     await expect(handleRequest(handlers, { channel: "kol-pt", type: "posts.list" }, {})).resolves.toEqual({ ok: true, data: { posts: [], entries: [] } });
     await expect(handleRequest(handlers, { channel: "kol-pt", type: "settings.get" }, {})).resolves.toEqual({ ok: false, error: "not stubbed" });
     await expect(handleRequest(handlers, { channel: "kol-pt", type: "unknown" }, {})).resolves.toEqual({ ok: false, error: "Invalid request" });
+  });
+
+  it("reports anything a handler throws as text", async () => {
+    const handlers = stubHandlers({
+      // Handlers can throw anything, not only errors
+      // eslint-disable-next-line prefer-promise-reject-errors
+      "settings.get": () => Promise.reject("plain failure"),
+    });
+
+    await expect(handleRequest(handlers, { channel: "kol-pt", type: "settings.get" }, {})).resolves.toEqual({ ok: false, error: "plain failure" });
+  });
+
+  it("gives handlers the request and who sent it", async () => {
+    const posts = vi.fn(async () => ({ posts: [], entries: [] }));
+    const sender = { id: "someone", url: "https://www.patreon.com/posts/1" };
+
+    await handleRequest(stubHandlers({ "posts.list": posts }), { channel: "kol-pt", type: "posts.list", force: true }, sender);
+
+    expect(posts).toHaveBeenCalledExactlyOnceWith({ channel: "kol-pt", type: "posts.list", force: true }, sender);
   });
 });

@@ -78,3 +78,20 @@ describe("createOverlayContainer", () => {
     expect(host.isConnected).toBe(false);
   });
 });
+
+describe("createOverlayContainer in a document without a body", () => {
+  it("attaches the host to the root element", () => {
+    const doc = document.implementation.createHTMLDocument("empty");
+
+    doc.body.remove();
+
+    const { container, remove } = createOverlayContainer(doc);
+    const host = (container.getRootNode() as ShadowRoot).host;
+
+    expect(host.parentElement).toBe(doc.documentElement);
+
+    remove();
+
+    expect(host.isConnected).toBe(false);
+  });
+});

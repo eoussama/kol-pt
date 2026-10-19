@@ -112,15 +112,11 @@ export class EmbedController {
    * posts, and the creator's untracked video posts.
    *
    * @param card - The post card
-   * @param postId - The post id, if found
+   * @param postId - The post id
    * @param pageUrl - The page's URL
    * @returns True if the card gets a panel
    */
-  private wantsPanel(card: HTMLElement, postId: string | undefined, pageUrl: string): boolean {
-    if (postId === undefined) {
-      return false;
-    }
-
+  private wantsPanel(card: HTMLElement, postId: string, pageUrl: string): boolean {
     if (this.posts === null || this.posts.has(postId)) {
       return true;
     }

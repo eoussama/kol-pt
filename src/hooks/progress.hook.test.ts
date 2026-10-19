@@ -108,4 +108,111 @@ describe("useProgressTracking", () => {
 
     expect(request).not.toHaveBeenCalled();
   });
+
+  it("saves when the page gets hidden mid-playback, but not when it becomes visible", () => {
+    const step = track();
+    const visibility = vi.spyOn(document, "visibilityState", "get");
+
+    step(80, true);
+
+    visibility.mockReturnValue("visible");
+    document.dispatchEvent(new Event("visibilitychange"));
+    expect(request).not.toHaveBeenCalled();
+
+    visibility.mockReturnValue("hidden");
+    document.dispatchEvent(new Event("visibilitychange"));
+    expect(request).toHaveBeenCalledExactlyOnceWith("progress.set", { postId: "p1", time: 80 });
+
+    visibility.mockRestore();
+  });
+
+  it("saves nothing on hiding the page when the video is not playing", () => {
+    const step = track();
+
+    step(80, false);
+    window.dispatchEvent(new Event("pagehide"));
+
+    expect(request).not.toHaveBeenCalled();
+  });
+
+  it("saves when the panel goes away mid-playback", () => {
+    const hook = renderHook(() => useProgressTracking(post));
+
+    player.currentTime = 90.9;
+    player.playing = true;
+    hook.rerender();
+    hook.unmount();
+
+    expect(request).toHaveBeenCalledExactlyOnceWith("progress.set", { postId: "p1", time: 90 });
+  });
+
+  it("stops listening to the page once the panel is gone", () => {
+    const hook = renderHook(() => useProgressTracking(post));
+
+    player.currentTime = 90;
+    player.playing = false;
+    hook.rerender();
+    hook.unmount();
+    window.dispatchEvent(new Event("pagehide"));
+
+    expect(request).not.toHaveBeenCalled();
+  });
+
+  it("does not save a position again that barely moved", () => {
+    const step = track();
+
+    step(30, true);
+    step(61, false);
+    step(61.5, true);
+    step(61.9, false);
+
+    expect(request).toHaveBeenCalledExactlyOnceWith("progress.set", { postId: "p1", time: 61 });
+  });
+
+  it("saves a position that moved a second or more", () => {
+    const step = track();
+
+    step(30, true);
+    step(61, false);
+    step(62, true);
+    step(62, false);
+
+    expect(vi.mocked(request).mock.calls.map(call => (call[1] as { time: number }).time)).toEqual([61, 62]);
+  });
+
+  it("forgets the position only once, until a new one is saved", () => {
+    useProgressStore.setState({ posts: new Map([["p1", { time: 120, updatedAt: 1 }]]) });
+
+    const step = track();
+
+    step(240, true);
+    step(251, false);
+    step(252, true);
+    step(253, false);
+
+    expect(request).toHaveBeenCalledExactlyOnceWith("progress.set", { postId: "p1", time: null });
+  });
+
+  it("keeps tracking when saving fails", async () => {
+    vi.mocked(request).mockRejectedValueOnce(new Error("offline"));
+
+    const step = track();
+
+    step(30, true);
+    step(61, false);
+    await Promise.resolve();
+    step(90, true);
+    step(95, false);
+
+    expect(request).toHaveBeenCalledTimes(2);
+  });
+
+  it("does not save the very start of a video", () => {
+    const step = track();
+
+    step(2, true);
+    step(5, false);
+
+    expect(request).not.toHaveBeenCalled();
+  });
 });

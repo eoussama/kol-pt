@@ -26,6 +26,8 @@ function describeMarked(item: IHistoryItem, kind: THistoryKind): string {
     : "";
 
   if (kind === "continue") {
+    // Posts to continue always come with what is left and the time it was saved, so neither fallback is reachable
+    /* v8 ignore next -- @preserve */
     return `${describeLeft(item.left ?? { reaction: 0, post: 0 })}${date ? ` ·${date}` : ""}`;
   }
 

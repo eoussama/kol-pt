@@ -44,6 +44,17 @@ describe("progress repository", () => {
     await expect(progressItem.getValue()).resolves.toEqual({ uid: "u1", posts: { post_2: { time: 90, updatedAt: 10 } } });
   });
 
+  it("does not block saves after a failed one", async () => {
+    vi.mocked(updateValues).mockRejectedValueOnce(new Error("Permission denied"));
+
+    const failed = setProgress("u1", "p1", 30, () => 1);
+    const saved = setProgress("u1", "p2", 40, () => 2);
+
+    await expect(failed).rejects.toThrow("Permission denied");
+    await expect(saved).resolves.toBeUndefined();
+    await expect(progressItem.getValue()).resolves.toEqual({ uid: "u1", posts: { p2: { time: 40, updatedAt: 2 } } });
+  });
+
   it("does not mix users' positions", async () => {
     vi.mocked(readValue).mockResolvedValue(null);
     await progressItem.setValue({ uid: "someone-else", posts: { p9: { time: 1, updatedAt: 1 } } });

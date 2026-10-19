@@ -1,5 +1,6 @@
+import { act, renderHook } from "@testing-library/react";
 import { request } from "../core/messaging/client";
-import { useWatchlistStore } from "./watchlist.state";
+import { usePostWatchlist, useWatchlistStore } from "./watchlist.state";
 
 
 
@@ -70,5 +71,28 @@ describe("watchlist store", () => {
 
     expect(stored("p1")).toEqual(["t1"]);
     expect(useWatchlistStore.getState().saving.size).toBe(0);
+  });
+});
+
+describe("usePostWatchlist", () => {
+  beforeEach(() => {
+    useWatchlistStore.setState({ posts: new Map(), markedAt: new Map(), saving: new Map() });
+  });
+
+  it("tells which of a post's reactions are watched, and follows changes", () => {
+    const { result } = renderHook(() => usePostWatchlist("p1"));
+
+    expect(result.current.isWatched("t1")).toBe(false);
+    expect(result.current.saving).toBe(false);
+    expect(result.current.isSaving("t1")).toBe(false);
+
+    act(() => useWatchlistStore.getState().setKeys(["p1/t1"]));
+    expect(result.current.isWatched("t1")).toBe(true);
+    expect(result.current.isWatched("t2")).toBe(false);
+
+    act(() => useWatchlistStore.setState({ saving: new Map([["p1", "t2"]]) }));
+    expect(result.current.saving).toBe(true);
+    expect(result.current.isSaving("t2")).toBe(true);
+    expect(result.current.isSaving("t1")).toBe(false);
   });
 });

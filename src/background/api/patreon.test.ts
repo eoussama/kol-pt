@@ -41,6 +41,20 @@ describe("getPatreonPostDetails", () => {
     expect(fetch.mock.calls[0]?.[0]).toContain("/api/posts/172223755?");
   });
 
+  it("falls back to the small thumbnail", async () => {
+    stubFetch({ published_at: null, image: { large_url: null, url: "https://image.mux.com/a/small.jpg" } });
+
+    await expect(getPatreonPostDetails("1")).resolves.toEqual({ publishedAt: null, thumbnail: "https://image.mux.com/a/small.jpg" });
+  });
+
+  it("knows nothing when Patreon reports an error or answers unexpectedly", async () => {
+    vi.stubGlobal("fetch", vi.fn(async () => new Response(JSON.stringify({ data: { attributes: { published_at: "2026-10-13T08:19:37.000+00:00" } } }), { status: 404 })));
+    await expect(getPatreonPostDetails("1")).resolves.toEqual({ publishedAt: null, thumbnail: null });
+
+    stubFetch("not attributes");
+    await expect(getPatreonPostDetails("1")).resolves.toEqual({ publishedAt: null, thumbnail: null });
+  });
+
   it("knows nothing it cannot use", async () => {
     stubFetch({ published_at: "not a date", image: { url: "http://insecure.example/a.jpg" } });
     await expect(getPatreonPostDetails("1")).resolves.toEqual({ publishedAt: null, thumbnail: null });

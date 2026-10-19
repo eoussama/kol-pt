@@ -2,7 +2,7 @@ import { fakeBrowser } from "wxt/testing/fake-browser";
 import { moderatorItem } from "../../core/storage/items";
 import { readValue, updateValues, writeValue } from "../database";
 import { getPostsWithEntries } from "./content";
-import { deleteTag, isModerator, mergeEdit, refreshModerator, saveEntry, savePost, saveTag } from "./moderation";
+import { deletePost, deleteTag, isModerator, mergeEdit, refreshModerator, saveEntry, savePost, saveTag } from "./moderation";
 
 
 
@@ -71,8 +71,21 @@ describe("moderation repository", () => {
     expect(writeValue).toHaveBeenCalledExactlyOnceWith("posts/post-1/tags/t1", null);
   });
 
-  it("refuses reactions on untracked posts", async () => {
-    await expect(saveTag("post-9", tag)).rejects.toThrow("not tracked");
+  it("refuses reactions on untracked posts, without blocking the changes after it", async () => {
+    const refused = saveTag("post-9", tag);
+    const deleted = deletePost("post-1");
+
+    await expect(refused).rejects.toThrow("not tracked");
+    await expect(deleted).resolves.toEqual({ posts: [], entries: [] });
+    expect(writeValue).toHaveBeenCalledExactlyOnceWith("posts/post-1", null);
+  });
+
+  it("stops tracking a post with its reactions, and answers with the fresh content", async () => {
+    vi.mocked(getPostsWithEntries).mockResolvedValueOnce({ posts: [], entries: [{ id: "e1", type: 0, title: "Show", altTitles: [] }] } as never);
+
+    await expect(deletePost("post.1")).resolves.toMatchObject({ entries: [{ id: "e1" }] });
+    expect(writeValue).toHaveBeenCalledExactlyOnceWith("posts/post_1", null);
+    expect(getPostsWithEntries).toHaveBeenCalledWith(true);
   });
 
   it("updates a post's details without touching its reactions", async () => {

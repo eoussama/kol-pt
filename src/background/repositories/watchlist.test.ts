@@ -52,6 +52,17 @@ describe("watchlist repository", () => {
     expect(stored?.keys.sort()).toEqual(["p1/t1", "p1/t2", "p2/t3"]);
   });
 
+  it("does not block toggles after a failed one", async () => {
+    vi.mocked(readValue).mockResolvedValue(null);
+    vi.mocked(updateValues).mockRejectedValueOnce(new Error("Permission denied"));
+
+    const failed = setWatched("u1", "p1", "t1", true);
+    const toggled = setWatched("u1", "p1", "t2", true);
+
+    await expect(failed).rejects.toThrow("Permission denied");
+    await expect(toggled).resolves.toEqual(["p1/t2"]);
+  });
+
   it("does not mix users' watchlists", async () => {
     vi.mocked(readValue).mockResolvedValue(null);
     await watchlistItem.setValue({ uid: "someone-else", keys: ["p9/t9"] });

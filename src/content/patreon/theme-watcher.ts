@@ -73,6 +73,17 @@ function parseComputedColor(value: string): { color: string; alpha: number } | n
 
 /**
  * @description
+ * Turns what a color reads as into an appearance.
+ *
+ * @param dark - Whether the color is dark, or null if it could not be read
+ * @returns The appearance, or null if the color could not be read
+ */
+function toMode(dark: boolean | null): TThemeMode | null {
+  return dark === null ? null : (dark ? "dark" : "light");
+}
+
+/**
+ * @description
  * Reads the appearance Patreon actually renders: the first opaque background
  * behind the posts, which is what the panel sits on. Falls back to Patreon's
  * card background token.
@@ -87,16 +98,13 @@ export function measurePatreonMode(doc: Document = document): TThemeMode | null 
     const background = parseComputedColor(getComputedStyle(element).backgroundColor);
 
     if (background && background.alpha >= 0.9) {
-      const dark = isDarkColor(background.color);
-
-      return dark === null ? null : (dark ? "dark" : "light");
+      return toMode(isDarkColor(background.color));
     }
   }
 
   const token = start ? getComputedStyle(start).getPropertyValue(SURFACE_TOKEN) : "";
-  const dark = token ? isDarkColor(token) : null;
 
-  return dark === null ? null : (dark ? "dark" : "light");
+  return toMode(token ? isDarkColor(token) : null);
 }
 
 /**

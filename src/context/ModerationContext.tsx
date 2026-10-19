@@ -113,10 +113,13 @@ export function ModerationProvider(props: IModerationProviderProps): JSX.Element
   const apply = (report: TReport) => {
     const times = { startTime: report.startTime, endTime: report.endTime };
 
+    /* v8 ignore next -- only reports with a reaction in the post can be applied, see canApply */
+    const tag = findTag(report) ?? null;
+
     setReviewing(null);
     setEditor(report.kind === "missing"
       ? { tag: null, initial: times, report }
-      : { tag: findTag(report) ?? null, initial: report.kind === "timestamp" ? times : undefined, report });
+      : { tag, initial: report.kind === "timestamp" ? times : undefined, report });
   };
 
   const closeEditor = (saved: boolean) => {
@@ -191,6 +194,7 @@ export function ModerationProvider(props: IModerationProviderProps): JSX.Element
         title={confirm?.title ?? ""}
         message={confirm?.message ?? ""}
         confirmLabel={confirm?.label ?? ""}
+        /* v8 ignore next -- nothing can be confirmed while the dialog is closed */
         onConfirm={confirm?.action ?? (async () => undefined)}
         onClose={() => setConfirm(null)}
       />

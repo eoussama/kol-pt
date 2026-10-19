@@ -68,6 +68,7 @@ export function useProgressTracking(post: Post): void {
   latest.current = { time: currentTime, playing };
 
   // Kept in a ref so the page listeners below always save with the latest state
+  /* v8 ignore next -- the placeholder is replaced on the very next line, before anything can call it */
   const save = useRef<(time: number) => void>(() => undefined);
 
   save.current = (time: number) => {

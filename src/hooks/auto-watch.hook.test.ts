@@ -36,7 +36,7 @@ describe("findFinishedReactions", () => {
 });
 
 describe("useAutoWatch", () => {
-  const toggle = vi.fn(async () => true);
+  const toggle = vi.fn(async (_postId: string, _tagId: string, _watched: boolean) => true);
 
   function play(times: Array<number>) {
     player.currentTime = times[0] ?? 0;
@@ -89,5 +89,26 @@ describe("useAutoWatch", () => {
     play([99.5, 100.1, 90, 99.5, 100.1]);
 
     expect(toggle).toHaveBeenCalledTimes(1);
+  });
+
+  it("keeps marking the next reactions when marking one fails", async () => {
+    toggle.mockRejectedValueOnce(new Error("offline"));
+
+    play([99.5, 100.1, 249.5, 250.1]);
+    await Promise.resolve();
+
+    expect(toggle.mock.calls.map(call => call[1])).toEqual(["a", "b"]);
+  });
+
+  it("marks several reactions that end in the same update", () => {
+    const together = { id: "p2", tags: [tag("x", 0, 100), tag("y", 50, 100)] } as unknown as Post;
+    const hook = renderHook(() => useAutoWatch(together));
+
+    player.currentTime = 99.5;
+    hook.rerender();
+    player.currentTime = 100.1;
+    hook.rerender();
+
+    expect(toggle.mock.calls.map(call => call[1])).toEqual(["x", "y"]);
   });
 });

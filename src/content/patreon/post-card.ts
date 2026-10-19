@@ -244,7 +244,7 @@ export function isCreatorPost(card: Element, creator: string, pageUrl: string): 
     }
   };
 
-  return isCreatorPath(pageUrl) || Array.from(card.querySelectorAll("a[href]")).some(link => isCreatorPath(link.getAttribute("href") ?? ""));
+  return isCreatorPath(pageUrl) || Array.from(card.querySelectorAll("a[href]")).some(link => isCreatorPath(link.getAttribute("href") as string));
 }
 
 /**
