@@ -28,7 +28,7 @@ export default defineConfig({
   zip: {
     // Replaces the default ("**/*", which skips dotfiles), so it is restated
     includeSources: ["**/*", ".env.example", ".nvmrc"],
-    excludeSources: ["html.txt", "branding/**", "build/**", "coverage/**", "reports/**", ".stryker-tmp/**"],
+    excludeSources: ["html.txt", "branding/**", "site/**", "site-dist/**", "build/**", "coverage/**", "reports/**", ".stryker-tmp/**"],
   },
   vite: () => ({
     plugins: [tailwindcss()],

@@ -110,6 +110,13 @@ cp .env.example .env   # then fill in the Firebase and YouTube values
 
 Variables are read at build time. Only the background script receives the Firebase configuration and the YouTube key; the script running on Patreon receives neither.
 
+### Landing page
+
+[`site/`](site) holds the landing page, published to GitHub Pages by the [Landing page workflow](.github/workflows/pages.yml) after every release, or from the Actions tab with *Run workflow*. Pages must be set to deploy from GitHub Actions (Settings, Pages, Source).
+
+- Store links go in [`site/stores.json`](site/stores.json). Each store with a link gets a button and a short redirect address (e.g. `/chrome/` leads to the Chrome Web Store); the others show as coming soon.
+- `node site/build.mjs` builds it into `site-dist/`, with the images and trailer from `branding/`.
+
 ### Database rules and moderators
 
 [`database.rules.json`](database.rules.json) holds the Realtime Database rules the extension expects. Merge them into your project's rules (Firebase console, Realtime Database, Rules):

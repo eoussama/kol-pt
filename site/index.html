@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>KOL Patreon Tracker</title>
+  <meta name="description" content="A browser extension that shows what each of KingOfLightning's Patreon streams reacts to, and when, so you can jump straight to a reaction.">
+  <meta name="color-scheme" content="dark light">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="KOL Patreon Tracker">
+  <meta property="og:description" content="See what every KOL stream on Patreon reacts to, and jump straight to it.">
+  <meta property="og:url" content="{{siteUrl}}">
+  <meta property="og:image" content="{{siteUrl}}assets/reactions.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="canonical" href="{{siteUrl}}">
+  <link rel="icon" type="image/png" href="assets/icon32.png">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="top">
+    <a class="brand" href="./">
+      <img src="assets/logo.png" alt="" width="32" height="32">
+      <span>KOL PT</span>
+    </a>
+    <nav aria-label="Sections">
+      <a href="#features">Features</a>
+      <a href="#screenshots">Screenshots</a>
+      <a href="#install">Install</a>
+      <a href="https://github.com/EOussama/kol-pt">GitHub</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <img class="hero-logo" src="assets/logo.png" alt="KOL Patreon Tracker logo" width="112" height="112">
+      <h1>KOL Patreon Tracker</h1>
+      <p class="lede">
+        See what every KingOfLightning stream on Patreon reacts to, and when,
+        then jump straight to the reaction you want instead of scrubbing through six hours of video.
+      </p>
+      <div class="stores" id="install">
+        {{stores}}
+      </div>
+      <p class="meta">Version {{version}} · Free and open source</p>
+    </section>
+
+    <section class="trailer" aria-label="Trailer">
+      <video controls preload="metadata" poster="assets/reactions.jpg" width="1280" height="720">
+        <source src="assets/trailer.mp4" type="video/mp4">
+        <a href="assets/trailer.mp4">Watch the trailer</a>
+      </video>
+    </section>
+
+    <section class="why">
+      <h2>Why it exists</h2>
+      <p>
+        Patreon started taking down copyrighted content, so KOL stopped naming the shows he reacts to in his posts.
+        This extension adds that information back, right where you watch: under each post on Patreon.
+      </p>
+    </section>
+
+    <section id="features" class="features">
+      <h2>Features</h2>
+      <ul class="grid">
+        <li>
+          <h3>Reactions on every post</h3>
+          <p>A panel under each tracked post lists what is reacted to, when it starts and how long it lasts.</p>
+        </li>
+        <li>
+          <h3>Jump to a reaction</h3>
+          <p>Start the post's video at any reaction, or pick up where you left off.</p>
+        </li>
+        <li>
+          <h3>Details and links</h3>
+          <p>Synopsis, genres and alternative titles, with links to MyAnimeList, AniList, Kitsu, IMDb and YouTube.</p>
+        </li>
+        <li>
+          <h3>Watched and favorites</h3>
+          <p>Sign in to tick off what you've watched and keep favorites, across devices and tabs.</p>
+        </li>
+        <li>
+          <h3>Browse from the toolbar</h3>
+          <p>Search every tracked stream and every show from the extension's popup.</p>
+        </li>
+        <li>
+          <h3>Fix it together</h3>
+          <p>Flag a wrong timestamp, a missing reaction or an untracked post, and moderators fix it for everyone.</p>
+        </li>
+      </ul>
+    </section>
+
+    <section id="screenshots" class="screenshots">
+      <h2>Screenshots</h2>
+      <figure class="wide">
+        <img src="assets/reactions.jpg" alt="A post on Patreon with the extension's panel listing six reactions, a Continue watching bar and a favorite" width="1863" height="1006" loading="lazy">
+        <figcaption>The reactions panel under a post on Patreon</figcaption>
+      </figure>
+      <div class="popups">
+        <figure>
+          <img src="assets/feed.jpg" alt="The popup's Feed tab listing tracked posts with their reactions" width="399" height="496" loading="lazy">
+          <figcaption>Every tracked stream</figcaption>
+        </figure>
+        <figure>
+          <img src="assets/entries.jpg" alt="The popup's Entries tab listing shows and YouTube channels" width="399" height="496" loading="lazy">
+          <figcaption>Every show and channel</figcaption>
+        </figure>
+        <figure>
+          <img src="assets/entry.jpg" alt="An entry's links and reactions in the popup" width="399" height="496" loading="lazy">
+          <figcaption>Links and reactions</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="steps">
+      <h2>How to use it</h2>
+      <ol>
+        <li>Install the extension for your browser.</li>
+        <li>Open <a href="https://www.patreon.com/cw/KingOfLightning/posts">KOL's Patreon posts</a>: tracked posts get a reactions panel under their tags.</li>
+        <li>Click a reaction to start the video there, or open the extension's popup to browse.</li>
+      </ol>
+      <p class="note">You need access to KOL's posts on Patreon to watch them: the extension does not unlock anything.</p>
+    </section>
+  </main>
+
+  <footer>
+    <p>
+      Not affiliated with or endorsed by KingOfLightning or Patreon. Made by fans, for fans.
+    </p>
+    <p>
+      <a href="https://github.com/EOussama/kol-pt">Source code</a> ·
+      <a href="https://github.com/EOussama/kol-pt/blob/main/PRIVACY.md">Privacy policy</a> ·
+      <a href="https://github.com/EOussama/kol-pt/issues/new/choose">Report a problem</a>
+    </p>
+  </footer>
+</body>
+</html>
