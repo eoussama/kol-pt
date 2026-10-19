@@ -33,7 +33,9 @@ const QUERY = `query ($id: Int, $idMal: Int) {
 export function toPlainText(description: string): string {
   return description
     .replace(/<br\s*\/?>/gi, "\n")
-    .replace(/<[^>]+>/g, "")
+    // Every "<" starts a match that runs to the next ">" (or the end), so no
+    // tag can be left behind by nested ones like "<scr<b>ipt>"
+    .replace(/<[^>]*>?/g, "")
     .replace(/&quot;/g, "\"")
     .replace(/&#0?39;|&apos;/g, "'")
     .replace(/&lt;/g, "<")
