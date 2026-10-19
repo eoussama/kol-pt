@@ -1,10 +1,46 @@
-# KOL Patreon Tracker
+<p align="center">
+  <img src="branding/logo.png" alt="KOL Patreon Tracker logo" width="96" height="96">
+</p>
+
+<h1 align="center">KOL Patreon Tracker</h1>
+
+<p align="center">
+  Find out what KingOfLightning is reacting to, and when, without scrubbing through hours of video.
+</p>
+
+<p align="center">
+  <a href="branding/kol-pt-trailer.mp4">Watch the trailer</a>
+</p>
 
 KOL Patreon Tracker is a browser extension for Chrome, Edge, Firefox and Safari that helps you find KingOfLightning (KOL) reactions on Patreon.
 KOL is an Anime/Manga YouTuber who mostly does One Piece content and other reactions and theories.
 
 Patreon has started taking down copyrighted content, so KOL stopped naming the shows he reacts to in his posts.
 This extension shows what each stream reacts to, and when, so you can jump straight to a reaction in streams that can run for over six hours.
+
+## Screenshots
+
+The reactions panel under each tracked post on Patreon:
+
+<p align="center">
+  <img src="branding/reactions.jpg" alt="A post on Patreon with the extension's panel listing six reactions, a Continue watching bar and a favorite" width="720">
+</p>
+
+The toolbar popup, with the feed of tracked posts, the list of entries and an entry's details:
+
+<table align="center">
+  <tr>
+    <td>
+      <img src="branding/feed.jpg" alt="The popup's Feed tab listing tracked posts with their reactions" width="240">
+    </td>
+    <td>
+      <img src="branding/entries.jpg" alt="The popup's Entries tab listing shows and YouTube channels" width="240">
+    </td>
+    <td>
+      <img src="branding/entry.jpg" alt="An entry's links and reactions in the popup" width="240">
+    </td>
+  </tr>
+</table>
 
 ## Features
 
