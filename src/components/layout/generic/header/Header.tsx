@@ -60,7 +60,7 @@ function Header(): JSX.Element {
   const route = useMemo(() => {
     const path = location.pathname;
     const frags = path.split("/");
-    const sanitizedFrags = frags.filter(e => e.trim().length > 0);
+    const sanitizedFrags = frags.filter(e => e.length > 0);
 
     return sanitizedFrags[0];
   }, [location.pathname]);

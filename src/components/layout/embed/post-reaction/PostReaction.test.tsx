@@ -209,6 +209,7 @@ describe("playback state", () => {
     expect(within(row).getByText("Playing")).toBeInTheDocument();
     expect(within(row).getByRole("button", { name: "restart reaction" })).toBeInTheDocument();
     expect(within(row).queryByRole("button", { name: "skip to reaction" })).not.toBeInTheDocument();
+    expect(row.querySelector("span[aria-hidden='true'].absolute")).toBeInTheDocument();
     unmount();
 
     player.playing = false;
@@ -216,6 +217,22 @@ describe("playback state", () => {
 
     expect(screen.getByText("Paused")).toBeInTheDocument();
     expect(screen.queryByText("Playing")).not.toBeInTheDocument();
+  });
+
+  it("explains the play button according to where the playhead is", async () => {
+    const { unmount } = renderRow("p1", "3", tag("3", null, [10, 70]));
+
+    fireEvent.focus(screen.getByRole("button", { name: "skip to reaction" }));
+
+    expect(await screen.findByText("Skip to reaction")).toBeInTheDocument();
+    unmount();
+
+    player.currentTime = 30;
+    renderRow("p1", "3", tag("3", null, [10, 70]));
+
+    fireEvent.focus(screen.getByRole("button", { name: "restart reaction" }));
+
+    expect(await screen.findByText("Restart reaction")).toBeInTheDocument();
   });
 
   it("restarts the reaction it is in", () => {
@@ -236,6 +253,7 @@ describe("playback state", () => {
     renderRow("p1", "3", tag("3", null, [times[0], times[1]]));
 
     expect(screen.getByRole("listitem")).not.toHaveAttribute("data-playing");
+    expect(screen.getByRole("listitem").querySelector("span[aria-hidden='true'].absolute")).not.toBeInTheDocument();
     expect(screen.queryByText(/Playing|Paused/)).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "skip to reaction" })).toBeInTheDocument();
   });
@@ -277,6 +295,21 @@ describe("watching and favoriting", () => {
     expect(toggleWatched).toHaveBeenLastCalledWith("p1", "t1", false);
   });
 
+  it("explains the checkbox according to whether the reaction is watched", async () => {
+    const { unmount } = renderRow("p1", "t2");
+
+    fireEvent.focus(screen.getByRole("checkbox", { name: "Mark as watched" }).parentElement as HTMLElement);
+
+    expect(await screen.findByText("Mark as watched")).toBeInTheDocument();
+    unmount();
+
+    renderRow("p1", "t1");
+
+    fireEvent.focus(screen.getByRole("checkbox", { name: "Mark as un-watched" }).parentElement as HTMLElement);
+
+    expect(await screen.findByText("Mark as un-watched")).toBeInTheDocument();
+  });
+
   it("dims the title of a watched reaction", () => {
     const { unmount } = renderRow("p1", "t1");
 
@@ -313,12 +346,50 @@ describe("watching and favoriting", () => {
     const { unmount } = renderRow("p1", "t2");
 
     expect(screen.getByRole("button", { name: "add to favorites" }).parentElement).not.toHaveClass("opacity-100");
+    expect(screen.getByRole("button", { name: "add to favorites" }).parentElement).toHaveClass("opacity-0");
     unmount();
 
     useFavoritesStore.setState({ posts: new Map([["p1", new Set(["t2"])]]) });
     renderRow("p1", "t2");
 
     expect(screen.getByRole("button", { name: "remove from favorites" }).parentElement).toHaveClass("opacity-100");
+  });
+
+  it("styles the heart after whether the reaction is a favorite", () => {
+    const { unmount } = renderRow("p1", "t2");
+    const outline = screen.getByRole("button", { name: "add to favorites" });
+
+    expect(outline).toHaveClass("text-muted-foreground");
+    expect(outline).not.toHaveClass("text-favorite");
+    expect(outline.querySelector("svg")).not.toHaveClass("fill-current");
+    expect(outline.parentElement).not.toHaveClass("z-10");
+    unmount();
+
+    useFavoritesStore.setState({ posts: new Map([["p1", new Set(["t2"])]]) });
+    renderRow("p1", "t2");
+
+    const filled = screen.getByRole("button", { name: "remove from favorites" });
+
+    expect(filled).toHaveClass("text-favorite");
+    expect(filled).not.toHaveClass("text-muted-foreground");
+    expect(filled.querySelector("svg")).toHaveClass("fill-current");
+    expect(filled.parentElement).toHaveClass("z-10");
+  });
+
+  it("explains the heart according to whether the reaction is a favorite", async () => {
+    const { unmount } = renderRow("p1", "t2");
+
+    fireEvent.focus(screen.getByRole("button", { name: "add to favorites" }));
+
+    expect(await screen.findByText("Add to favorites")).toBeInTheDocument();
+    unmount();
+
+    useFavoritesStore.setState({ posts: new Map([["p1", new Set(["t2"])]]) });
+    renderRow("p1", "t2");
+
+    fireEvent.focus(screen.getByRole("button", { name: "remove from favorites" }));
+
+    expect(await screen.findByText("Remove from favorites")).toBeInTheDocument();
   });
 
   it("locks the heart while a favorite of the post is saved", () => {

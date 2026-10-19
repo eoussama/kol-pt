@@ -83,6 +83,14 @@ describe("entry search", () => {
     expect(entry.match(query)).toBe(true);
   });
 
+  it("matches across the fields it searches, which are kept apart by spaces", () => {
+    expect(entry.match("heat tt0113277 movie heat")).toBe(true);
+    expect(entry.match("Heat tt0113277")).toBe(true);
+    expect(entry.match("tt0113277 Movie")).toBe(true);
+    expect(entry.match("Heattt0113277")).toBe(false);
+    expect(entry.match("tt0113277Movie")).toBe(false);
+  });
+
   it("does not match something unrelated", () => {
     expect(entry.match("anime")).toBe(false);
     expect(entry.match("Casino")).toBe(false);

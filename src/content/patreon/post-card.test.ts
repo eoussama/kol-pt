@@ -26,6 +26,8 @@ describe("getPostIdFromUrl", () => {
     "https://www.patreon.com/cw/SomeCreator/posts",
     "https://www.patreon.com/SomeCreator/posts?filters%5Btag%5D=Anime",
     "https://www.patreon.com/posts/no-number-here",
+    "https://www.patreon.com/posts/some-post-123abc",
+    "https://www.patreon.com/posts/some-post-123/edit",
     "",
   ])("returns null for %s", (url) => {
     expect(getPostIdFromUrl(url)).toBeNull();
@@ -91,16 +93,30 @@ describe("post cards in the current feed markup", () => {
   });
 });
 
+/**
+ * @description
+ * Builds a post card.
+ *
+ * @param html - What is inside it
+ * @returns The card
+ */
+function card(html: string): HTMLElement {
+  const element = document.createElement("div");
+
+  element.setAttribute("data-tag", "post-card");
+  element.innerHTML = html;
+
+  return element;
+}
+
+describe("getPostId", () => {
+  it("does not take the comment box's label for the box", () => {
+    expect(getPostId(card("<label id=\"comment-section-input-77-label\"></label>"))).toBeNull();
+    expect(getPostId(card("<label id=\"comment-section-input-77-label\"></label><textarea id=\"comment-section-input-78\"></textarea>"))).toBe("78");
+  });
+});
+
 describe("resolveCards on a post page", () => {
-  function card(html: string): HTMLElement {
-    const element = document.createElement("div");
-
-    element.setAttribute("data-tag", "post-card");
-    element.innerHTML = html;
-
-    return element;
-  }
-
   it("takes the id of a lone unresolved card from the URL", () => {
     const main = card("<div class=\"patreon-post-content\"></div>");
     const resolved = resolveCards([main], "https://www.patreon.com/posts/some-post-555");
@@ -123,6 +139,14 @@ describe("resolveCards on a post page", () => {
     expect(resolved.has(bare)).toBe(false);
   });
 
+  it("leaves locked cards out, whatever their links and the URL say", () => {
+    const linked = card("<div data-tag=\"paywall-blur\"></div><a data-tag=\"post-published-at\" href=\"/posts/x-444\"></a>");
+    const bare = card("<div data-tag=\"locked-badge-button\"></div>");
+
+    expect(resolveCards([linked], FEED_URL).size).toBe(0);
+    expect(resolveCards([bare], "https://www.patreon.com/posts/x-555").size).toBe(0);
+  });
+
   it("does not guess between several unresolved cards", () => {
     const first = card("<p></p>");
     const second = card("<p></p>");
@@ -140,6 +164,51 @@ describe("untracked post details", () => {
     expect(isCreatorPost(discord!, "somecreator", "https://www.patreon.com/home")).toBe(true);
     expect(isCreatorPost(discord!, "Other", "https://www.patreon.com/home")).toBe(false);
     expect(isCreatorPost(discord!, "Other", "https://www.patreon.com/cw/Other/posts")).toBe(true);
+  });
+
+  it.each([
+    ["a /c/ page", "https://www.patreon.com/c/Other/posts", true],
+    ["a /cw/ page", "https://www.patreon.com/cw/Other/posts", true],
+    ["their own page", "https://www.patreon.com/Other", true],
+    ["another creator's /c/ page", "https://www.patreon.com/c/Another/posts", false],
+    ["another creator's /cw/ page", "https://www.patreon.com/cw/Another/posts", false],
+    ["a page that merely mentions them", "https://www.patreon.com/home/Other/posts", false],
+    ["a page that only starts like theirs", "https://www.patreon.com/cx/Other/posts", false],
+  ])("tells the creator's posts apart on %s", (_name, url, expected) => {
+    expect(isCreatorPost(card("<p>No links</p>"), "other", url)).toBe(expected);
+  });
+
+  it("takes a card for the creator's when any of its links is theirs", () => {
+    const mixed = card("<a href=\"https://example.com/elsewhere\">Elsewhere</a><a href=\"https://www.patreon.com/Other\">Other</a>");
+
+    expect(isCreatorPost(mixed, "other", "https://www.patreon.com/home")).toBe(true);
+  });
+
+  it("does not take a card without links for the creator's", () => {
+    expect(isCreatorPost(card("<p>No links</p>"), "other", "https://www.patreon.com/home")).toBe(false);
+  });
+
+  it("reads a title kept on one line, and none for a card without one", () => {
+    const titled = card("<span data-tag=\"post-title\">  Part one \n  of   two  </span>");
+
+    expect(readPostDetails(titled, "1").title).toBe("Part one of two");
+    expect(readPostDetails(card("<p></p>"), "1")).toEqual({ id: "1", title: "", description: "" });
+  });
+
+  it("reads the description line by line, without empty lines", () => {
+    const body = card("<div class=\"patreon-post-content\"></div>");
+
+    body.querySelector(".patreon-post-content")!.textContent = "First   line\n\n  Second \n   \nThird\tpart  ";
+
+    expect(readPostDetails(body, "1").description).toBe("First line\nSecond\nThird part");
+  });
+
+  it("keeps a description to 5000 characters", () => {
+    const body = card("<div class=\"patreon-post-content\"></div>");
+
+    body.querySelector(".patreon-post-content")!.textContent = "a".repeat(6000);
+
+    expect(readPostDetails(body, "1").description).toHaveLength(5000);
   });
 
   it("reads the post's slug and title to track it", () => {
@@ -173,6 +242,42 @@ describe("getMountPoint without tags", () => {
     expect(withBody.anchor.classList.contains("patreon-post-content")).toBe(true);
     expect(bodyless.position).toBe("before");
     expect(bodyless.anchor.classList.contains("footer")).toBe(true);
+  });
+});
+
+describe("getMountPoint around the like rows", () => {
+  const row = (name: string) => `<div class="${name}"><div><div data-tag="post-details"><button>like</button></div></div></div>`;
+
+  it("goes above the card's last like row, however many it has", () => {
+    const three = card(`${row("one")}${row("two")}${row("three")}`);
+
+    expect(getMountPoint(three).anchor.className).toBe("three");
+  });
+
+  it("goes above the outermost wrapper of the row that holds nothing else, inside the card", () => {
+    const lone = card(row("only"));
+    const wrapper = document.createElement("div");
+
+    wrapper.append(lone);
+    document.body.replaceChildren(wrapper);
+
+    expect(getMountPoint(lone).anchor.className).toBe("only");
+  });
+
+  it("does not climb out of a wrapper that has company", () => {
+    const shared = card("<div class=\"row\"><span>Next to it</span><div class=\"wrap\"><div data-tag=\"post-details\"></div></div></div>");
+
+    expect(getMountPoint(shared).anchor.className).toBe("wrap");
+  });
+
+  it("inserts the panel before the row", () => {
+    const withRow = card(row("only"));
+    const panel = document.createElement("section");
+
+    insertAt(getMountPoint(withRow), panel);
+
+    expect(withRow.firstElementChild).toBe(panel);
+    expect(panel.nextElementSibling?.className).toBe("only");
   });
 });
 

@@ -88,6 +88,7 @@ describe("entriesPage", () => {
     renderPage();
 
     expect(await screen.findByLabelText("Loading entries")).toHaveAttribute("aria-busy", "true");
+    expect(screen.getByLabelText("Loading entries").children).toHaveLength(7);
     expect(screen.queryByRole("list")).not.toBeInTheDocument();
   });
 
@@ -102,6 +103,7 @@ describe("entriesPage", () => {
     expect(screen.getByText("Anime")).toBeInTheDocument();
     expect(screen.getByText("YouTube")).toBeInTheDocument();
     expect(screen.getAllByRole("listitem")).toHaveLength(2);
+    expect(screen.getByRole("button", { name: /Frieren/ }).querySelectorAll("span.truncate")).toHaveLength(2);
   });
 
   it("shows no subtitle for an entry without alternative titles", async () => {
@@ -112,6 +114,7 @@ describe("entriesPage", () => {
     const row = await screen.findByRole("button", { name: /Severance/ });
 
     expect(row.textContent).toBe("SeveranceTV Show");
+    expect(row.querySelectorAll("span.truncate")).toHaveLength(1);
   });
 
   it("shows the thumbnail found for an entry without a cover", async () => {

@@ -95,6 +95,16 @@ describe("postDetailsDialog", () => {
     });
   });
 
+  it("trims the thumbnail link it started with", async () => {
+    const onClose = vi.fn();
+
+    renderDialog({ onClose, post: { ...post, thumbnail: " https://example.com/c.jpg " } });
+    fireEvent.click(screen.getByRole("button", { name: "Save" }));
+
+    await waitFor(() => expect(onClose).toHaveBeenCalledExactlyOnceWith(true));
+    expect(requestMock).toHaveBeenCalledWith("posts.save", { post: expect.objectContaining({ thumbnail: "https://example.com/c.jpg" }) });
+  });
+
   it("accepts a post without a thumbnail", async () => {
     const onClose = vi.fn();
 
@@ -114,6 +124,8 @@ describe("postDetailsDialog", () => {
     expect((await screen.findByRole("alert")).closest("[data-slot=field]")).toHaveTextContent("Title");
     expect(screen.getByRole("alert")).toHaveTextContent("Give the post a title");
     expect(screen.getByRole("textbox", { name: /Title/ })).toHaveAttribute("aria-invalid", "true");
+    expect(screen.getByRole("textbox", { name: /Title/ }).closest("[data-slot=field]")).toHaveAttribute("data-invalid", "true");
+    expect(screen.getByLabelText(/Posted on/).closest("[data-slot=field]")).not.toHaveAttribute("data-invalid", "true");
     expect(requestMock).not.toHaveBeenCalled();
   });
 
@@ -126,6 +138,7 @@ describe("postDetailsDialog", () => {
     expect(await screen.findByRole("alert")).toHaveTextContent("Pick the date it was posted");
     expect(screen.getByRole("alert").closest("[data-slot=field]")).toHaveTextContent("Posted on");
     expect(screen.getByLabelText(/Posted on/)).toHaveAttribute("aria-invalid", "true");
+    expect(screen.getByLabelText(/Posted on/).closest("[data-slot=field]")).toHaveAttribute("data-invalid", "true");
     expect(requestMock).not.toHaveBeenCalled();
   });
 
@@ -137,6 +150,7 @@ describe("postDetailsDialog", () => {
 
     expect(await screen.findByRole("alert")).toHaveTextContent("The thumbnail must be an https link");
     expect(screen.getByRole("alert").closest("[data-slot=field]")).toHaveTextContent("Thumbnail link");
+    expect(screen.getByRole("alert").closest("[data-slot=field]")).toHaveAttribute("data-invalid", "true");
     expect(requestMock).not.toHaveBeenCalled();
   });
 
@@ -147,14 +161,19 @@ describe("postDetailsDialog", () => {
       finish = () => resolve(null);
     })) as never);
     renderDialog();
+
+    expect(screen.getByRole("button", { name: "Save" }).querySelector("[data-icon=inline-start]")).toBeNull();
+
     fireEvent.click(screen.getByRole("button", { name: "Save" }));
 
     await waitFor(() => expect(screen.getByRole("button", { name: "Save" })).toBeDisabled());
+    expect(screen.getByRole("button", { name: "Save" }).querySelector("[data-icon=inline-start]")).not.toBeNull();
     expect(screen.getByRole("textbox", { name: /Title/ })).toBeDisabled();
 
     finish();
 
     await waitFor(() => expect(screen.getByRole("button", { name: "Save" })).toBeEnabled());
+    expect(screen.getByRole("button", { name: "Save" }).querySelector("[data-icon=inline-start]")).toBeNull();
   });
 
   it("shows why saving failed under the form, and stays open", async () => {

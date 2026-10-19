@@ -64,6 +64,24 @@ describe("entryEditorDialog", () => {
     expect(screen.getByRole("button", { name: "Save" })).toBeDisabled();
   });
 
+  it("gives an example for each ID", async () => {
+    render(<EntryEditorDialog open entry={frieren} onClose={vi.fn()} />);
+
+    expect(screen.getByRole("textbox", { name: "IMDb ID" })).toHaveAttribute("placeholder", "e.g. tt0388629");
+    expect(screen.getByRole("textbox", { name: "MyAnimeList ID" })).toHaveAttribute("placeholder", "e.g. 21");
+    expect(screen.getByRole("textbox", { name: "AniList ID" })).toHaveAttribute("placeholder", "e.g. 21");
+    expect(screen.getByRole("textbox", { name: "Kitsu ID" })).toHaveAttribute("placeholder", "e.g. 12");
+
+    await pickType("YouTube channel");
+
+    expect(screen.getByRole("textbox", { name: "Channel handle" })).toHaveAttribute("placeholder", "Without the @");
+    expect(screen.getByRole("textbox", { name: "Channel ID" })).toHaveAttribute("placeholder", "e.g. UC...");
+
+    await pickType("Movie");
+
+    expect(screen.getByRole("textbox", { name: "Rotten Tomatoes ID" })).toHaveAttribute("placeholder", "e.g. the_matrix");
+  });
+
   it("fills the form from the entry being edited", () => {
     render(<EntryEditorDialog open entry={frieren} onClose={vi.fn()} />);
 
@@ -252,6 +270,39 @@ describe("entryEditorDialog", () => {
 
     expect(screen.getByRole("textbox", { name: /Title/ })).toBeRequired();
     expect(screen.getByRole("textbox", { name: "Other titles" })).not.toBeRequired();
+    expect((screen.getByRole("textbox", { name: /Title/ }) as HTMLInputElement).labels?.[0]?.textContent).toBe("Title*");
+    expect((screen.getByRole("textbox", { name: "Other titles" }) as HTMLTextAreaElement).labels?.[0]?.textContent).toBe("Other titles");
+  });
+
+  it("shows a spinner in the save button only while saving", async () => {
+    let finish: () => void = () => undefined;
+
+    requestMock.mockImplementation(((method: string) => method === "entries.save"
+      ? new Promise<null>((resolve) => {
+          finish = () => resolve(null);
+        })
+      : Promise.resolve([])) as never);
+    render(<EntryEditorDialog open entry={frieren} onClose={vi.fn()} />);
+
+    expect(screen.getByRole("button", { name: "Save" }).querySelector("[data-icon=inline-start]")).toBeNull();
+
+    fireEvent.click(screen.getByRole("button", { name: "Save" }));
+
+    await waitFor(() => expect(screen.getByRole("button", { name: "Save" }).querySelector("[data-icon=inline-start]")).not.toBeNull());
+
+    finish();
+
+    await waitFor(() => expect(screen.getByRole("button", { name: "Save" }).querySelector("[data-icon=inline-start]")).toBeNull());
+  });
+
+  it.each(["TV Show", "Cartoon"])("offers no ID field of its own for %s", async (name) => {
+    render(<EntryEditorDialog open entry={null} initialTitle="Bluey" onClose={vi.fn()} />);
+
+    await pickType(name);
+
+    expect(screen.getAllByRole("textbox").map(box => (box as HTMLInputElement).labels?.[0]?.textContent)).toEqual(
+      ["Title*", "Other titles", "Cover link", "IMDb ID", "MyAnimeList ID", "AniList ID", "Kitsu ID"],
+    );
   });
 
   it("keeps the anime IDs visible but disabled for other types, and loses nothing", async () => {
@@ -329,6 +380,12 @@ describe("toForm", () => {
     expect(toForm(channel, "")).toMatchObject({ type: EEntryType.YOUTUBE, handle: "kol", channelId: "UC123" });
     expect(toForm(matrix, "")).toMatchObject({ type: EEntryType.MOVIE, rottentomatoesId: "the_matrix" });
   });
+
+  it("leaves a field empty when the entry has a null for it", () => {
+    const nulled = { ...frieren, id: "e1", type: EEntryType.ANIME, title: "Frieren", altTitles: [], model: { imdbId: null, cover: null, malId: 0 } } as never;
+
+    expect(toForm(nulled, "")).toMatchObject({ imdbId: "", cover: "", malId: "0", anilistId: "" });
+  });
 });
 
 describe("toEntryInput", () => {
@@ -337,6 +394,18 @@ describe("toEntryInput", () => {
   it("reads the anime IDs as numbers, and the Kitsu ID as text", () => {
     expect(toEntryInput("e1", { ...form, malId: " 52991 ", anilistId: "154587", kitsuId: " 46474 " })).toEqual({
       entry: { id: "e1", type: EEntryType.ANIME, title: "Frieren", altTitles: [], malId: 52991, anilistId: 154587, kitsuId: "46474" },
+    });
+  });
+
+  it("leaves out an anime ID that is blank", () => {
+    expect(toEntryInput("e1", { ...form, malId: "   ", anilistId: "" })).toEqual({
+      entry: { id: "e1", type: EEntryType.ANIME, title: "Frieren", altTitles: [] },
+    });
+  });
+
+  it("trims the other titles and drops the blank ones", () => {
+    expect(toEntryInput("e1", { ...form, altTitles: "  Sousou no Frieren  \n   \n\nBeyond Journey End " })).toEqual({
+      entry: expect.objectContaining({ altTitles: ["Sousou no Frieren", "Beyond Journey End"] }),
     });
   });
 

@@ -248,7 +248,7 @@ function ReactionEditorDialog(props: IReactionEditorDialogProps): JSX.Element {
                       value={entry}
                       itemToStringLabel={toEntryLabel}
                       isItemEqualToValue={(option, value) => option.id === value.id}
-                      filter={(option, query) => option.match(query.toLowerCase())}
+                      filter={(option, query) => option.match(query)}
                       onInputValueChange={value => setTyped(value)}
                       onValueChange={value => setEntryId(value?.id ?? null)}
                     >

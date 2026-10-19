@@ -47,6 +47,27 @@ describe("getPatreonPostDetails", () => {
     await expect(getPatreonPostDetails("1")).resolves.toEqual({ publishedAt: null, thumbnail: "https://image.mux.com/a/small.jpg" });
   });
 
+  it("keeps when the post was published without a thumbnail", async () => {
+    stubFetch({ published_at: "2026-10-13T08:19:37.000+00:00", image: null });
+
+    await expect(getPatreonPostDetails("1")).resolves.toEqual({ publishedAt: Date.parse("2026-10-13T08:19:37.000Z"), thumbnail: null });
+
+    stubFetch({ published_at: "2026-10-13T08:19:37.000+00:00" });
+
+    await expect(getPatreonPostDetails("1")).resolves.toEqual({ publishedAt: Date.parse("2026-10-13T08:19:37.000Z"), thumbnail: null });
+  });
+
+  it("gives up after eight seconds", async () => {
+    const timeout = vi.spyOn(AbortSignal, "timeout");
+    const fetch = stubFetch({ published_at: null, image: null });
+
+    await getPatreonPostDetails("1");
+
+    expect(timeout).toHaveBeenCalledWith(8000);
+    expect((fetch.mock.calls[0] as Array<unknown>)[1]).toEqual({ signal: expect.any(AbortSignal) });
+    timeout.mockRestore();
+  });
+
   it("knows nothing when Patreon reports an error or answers unexpectedly", async () => {
     vi.stubGlobal("fetch", vi.fn(async () => new Response(JSON.stringify({ data: { attributes: { published_at: "2026-10-13T08:19:37.000+00:00" } } }), { status: 404 })));
     await expect(getPatreonPostDetails("1")).resolves.toEqual({ publishedAt: null, thumbnail: null });

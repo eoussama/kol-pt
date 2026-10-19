@@ -99,5 +99,6 @@ describe("postResume distance", () => {
     expect(container).toHaveTextContent("Continue watching");
     expect(container).toHaveTextContent("left off at 0:02:30");
     expect(container).not.toHaveTextContent("·");
+    expect(screen.getByText(/left off at/).textContent).toBe("left off at 0:02:30");
   });
 });

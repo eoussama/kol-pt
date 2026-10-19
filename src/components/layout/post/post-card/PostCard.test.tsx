@@ -158,6 +158,12 @@ describe("postCard", () => {
       expect(parentClick).not.toHaveBeenCalled();
     });
 
+    it("keeps the reactions above the button that stretches over the card", () => {
+      renderCard();
+
+      expect(screen.getByRole("button", { name: "Opening" }).parentElement).toHaveClass("z-10");
+    });
+
     it("prevents the browser's default action on a chip click", () => {
       renderCard();
 
@@ -189,7 +195,7 @@ describe("postCard", () => {
       const chips = screen.getByRole("button", { name: "Opening" }).parentElement!;
 
       expect(toggle).toHaveAttribute("aria-expanded", "false");
-      expect(chips).toHaveClass("max-h-5", "overflow-hidden");
+      expect(chips).toHaveClass("max-h-5", "overflow-hidden", "flex-wrap");
 
       fireEvent.click(toggle);
 
@@ -260,6 +266,7 @@ describe("postCard", () => {
       expect(observers).toHaveLength(0);
       expect(screen.queryByRole("button", { name: /Show (more|less)/ })).not.toBeInTheDocument();
       expect(screen.getByRole("button", { name: "Opening" }).parentElement).toHaveClass("overflow-x-auto");
+      expect(screen.getByRole("button", { name: "Opening" }).parentElement).not.toHaveClass("flex-wrap");
     });
   });
 

@@ -210,6 +210,29 @@ describe("useEntry", () => {
       await waitFor(() => expect(requestMock).toHaveBeenCalledWith("anime.info", { anilistId: 154587 }));
     });
 
+    it("treats an ID of zero as no ID", async () => {
+      const [none, byAniList, byMyAnimeList] = [nextId(), nextId(), nextId()];
+
+      serve([
+        { id: none, title: "None", type: EEntryType.ANIME, malId: 0, anilistId: 0, altTitles: [] },
+        { id: byAniList, title: "AniList", type: EEntryType.ANIME, malId: 0, anilistId: 7, altTitles: [] },
+        { id: byMyAnimeList, title: "MyAnimeList", type: EEntryType.ANIME, malId: 8, anilistId: 0, altTitles: [] },
+      ], [], { "anime.info": info });
+
+      const first = renderHook(() => useEntry(none));
+
+      await waitFor(() => expect(first.result.current.loading).toBe(false));
+      expect(requestMock).not.toHaveBeenCalledWith("anime.info", expect.anything());
+
+      renderHook(() => useEntry(byAniList));
+      await waitFor(() => expect(requestMock).toHaveBeenCalledWith("anime.info", { anilistId: 7 }));
+
+      renderHook(() => useEntry(byMyAnimeList));
+      await waitFor(() => expect(requestMock).toHaveBeenCalledWith("anime.info", { malId: 8 }));
+      expect(requestMock).not.toHaveBeenCalledWith("anime.info", expect.objectContaining({ malId: 0 }));
+      expect(requestMock).not.toHaveBeenCalledWith("anime.info", expect.objectContaining({ anilistId: 0 }));
+    });
+
     it("has no details to ask for without either ID", async () => {
       const id = nextId();
 
@@ -317,6 +340,22 @@ describe("useEntry", () => {
       expect(second.result.current.entry?.title).toBe("Severance");
 
       await waitFor(() => expect(second.result.current.entry?.title).toBe("Severance S2"));
+    });
+
+    it("drops an entry that no longer exists when it is loaded again", async () => {
+      const id = nextId();
+
+      serve([{ id, title: "Severance", type: EEntryType.TV_SHOW, altTitles: [] }], []);
+
+      const { result, rerender } = renderHook(({ revision }) => useEntry(id, revision), { initialProps: { revision: 0 } });
+
+      await waitFor(() => expect(result.current.entry?.title).toBe("Severance"));
+
+      serve([], []);
+      rerender({ revision: 1 });
+
+      await waitFor(() => expect(result.current.entry).toBeNull());
+      expect(result.current.loading).toBe(false);
     });
 
     it("loads the entry again when the revision changes, e.g. once it is edited", async () => {

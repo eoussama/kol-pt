@@ -102,10 +102,13 @@ describe("reportsReviewDialog", () => {
     await waitFor(() => expect(within(first!).getByRole("button", { name: "Dismiss" })).toBeDisabled());
     expect(requestMock).toHaveBeenCalledExactlyOnceWith("reports.resolve", { reportId: "r1" });
     expect(within(second!).getByRole("button", { name: "Dismiss" })).toBeEnabled();
+    expect(within(first!).getByRole("button", { name: "Dismiss" }).querySelector("[data-icon=inline-start]")).not.toBeNull();
+    expect(within(second!).getByRole("button", { name: "Dismiss" }).querySelector("[data-icon=inline-start]")).toBeNull();
 
     finish();
 
     await waitFor(() => expect(within(first!).getByRole("button", { name: "Dismiss" })).toBeEnabled());
+    expect(within(first!).getByRole("button", { name: "Dismiss" }).querySelector("[data-icon=inline-start]")).toBeNull();
   });
 
   it("shows why a report could not be dismissed, until the next try", async () => {

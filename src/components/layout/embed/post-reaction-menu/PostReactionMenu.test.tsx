@@ -111,6 +111,7 @@ describe("postReactionMenu", () => {
 
       expect(items()).toEqual(["View on MyAnimeList"]);
       expect(screen.queryByRole("separator")).not.toBeInTheDocument();
+      expect(screen.getAllByRole("group")).toHaveLength(1);
     });
 
     it("lets signed-in viewers report a problem, and nothing more", () => {
@@ -139,6 +140,7 @@ describe("postReactionMenu", () => {
 
       expect(items()).toEqual(["Report a problem"]);
       expect(screen.queryByRole("separator")).not.toBeInTheDocument();
+      expect(screen.getAllByRole("group")).toHaveLength(1);
     });
 
     it("lets moderators edit and delete the reaction", () => {

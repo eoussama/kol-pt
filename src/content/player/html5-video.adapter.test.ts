@@ -266,6 +266,38 @@ describe("html5VideoAdapter resume guard", () => {
     expect(video.currentTime).toBe(301.5);
   });
 
+  it("puts the playhead back from as little as a little over the tolerance", async () => {
+    const { video, loadMetadata, startPlaying } = setup();
+
+    loadMetadata();
+    await new Html5VideoAdapter(video).playFrom(300);
+    video.currentTime = 302;
+    startPlaying();
+
+    expect(video.currentTime).toBe(302);
+
+    await new Html5VideoAdapter(video).playFrom(300);
+    video.currentTime = 302.5;
+    startPlaying();
+
+    expect(video.currentTime).toBe(300);
+  });
+
+  it("stops its timer once the video is playing", async () => {
+    vi.useFakeTimers();
+
+    const { video, loadMetadata, startPlaying } = setup();
+
+    loadMetadata();
+    await new Html5VideoAdapter(video).playFrom(300);
+
+    expect(vi.getTimerCount()).toBe(1);
+
+    startPlaying();
+
+    expect(vi.getTimerCount()).toBe(0);
+  });
+
   it("guards only the latest jump", async () => {
     const { video, loadMetadata, startPlaying } = setup();
     const adapter = new Html5VideoAdapter(video);
@@ -363,5 +395,50 @@ describe("html5VideoAdapter listeners", () => {
     loadMetadata();
 
     expect(video.currentTime).toBe(0);
+  });
+
+  it("lets go of a listener once, whether it is removed or the adapter disposed", () => {
+    const { video } = setup();
+    const removal = vi.spyOn(video, "removeEventListener");
+    const adapter = new Html5VideoAdapter(video);
+    const first = vi.fn();
+    const second = vi.fn();
+
+    adapter.on("timeupdate", first)();
+    adapter.on("timeupdate", second);
+    removal.mockClear();
+    adapter.dispose();
+
+    // The metadata listener and the second one; the first is long gone
+    expect(removal.mock.calls.map(([event]) => event)).toEqual(["loadedmetadata", "timeupdate"]);
+  });
+
+  it("forgets a listener it removed even when it is the only one", () => {
+    const { video } = setup();
+    const removal = vi.spyOn(video, "removeEventListener");
+    const adapter = new Html5VideoAdapter(video);
+
+    adapter.dispose();
+    adapter.on("timeupdate", vi.fn())();
+    removal.mockClear();
+    adapter.dispose();
+
+    expect(removal).not.toHaveBeenCalled();
+  });
+
+  it("does not drop another listener when one is removed twice", () => {
+    const { video } = setup();
+    const adapter = new Html5VideoAdapter(video);
+    const first = vi.fn();
+    const second = vi.fn();
+    const removeFirst = adapter.on("timeupdate", first);
+
+    adapter.on("timeupdate", second);
+    removeFirst();
+    removeFirst();
+    adapter.dispose();
+    video.dispatchEvent(new Event("timeupdate"));
+
+    expect(second).not.toHaveBeenCalled();
   });
 });

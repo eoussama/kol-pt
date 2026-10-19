@@ -118,6 +118,13 @@ describe("measurePatreonMode with colors it cannot read", () => {
     ["rgb(255 255 255 / 95%)", "light"],
     ["rgb(255 255 255 / 0.95)", "light"],
     ["rgb(255 255 255)", "light"],
+    ["rgb(  255 255 255)", "light"],
+    ["rgb(255 255 255  )", "light"],
+    ["rgb(255 255 255 /   95%)", "light"],
+    ["  rgb(255 255 255)  ", "light"],
+    ["rgba(255, 255, 255, 0.95)", "light"],
+    ["not rgb(255 255 255)", "dark"],
+    ["rgb(255 255 255) and more", "dark"],
   ])("reads the opacity in %s", (color, expected) => {
     document.body.innerHTML = "<main><div id=\"top\"><div data-tag=\"post-card\"></div></div></main>";
 
@@ -167,6 +174,120 @@ describe("measurePatreonMode from the surface token", () => {
   });
 });
 
+describe("watchPatreonTheme noticing page changes", () => {
+  let controller: AbortController;
+  const onChange = vi.fn();
+
+  /**
+   * @description
+   * Lets the page's mutation observers and the watcher's throttle run.
+   *
+   * @returns Promise that resolves once they have
+   */
+  const throttle = async () => {
+    await Promise.resolve();
+    vi.advanceTimersByTime(150);
+  };
+
+  beforeEach(() => {
+    vi.useFakeTimers();
+    onChange.mockReset();
+    controller = new AbortController();
+    document.documentElement.setAttribute("data-token-color-mode", "light");
+    document.head.insertAdjacentHTML("beforeend", "<style id=\"themes\">.night { background-color: rgb(18, 18, 18); } [data-theme=\"night\"] { background-color: rgb(18, 18, 18); }</style>");
+    document.body.innerHTML = "<div id=\"c\"><main><div data-tag=\"post-card\"></div></main></div>";
+  });
+
+  afterEach(() => {
+    controller.abort();
+    document.getElementById("themes")?.remove();
+    vi.useRealTimers();
+  });
+
+  it.each([
+    ["style", (c: HTMLElement) => c.style.setProperty("background-color", "rgb(18, 18, 18)")],
+    ["class", (c: HTMLElement) => c.classList.add("night")],
+    ["data-theme", (c: HTMLElement) => c.setAttribute("data-theme", "night")],
+  ])("notices a %s change deep in the page without waiting for the next check", async (_name, change) => {
+    watchPatreonTheme({ onChange, signal: controller.signal });
+    expect(onChange).toHaveBeenLastCalledWith("light", "light");
+
+    change(document.getElementById("c") as HTMLElement);
+    await throttle();
+
+    expect(onChange).toHaveBeenLastCalledWith("dark", "dark");
+  });
+
+  it("checks again when the page finishes loading, once", () => {
+    watchPatreonTheme({ onChange, signal: controller.signal });
+
+    (document.getElementById("c") as HTMLElement).style.setProperty("background-color", "rgb(18, 18, 18)");
+    window.dispatchEvent(new Event("load"));
+
+    expect(onChange).toHaveBeenLastCalledWith("dark", "dark");
+
+    (document.getElementById("c") as HTMLElement).style.setProperty("background-color", "rgb(255, 255, 255)");
+    window.dispatchEvent(new Event("load"));
+
+    expect(onChange).toHaveBeenLastCalledWith("dark", "dark");
+  });
+
+  it("only reports a change of appearance", () => {
+    const check = watchPatreonTheme({ onChange, signal: controller.signal });
+
+    check();
+    check();
+
+    expect(onChange).toHaveBeenCalledTimes(1);
+  });
+
+  it("tells the check when the appearance is the same", () => {
+    const onCheck = vi.fn();
+    const check = watchPatreonTheme({ onChange, onCheck, signal: controller.signal });
+
+    check();
+
+    expect(onCheck).toHaveBeenCalledTimes(2);
+    expect(onCheck).toHaveBeenLastCalledWith("light");
+  });
+
+  it("leaves nothing running once aborted", async () => {
+    const disconnect = vi.spyOn(MutationObserver.prototype, "disconnect");
+
+    watchPatreonTheme({ onChange, signal: controller.signal });
+    document.body.append(document.createElement("p"));
+    (document.getElementById("c") as HTMLElement).setAttribute("data-theme", "night");
+    await Promise.resolve();
+
+    expect(vi.getTimerCount()).toBe(2);
+
+    controller.abort();
+
+    expect(vi.getTimerCount()).toBe(0);
+    expect(disconnect).toHaveBeenCalled();
+    disconnect.mockRestore();
+  });
+
+  it("works on a document that has no window", () => {
+    const doc = document.implementation.createHTMLDocument("detached");
+
+    watchPatreonTheme({ onChange, signal: controller.signal, doc });
+
+    expect(onChange).toHaveBeenCalledTimes(1);
+  });
+
+  it("listens for the abort and the load once", () => {
+    const signalListen = vi.spyOn(controller.signal, "addEventListener");
+    const windowListen = vi.spyOn(window, "addEventListener");
+
+    watchPatreonTheme({ onChange, signal: controller.signal });
+
+    expect(signalListen).toHaveBeenCalledWith("abort", expect.any(Function), { once: true });
+    expect(windowListen).toHaveBeenCalledWith("load", expect.any(Function), { once: true });
+    windowListen.mockRestore();
+  });
+});
+
 describe("watchPatreonTheme following the system appearance", () => {
   const listeners = new Set<() => void>();
   let systemDark = false;
@@ -180,8 +301,8 @@ describe("watchPatreonTheme following the system appearance", () => {
       get matches() {
         return systemDark;
       },
-      addEventListener: (_event: string, listener: () => void) => listeners.add(listener),
-      removeEventListener: (_event: string, listener: () => void) => listeners.delete(listener),
+      addEventListener: (event: string, listener: () => void) => event === "change" && listeners.add(listener),
+      removeEventListener: (event: string, listener: () => void) => event === "change" && listeners.delete(listener),
     })));
     document.documentElement.setAttribute("data-token-color-mode", "auto");
     document.body.innerHTML = "<div data-tag=\"post-card\"></div>";
@@ -205,5 +326,16 @@ describe("watchPatreonTheme following the system appearance", () => {
 
     controller.abort();
     expect(listeners.size).toBe(0);
+  });
+
+  it("tells Patreon's setting from what the system makes of it", () => {
+    const onChange = vi.fn();
+
+    systemDark = true;
+    document.body.innerHTML = "<div data-tag=\"post-card\" style=\"--global-bg-base-default: #1c1c1c\"></div>";
+    watchPatreonTheme({ onChange, signal: controller.signal });
+
+    // Rendered dark, as the setting leads to: the setting itself is what is remembered
+    expect(onChange).toHaveBeenLastCalledWith("dark", "auto");
   });
 });

@@ -19,6 +19,9 @@ overrides:
   # Stryker's dashboard client (typed-rest-client) pins an old qs.
   qs: ^6.16.0
 
+patchedDependencies:
+  "@stryker-mutator/vitest-runner": patches/@stryker-mutator__vitest-runner.patch
+
 allowBuilds:
   "@firebase/util": true
   "@parcel/watcher": true

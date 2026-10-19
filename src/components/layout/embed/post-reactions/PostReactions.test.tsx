@@ -15,12 +15,15 @@ const entryState = { loading: false, entry: null as unknown, photo: "", descript
 const useEntry = vi.fn((_entryId: string, _revision?: number) => entryState);
 
 vi.mock("../../../../content/player/PlayerProvider", () => ({ usePlayer: () => player }));
-vi.mock("../../../../hooks/auto-watch.hook", () => ({ useAutoWatch: () => undefined }));
-vi.mock("../../../../hooks/progress.hook", () => ({ useProgressTracking: () => undefined }));
+const useAutoWatch = vi.fn();
+const useProgressTracking = vi.fn();
+
+vi.mock("../../../../hooks/auto-watch.hook", () => ({ useAutoWatch: (post: unknown) => useAutoWatch(post) }));
+vi.mock("../../../../hooks/progress.hook", () => ({ useProgressTracking: (post: unknown) => useProgressTracking(post) }));
 vi.mock("../../../../hooks/entry.hook", () => ({ useEntry: (entryId: string, revision?: number) => useEntry(entryId, revision) }));
 
 const user = { uid: "u1", email: null, displayName: null, photoURL: null };
-const anime = createEntry({ id: "e1", type: EEntryType.ANIME, title: "Frieren" } as never);
+const anime = createEntry({ id: "e1", type: EEntryType.ANIME, title: "Frieren", malId: 52991 } as never);
 
 /**
  * @description
@@ -66,6 +69,8 @@ beforeEach(() => {
   player.playFrom.mockClear();
   player.cue.mockClear();
   useEntry.mockClear();
+  useAutoWatch.mockClear();
+  useProgressTracking.mockClear();
   window.history.replaceState({}, "", "/");
 });
 
@@ -102,6 +107,29 @@ describe("reactions panel", () => {
   beforeEach(() => {
     useAuthStore.setState({ user: null, ready: true });
     useWatchlistStore.setState({ posts: new Map([["p1", new Set(["a"])]]), saving: new Map() });
+  });
+
+  it("tracks the post's progress and watches it automatically", () => {
+    const post = { id: "p1", tags: [tag("a")] };
+
+    render(
+      <PostContext.Provider value={{ post: post as never }}>
+        <ReactionOverlayContext.Provider value={{ tag: null, dialogOpened: false, setDialogOpened: vi.fn(), setTag: vi.fn() } as never}>
+          <PostReactions />
+        </ReactionOverlayContext.Provider>
+      </PostContext.Provider>,
+    );
+
+    expect(useAutoWatch).toHaveBeenCalledWith(post);
+    expect(useProgressTracking).toHaveBeenCalledWith(post);
+  });
+
+  it("shows the Discord icon on the Passione button", () => {
+    renderPanel();
+
+    const icon = screen.getByRole("img", { name: "Discord icon" });
+
+    expect(icon).toHaveAttribute("src", expect.stringContaining("/images/platforms/discord.png"));
   });
 
   it("counts the reactions, in the singular for one", () => {
@@ -228,6 +256,26 @@ describe("positioning the video", () => {
     expect(player.cue).not.toHaveBeenCalled();
   });
 
+  it("follows the link once the player gets ready", () => {
+    player.ready = false;
+    window.history.replaceState({}, "", "/?resumeAt=125");
+
+    const view = renderPanel(tags);
+
+    expect(player.cue).not.toHaveBeenCalled();
+
+    player.ready = true;
+    view.rerender(
+      <PostContext.Provider value={{ post: { id: "p1", tags } as never }}>
+        <ReactionOverlayContext.Provider value={view.state as never}>
+          <PostReactions />
+        </ReactionOverlayContext.Provider>
+      </PostContext.Provider>,
+    );
+
+    expect(player.cue).toHaveBeenCalledWith(125);
+  });
+
   it("waits for the player", () => {
     player.ready = false;
     window.history.replaceState({}, "", "/?resumeAt=125");
@@ -251,6 +299,15 @@ describe("reaction info dialog", () => {
     expect(await screen.findByRole("dialog")).toHaveTextContent("Reaction info");
     expect(useEntry).toHaveBeenCalledWith("e1", 0);
     expect(screen.getByRole("heading", { name: "Frieren" })).toBeInTheDocument();
+  });
+
+  it("shows the entry's links side by side", async () => {
+    entryState.entry = anime;
+    renderPanel([tag("a", 0, anime)], { dialogOpened: true, tag: tag("a", 0, anime) });
+
+    const link = await screen.findByRole("button", { name: /View on MyAnimeList/ });
+
+    expect(link.parentElement).toHaveClass("grid-cols-2");
   });
 
   it("asks for no entry when the reaction has none", async () => {
@@ -296,6 +353,14 @@ describe("login callout", () => {
 
     act(() => useAuthStore.getState().setUser(user));
     await expectHidden();
+  });
+
+  it("invites to log in with a sentence", async () => {
+    renderPanel();
+    act(() => useAuthStore.getState().setUser(null));
+    await expectShown();
+
+    expect(callout()).toHaveTextContent("Login to KOL PT in order to track your progress.");
   });
 
   it("shows for a signed-out user, can be dismissed, and returns after a sign-in and out", async () => {

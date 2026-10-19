@@ -19,13 +19,25 @@ describe("entryReactions search", () => {
     renderList();
 
     expect(screen.getAllByRole("listitem")).toHaveLength(3);
+    expect(screen.queryByText(/No reactions match/)).not.toBeInTheDocument();
 
     fireEvent.change(screen.getByRole("searchbox", { name: "Search reactions" }), { target: { value: "open" } });
     expect(screen.getAllByRole("listitem")).toHaveLength(2);
+    expect(screen.queryByText(/No reactions match/)).not.toBeInTheDocument();
 
     fireEvent.change(screen.getByRole("searchbox", { name: "Search reactions" }), { target: { value: "zzz" } });
     expect(screen.queryAllByRole("listitem")).toHaveLength(0);
+    expect(screen.queryByRole("list")).not.toBeInTheDocument();
     expect(screen.getByText(/No reactions match/)).toBeInTheDocument();
+  });
+
+  it("repeats what was searched for, without the spaces around it", () => {
+    renderList();
+
+    fireEvent.change(screen.getByRole("searchbox", { name: "Search reactions" }), { target: { value: "  zzz " } });
+
+    expect(screen.getByText(/No reactions match/).textContent).toBe("No reactions match zzz");
+    expect(screen.getByText("zzz").textContent).toBe("zzz");
   });
 
   it("has no search for a single reaction", () => {

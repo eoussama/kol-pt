@@ -219,7 +219,7 @@ function PostReaction(props: IPostReactionProps): JSX.Element {
               "flex size-7 items-center justify-center transition-[opacity,translate] duration-200",
               favorite ? "opacity-100" : REVEAL,
               // Above the hidden dots it covers, so it gets the clicks
-              favorite && hasMore && "relative z-10 translate-x-7.5 group-focus-within:translate-x-0 group-hover:translate-x-0",
+              favorite && "relative z-10 translate-x-7.5 group-focus-within:translate-x-0 group-hover:translate-x-0",
             )}
           >
             {favorites.isSaving(tag.id)

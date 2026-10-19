@@ -23,6 +23,10 @@ describe("entries store", () => {
     useEntriesStore.setState({ entries: [], error: false, loading: false });
   });
 
+  it("starts with no entries, no error, and nothing loading", () => {
+    expect(useEntriesStore.getInitialState()).toMatchObject({ entries: [], error: false, loading: false });
+  });
+
   it("loads the entries as domain objects, allowing the cache by default", async () => {
     requestMock.mockResolvedValue(data);
 

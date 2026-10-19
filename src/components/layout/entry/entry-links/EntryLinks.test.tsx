@@ -50,7 +50,7 @@ describe("entryLinks", () => {
   it("shows the links side by side in a dialog, and stacked otherwise", () => {
     const { container, rerender } = render(<EntryLinks entry={anime()} isDialog={true} />);
 
-    expect(container.querySelector("section")).toHaveClass("grid-cols-2");
+    expect(container.querySelector("section")).toHaveClass("grid", "grid-cols-2");
 
     rerender(<EntryLinks entry={anime()} isDialog={false} />);
     expect(container.querySelector("section")).not.toHaveClass("grid-cols-2");

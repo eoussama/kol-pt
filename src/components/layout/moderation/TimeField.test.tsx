@@ -118,6 +118,22 @@ describe("timeField", () => {
     expect(screen.getByRole("button", { name: "Set starts at from the video" })).toBeDisabled();
   });
 
+  it("explains the button according to whether the video is ready", async () => {
+    const { unmount } = render(<Form initial={null} />);
+
+    fireEvent.focus(screen.getByRole("button", { name: "Set starts at from the video" }).parentElement as HTMLElement);
+
+    expect(await screen.findByText("Use the video's current time")).toBeInTheDocument();
+    unmount();
+
+    player.ready = false;
+    render(<Form initial={null} />);
+
+    fireEvent.focus(screen.getByRole("button", { name: "Set starts at from the video" }).parentElement as HTMLElement);
+
+    expect(await screen.findByText("The video is not ready")).toBeInTheDocument();
+  });
+
   it("follows a value set from outside", () => {
     render(<Form initial={null} />);
 

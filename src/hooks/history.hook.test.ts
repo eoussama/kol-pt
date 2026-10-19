@@ -38,6 +38,14 @@ describe("buildHistory", () => {
     expect(history[2]?.markedAt).toBeNull();
   });
 
+  it("ranks a reaction marked at the very start of time above undated ones", () => {
+    const watched = new Map([["old-post-1", new Set(["t1", "t2"])]]);
+
+    const history = buildHistory(posts, watched, new Map([["old-post-1/t2", 0]]));
+
+    expect(history.map(item => item.tag.id)).toEqual(["t2", "t1"]);
+  });
+
   it("is empty when nothing is watched", () => {
     expect(buildHistory(posts, new Map(), new Map())).toEqual([]);
   });

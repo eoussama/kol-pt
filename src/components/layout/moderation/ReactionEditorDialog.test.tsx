@@ -247,6 +247,37 @@ describe("reactionEditorDialog", () => {
       }]);
     });
 
+    it("does not save the entry when its other titles only differ in spaces", async () => {
+      const onClose = vi.fn();
+
+      renderDialog({ onClose });
+      await pickEntry("frie", /Frieren/);
+      fireEvent.change(screen.getByRole("textbox", { name: "Episode" }), { target: { value: "7" } });
+      fireEvent.change(screen.getByRole("textbox", { name: "Other titles of Frieren" }), { target: { value: "  Sousou no Frieren  \n" } });
+      fireEvent.change(time("Starts at"), { target: { value: "1:00" } });
+      fireEvent.change(time("Ends at"), { target: { value: "2:00" } });
+      save();
+
+      await waitFor(() => expect(onClose).toHaveBeenCalledExactlyOnceWith(true));
+      expect(callsTo("entries.save")).toEqual([]);
+    });
+
+    it("does not save an entry with several other titles that did not change", async () => {
+      const onClose = vi.fn();
+
+      models = [{ ...frierenModel, altTitles: ["Sousou no Frieren", "Frieren S1"] } as TEntry, matrixModel, kolModel, otherChannelModel];
+      useEntriesStore.setState({ entries: models.map(createEntry) });
+      renderDialog({ onClose });
+      await pickEntry("frie", /Frieren/);
+      fireEvent.change(screen.getByRole("textbox", { name: "Episode" }), { target: { value: "7" } });
+      fireEvent.change(time("Starts at"), { target: { value: "1:00" } });
+      fireEvent.change(time("Ends at"), { target: { value: "2:00" } });
+      save();
+
+      await waitFor(() => expect(onClose).toHaveBeenCalledExactlyOnceWith(true));
+      expect(callsTo("entries.save")).toEqual([]);
+    });
+
     it("saves the entry's other titles with the reaction, entry first", async () => {
       const onClose = vi.fn();
 
@@ -273,6 +304,7 @@ describe("reactionEditorDialog", () => {
       save();
 
       expect((await screen.findByRole("alert")).closest("[data-slot=field]")).toHaveTextContent("Other titles of Frieren");
+      expect(screen.getByRole("alert").closest("[data-slot=field]")).toHaveAttribute("data-invalid", "true");
       expect(screen.getByRole("textbox", { name: "Other titles of Frieren" })).toHaveAttribute("aria-invalid", "true");
       expect(screen.queryByText("One per line. Saved to the entry, for every reaction to it")).not.toBeInTheDocument();
       expect(callsTo("entries.save")).toEqual([]);
@@ -286,6 +318,7 @@ describe("reactionEditorDialog", () => {
 
       expect(await screen.findByRole("alert")).toHaveTextContent("Pick what KOL reacted to");
       expect(screen.getByRole("alert").closest("[data-slot=field]")).toHaveTextContent("What KOL reacted to");
+      expect(screen.getByRole("alert").closest("[data-slot=field]")).toHaveAttribute("data-invalid", "true");
       expect(screen.getByRole("combobox", { name: /What KOL reacted to/ })).toHaveAttribute("aria-invalid", "true");
       expect(callsTo("tags.save")).toEqual([]);
     });
@@ -298,6 +331,8 @@ describe("reactionEditorDialog", () => {
       save();
 
       expect((await screen.findByRole("alert")).closest("[data-slot=field]")).toHaveTextContent("Label");
+      expect(screen.getByRole("alert").closest("[data-slot=field]")).toHaveAttribute("data-invalid", "true");
+      expect(screen.getByRole("alert")).not.toHaveTextContent("Pick what KOL reacted to");
       expect(screen.getByRole("textbox", { name: "Label" })).toHaveAttribute("aria-invalid", "true");
       expect(callsTo("tags.save")).toEqual([]);
     });
@@ -336,6 +371,7 @@ describe("reactionEditorDialog", () => {
       save();
 
       expect((await screen.findByRole("alert")).closest("[data-slot=field]")).toHaveTextContent("Hover text");
+      expect(screen.getByRole("alert").closest("[data-slot=field]")).toHaveAttribute("data-invalid", "true");
       expect(screen.getByRole("textbox", { name: "Hover text" })).toHaveAttribute("aria-invalid", "true");
       expect(screen.queryByText("Shown when hovering the reaction's chip")).not.toBeInTheDocument();
     });
@@ -350,6 +386,29 @@ describe("reactionEditorDialog", () => {
       expect(screen.getByRole("button", { name: "Save" })).toBeDisabled();
 
       fireEvent.change(time("Ends at"), { target: { value: "2:01" } });
+
+      expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Save" })).toBeEnabled();
+    });
+
+    it("cannot save times that end when they start", () => {
+      renderDialog();
+      fireEvent.change(time("Starts at"), { target: { value: "1:00" } });
+      fireEvent.change(time("Ends at"), { target: { value: "1:00" } });
+
+      expect(screen.getByRole("alert")).toHaveTextContent("Must be after the start");
+      expect(screen.getByRole("button", { name: "Save" })).toBeDisabled();
+    });
+
+    it("finds nothing wrong with a time that has no other to compare to", () => {
+      renderDialog();
+      fireEvent.change(time("Starts at"), { target: { value: "1:00" } });
+
+      expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Save" })).toBeEnabled();
+
+      fireEvent.change(time("Starts at"), { target: { value: "" } });
+      fireEvent.change(time("Ends at"), { target: { value: "0:00" } });
 
       expect(screen.queryByRole("alert")).not.toBeInTheDocument();
       expect(screen.getByRole("button", { name: "Save" })).toBeEnabled();
@@ -395,6 +454,42 @@ describe("reactionEditorDialog", () => {
       finish();
 
       await waitFor(() => expect(screen.getByRole("button", { name: "Save" })).toBeEnabled());
+    });
+
+    it("shows a spinner in the save button only while saving", async () => {
+      let finish: () => void = () => undefined;
+
+      requestMock.mockImplementation(((method: string) => method === "tags.save"
+        ? new Promise<null>((resolve) => {
+            finish = () => resolve(null);
+          })
+        : Promise.resolve(models)) as never);
+      renderDialog();
+      await fillMovieReaction();
+
+      expect(screen.getByRole("button", { name: "Save" }).querySelector("[data-icon=inline-start]")).toBeNull();
+
+      save();
+
+      await waitFor(() => expect(screen.getByRole("button", { name: "Save" }).querySelector("[data-icon=inline-start]")).not.toBeNull());
+
+      finish();
+
+      await waitFor(() => expect(screen.getByRole("button", { name: "Save" }).querySelector("[data-icon=inline-start]")).toBeNull());
+    });
+
+    it("saves a reaction whose entry is not in the list, without touching an entry", async () => {
+      const onClose = vi.fn();
+
+      renderDialog({ tag: new Tag({ id: "t9", entryId: "gone", label: "4", description: "Hover", startTime: 60, endTime: 120, context: {} }, null), onClose });
+      save();
+
+      await waitFor(() => expect(onClose).toHaveBeenCalledExactlyOnceWith(true));
+      expect(callsTo("entries.save")).toEqual([]);
+      expect(callsTo("tags.save")).toEqual([{
+        postId: "post-1001",
+        tag: { id: "t9", entryId: "gone", label: "4", description: "Hover", startTime: 60, endTime: 120, context: {} },
+      }]);
     });
 
     it("shows why saving failed under the form, and stays open", async () => {
@@ -618,6 +713,17 @@ describe("reactionEditorDialog", () => {
       save();
 
       expect(await screen.findByRole("alert")).toBeInTheDocument();
+      expect(screen.getByRole("alert")).toHaveAttribute("data-slot", "field-error");
+      expect(callsTo("tags.save")).toEqual([]);
+    });
+
+    it("shows a problem a video reaction has with no field under the form", async () => {
+      renderDialog({ tag: new Tag({ id: "", entryId: "e3", label: "Plain", description: "", startTime: 5, endTime: 50, context: {} }, kol) });
+      await waitFor(() => expect(screen.getByRole("textbox", { name: "Video title" })).toBeInTheDocument());
+      save();
+
+      expect((await screen.findByRole("alert")).closest("[data-slot=field]")).toBeNull();
+      expect(screen.getByRole("alert")).toHaveAttribute("data-slot", "alert");
       expect(callsTo("tags.save")).toEqual([]);
     });
 
@@ -669,6 +775,19 @@ describe("reactionEditorDialog", () => {
       expect(screen.getByRole("textbox", { name: "Episode" })).toBeInTheDocument();
     });
 
+    it("marks the entry picked in the list", async () => {
+      renderDialog();
+      await pickEntry("matrix", /The Matrix/);
+
+      const picker = screen.getByRole("combobox", { name: /What KOL reacted to/ });
+
+      fireEvent.keyDown(picker, { key: "ArrowDown" });
+
+      const options = await screen.findAllByRole("option");
+
+      expect(options.filter(option => option.getAttribute("aria-selected") === "true").map(option => option.textContent)).toEqual([expect.stringContaining("The Matrix")]);
+    });
+
     it("forgets the entry when the picker is emptied", async () => {
       renderDialog();
       await pickEntry("matrix", /The Matrix/);
@@ -679,6 +798,14 @@ describe("reactionEditorDialog", () => {
       await waitFor(() => expect(screen.queryByLabelText("edit entry")).not.toBeInTheDocument());
       expect(screen.getByRole("textbox", { name: "Label" })).toBeInTheDocument();
       expect(screen.queryByRole("textbox", { name: /Other titles/ })).not.toBeInTheDocument();
+    });
+
+    it("starts a new entry without a title when nothing was typed", () => {
+      renderDialog();
+
+      fireEvent.click(screen.getByLabelText("new entry"));
+
+      expect(screen.getByRole("textbox", { name: /Title/ })).toHaveValue("");
     });
 
     it("starts a new entry empty once an entry is picked", async () => {

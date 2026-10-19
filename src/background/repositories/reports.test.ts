@@ -52,6 +52,8 @@ describe("reports repository", () => {
     vi.mocked(readValue).mockResolvedValue({ id: "x" });
 
     await expect(createReport(user, { kind: "missing", postId: "post-1", postTitle: "", note: "" })).rejects.toThrow("already reported");
+    expect(readValue).toHaveBeenCalledExactlyOnceWith("reports/post-1~missing~u1");
+    expect(writeValue).not.toHaveBeenCalled();
   });
 
   it("loads reports newest first and drops closed ones", async () => {
@@ -62,6 +64,7 @@ describe("reports repository", () => {
     });
 
     await expect(loadReports("m1")).resolves.toMatchObject([{ id: "b" }, { id: "a" }]);
+    expect(readValue).toHaveBeenCalledExactlyOnceWith("reports");
 
     await resolveReport("m1", "b");
 

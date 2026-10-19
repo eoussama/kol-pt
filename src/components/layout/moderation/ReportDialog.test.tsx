@@ -115,6 +115,28 @@ describe("reportDialog", () => {
     }));
   });
 
+  it.each([
+    ["timestamp", "Suggest when the reaction really starts and ends.", "Anything else a moderator should know", "Note"],
+    ["entry", "Tell the moderators what KOL really reacts to.", "e.g. It's episode 5, not 4", "What is it really?*"],
+    ["missing", "Tell the moderators what KOL reacts to, and when.", "e.g. One Piece episode 1100", "What did KOL react to?*"],
+    ["untracked", "Ask the moderators to add this post's reactions.", "e.g. What KOL reacts to in it", "Note"],
+  ] as const)("explains what a %s report asks for", (kind, description, placeholder, label) => {
+    renderDialog({ kind });
+
+    const note = screen.getByRole("textbox", { name: /^(Note|What)/ }) as HTMLTextAreaElement;
+
+    expect(screen.getByRole("dialog")).toHaveTextContent(description);
+    expect(note).toHaveAttribute("placeholder", placeholder);
+    expect(note.labels?.[0]?.textContent).toBe(label);
+  });
+
+  it("summarises each problem a reaction can have", () => {
+    renderDialog({ kind: "timestamp", tag });
+
+    expect(screen.getByRole("radio", { name: /Wrong timestamp\s*It starts or ends at the wrong time/ })).toBeInTheDocument();
+    expect(screen.getByRole("radio", { name: /Wrong show or episode\s*KOL reacts to something else/ })).toBeInTheDocument();
+  });
+
   it("starts with the kind it is given", () => {
     renderDialog({ kind: "entry", tag });
 
@@ -173,6 +195,23 @@ describe("reportDialog", () => {
     }));
   });
 
+  it("sends only the end time when the start is not given", async () => {
+    renderDialog({ kind: "missing" });
+
+    fireEvent.change(screen.getByRole("textbox", { name: /What did KOL react to/ }), { target: { value: "One Piece" } });
+    fireEvent.change(screen.getByRole("textbox", { name: "Ends at" }), { target: { value: "0:00" } });
+
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Send report" })).toBeEnabled();
+
+    fireEvent.change(screen.getByRole("textbox", { name: "Ends at" }), { target: { value: "1:30" } });
+    send();
+
+    await waitFor(() => expect(requestMock).toHaveBeenCalledWith("reports.create", {
+      report: expect.objectContaining({ kind: "missing", startTime: undefined, endTime: 90 }),
+    }));
+  });
+
   it("cannot send times that end before they start", () => {
     renderDialog({ kind: "timestamp", tag });
 
@@ -185,6 +224,17 @@ describe("reportDialog", () => {
 
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Send report" })).toBeEnabled();
+  });
+
+  it("shortens a long reaction title to what a report holds", async () => {
+    renderDialog({ kind: "timestamp", tag: new Tag({ id: "t1", entryId: "e1", label: "L".repeat(400), description: "", startTime: 60, endTime: 120, context: {} }, null) });
+    send();
+
+    await waitFor(() => expect(requestMock).toHaveBeenCalledWith("reports.create", { report: expect.objectContaining({ tagTitle: expect.any(String) }) }));
+
+    const { report } = requestMock.mock.calls[0]![1] as { report: { tagTitle: string } };
+
+    expect(report.tagTitle).toHaveLength(300);
   });
 
   it("limits the note to 500 characters, and counts them", () => {
@@ -216,10 +266,14 @@ describe("reportDialog", () => {
       finish = () => resolve(null);
     })) as never);
     renderDialog({ kind: "untracked" });
+
+    expect(screen.getByRole("button", { name: "Send report" }).querySelector("[data-icon=inline-start]")).toBeNull();
+
     send();
 
     await waitFor(() => expect(screen.getByRole("button", { name: "Send report" })).toBeDisabled());
     expect(screen.getByRole("textbox", { name: "Note" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Send report" }).querySelector("[data-icon=inline-start]")).not.toBeNull();
 
     finish();
 
@@ -237,6 +291,19 @@ describe("reportDialog", () => {
     send();
 
     expect(await screen.findByText("Thanks! A moderator will look at it.")).toBeInTheDocument();
+    expect(screen.queryByText("You already reported this.")).not.toBeInTheDocument();
+  });
+
+  it("hides an earlier refusal while sending again", async () => {
+    requestMock.mockRejectedValueOnce(new Error("You already reported this."));
+    renderDialog({ kind: "untracked" });
+    send();
+    await screen.findByText("You already reported this.");
+
+    requestMock.mockImplementationOnce((() => new Promise(() => undefined)) as never);
+    send();
+
+    await waitFor(() => expect(screen.getByRole("button", { name: "Send report" })).toBeDisabled());
     expect(screen.queryByText("You already reported this.")).not.toBeInTheDocument();
   });
 

@@ -60,6 +60,13 @@ describe("post search", () => {
     expect(post.match(query)).toBe(true);
   });
 
+  it("keeps the post's and reactions' texts apart by spaces", () => {
+    expect(post.match("stream day reacting to a lot")).toBe(true);
+    expect(post.match("pilot a great opening")).toBe(true);
+    expect(post.match("dayreacting")).toBe(false);
+    expect(post.match("pilota great")).toBe(false);
+  });
+
   it("matches the creation date as displayed", () => {
     expect(post.match(post.creationDate.toLocaleString())).toBe(true);
   });

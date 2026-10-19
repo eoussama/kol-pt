@@ -34,7 +34,7 @@ describe("postInputSchema", () => {
     expect(PostInputSchema.parse({ ...post, thumbnail: "https://cdn.test/a.jpg" }).thumbnail).toBe("https://cdn.test/a.jpg");
   });
 
-  it.each(["http://cdn.test/a.jpg", "javascript:alert(1)", "not a url"])("rejects the thumbnail %s", (thumbnail) => {
+  it.each(["http://cdn.test/a.jpg", "httpsx://cdn.test/a.jpg", "xhttps://cdn.test/a.jpg", "javascript:alert(1)", "not a url"])("rejects the thumbnail %s", (thumbnail) => {
     expect(PostInputSchema.safeParse({ ...post, thumbnail }).success).toBe(false);
   });
 
@@ -62,7 +62,7 @@ describe("tagInputSchema", () => {
   });
 
   it("reads the YouTube context", () => {
-    const context = { title: " A video ", videoId: "abc", altTitles: ["Short"] };
+    const context = { title: " A video ", videoId: " abc ", altTitles: ["Short"] };
 
     expect(TagInputSchema.parse({ ...tag, context }).context).toEqual({ title: "A video", videoId: "abc", altTitles: ["Short"] });
   });

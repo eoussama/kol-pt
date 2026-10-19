@@ -135,6 +135,19 @@ describe("waitForPlayer", () => {
     disconnect.mockRestore();
   });
 
+  it("listens for the abort once, and watches the whole card", () => {
+    const observe = vi.spyOn(MutationObserver.prototype, "observe");
+    const card = cardWith("");
+    const controller = new AbortController();
+    const listen = vi.spyOn(controller.signal, "addEventListener");
+
+    waitForPlayer(card, controller.signal);
+
+    expect(listen).toHaveBeenCalledWith("abort", expect.any(Function), { once: true });
+    expect(observe).toHaveBeenCalledWith(card, { childList: true, subtree: true });
+    observe.mockRestore();
+  });
+
   it("gives up with nothing when aborted first, and stops watching", async () => {
     const disconnect = vi.spyOn(MutationObserver.prototype, "disconnect");
     const card = cardWith("");

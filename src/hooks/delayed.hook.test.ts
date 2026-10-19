@@ -18,6 +18,21 @@ describe("useDelayed", () => {
     expect(result.current).toBe(false);
   });
 
+  it("never shows as elapsed before the delay, not even for a moment", () => {
+    const seen: Array<boolean> = [];
+
+    renderHook(() => {
+      const elapsed = useDelayed(true, 200);
+
+      seen.push(elapsed);
+
+      return elapsed;
+    });
+
+    expect(seen.length).toBeGreaterThan(0);
+    expect(seen.every(elapsed => !elapsed)).toBe(true);
+  });
+
   it("turns true once active for the delay", () => {
     const { result } = renderHook(() => useDelayed(true, 200));
 
@@ -33,6 +48,12 @@ describe("useDelayed", () => {
 
     act(() => vi.advanceTimersByTime(1000));
     expect(result.current).toBe(false);
+  });
+
+  it("waits for nothing when it is not active", () => {
+    renderHook(() => useDelayed(false, 200));
+
+    expect(vi.getTimerCount()).toBe(0);
   });
 
   it("turns false as soon as it stops", () => {

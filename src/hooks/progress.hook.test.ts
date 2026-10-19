@@ -26,6 +26,18 @@ describe("toSavedPosition", () => {
     expect(toSavedPosition(post, 3)).toBeUndefined();
     expect(toSavedPosition(post, 250)).toBeNull();
   });
+
+  it("saves from ten seconds in", () => {
+    expect(toSavedPosition(post, 9.9)).toBeUndefined();
+    expect(toSavedPosition(post, 10)).toBe(10);
+  });
+
+  it("never forgets the position of a post without reactions", () => {
+    const empty = { id: "p0", tags: [] } as unknown as Post;
+
+    expect(toSavedPosition(empty, 0)).toBeUndefined();
+    expect(toSavedPosition(empty, 42)).toBe(42);
+  });
 });
 
 describe("useProgressTracking", () => {
@@ -74,6 +86,14 @@ describe("useProgressTracking", () => {
     vi.advanceTimersByTime(1000);
     step(45, true);
     expect(request).toHaveBeenCalledWith("progress.set", { postId: "p1", time: 45 });
+  });
+
+  it("does not save the moment it starts on a video that is already playing", () => {
+    player.currentTime = 30;
+    player.playing = true;
+    renderHook(() => useProgressTracking(post));
+
+    expect(request).not.toHaveBeenCalled();
   });
 
   it("saves when the page is hidden mid-playback", () => {
@@ -156,6 +176,16 @@ describe("useProgressTracking", () => {
     window.dispatchEvent(new Event("pagehide"));
 
     expect(request).not.toHaveBeenCalled();
+  });
+
+  it("stops listening to the page's events by name once the panel is gone", () => {
+    const removeFromWindow = vi.spyOn(window, "removeEventListener");
+    const removeFromDocument = vi.spyOn(document, "removeEventListener");
+
+    renderHook(() => useProgressTracking(post)).unmount();
+
+    expect(removeFromWindow).toHaveBeenCalledWith("pagehide", expect.any(Function));
+    expect(removeFromDocument).toHaveBeenCalledWith("visibilitychange", expect.any(Function));
   });
 
   it("does not save a position again that barely moved", () => {

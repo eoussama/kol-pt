@@ -47,8 +47,8 @@ describe("usePopupTheme", () => {
 
       return {
         get matches() { return system.dark; },
-        addEventListener: (_: string, listener: () => void) => system.listeners.add(listener),
-        removeEventListener: (_: string, listener: () => void) => system.listeners.delete(listener),
+        addEventListener: (type: string, listener: () => void) => type === "change" && system.listeners.add(listener),
+        removeEventListener: (type: string, listener: () => void) => type === "change" && system.listeners.delete(listener),
       };
     });
     document.documentElement.classList.remove("dark");

@@ -3,10 +3,16 @@ import type { TPost } from "../../core/schemas/post.schema";
 import type { ICardEmbed } from "./card-registry";
 
 import { act, render, screen, waitFor } from "@testing-library/react";
+import { fakeBrowser } from "wxt/testing/fake-browser";
 import { hydratePosts } from "../../core/domain/hydrate";
 import { EEntryType } from "../../core/enums/entry-type.enum";
 import { request } from "../../core/messaging/client";
+import { authUserItem, progressItem, watchlistItem } from "../../core/storage/items";
 import { useAuthStore } from "../../state/auth.state";
+import { useProgressStore } from "../../state/progress.state";
+import { useReportsStore } from "../../state/reports.state";
+import { useThemeStore } from "../../state/theme.state";
+import { useWatchlistStore } from "../../state/watchlist.state";
 import { CardRegistry } from "./card-registry";
 import { EmbedRoot } from "./EmbedRoot";
 
@@ -28,9 +34,10 @@ const model: TPost = {
  * @description
  * Mounts the root and a card for a panel to render into.
  *
+ * @param overlayContainer - Where the panels' overlays render, if not the body
  * @returns The registry, the card, its host and a way to register a panel for it
  */
-function setup() {
+function setup(overlayContainer?: HTMLElement) {
   const registry = new CardRegistry();
   const card = document.createElement("div");
   const host = document.createElement("div");
@@ -39,7 +46,7 @@ function setup() {
   document.body.append(card);
 
   // The root container is detached, like in the content script
-  render(<EmbedRoot registry={registry} />, { container: document.createElement("div") });
+  render(<EmbedRoot registry={registry} overlayContainer={overlayContainer} />, { container: document.createElement("div") });
 
   const mount = (embed: Partial<ICardEmbed>) => act(() => registry.set({ key: "1001-1", card, host, postId: "1001", post: null, untracked: false, ...embed }));
 
@@ -47,11 +54,14 @@ function setup() {
 }
 
 beforeEach(() => {
+  fakeBrowser.reset();
   vi.mocked(request).mockReset().mockResolvedValue(undefined as never);
 });
 
 afterEach(() => {
   useAuthStore.setState({ user: null, moderator: false, ready: false });
+  useThemeStore.setState({ mode: "light" });
+  document.documentElement.classList.remove("dark");
   document.body.replaceChildren();
 });
 
@@ -99,5 +109,67 @@ describe("embedRoot", () => {
     await waitFor(() => expect(host.shadowRoot?.textContent).toContain("1 reaction"));
     expect(host.shadowRoot?.textContent).not.toContain("does not track this post yet");
     expect(screen.queryByText("does not track")).toBeNull();
+  });
+
+  it("mirrors the signed-in user, the watchlist, the saved positions and the reports from storage", async () => {
+    const user = { uid: "u1", email: null, displayName: null, photoURL: null };
+
+    await authUserItem.setValue(user);
+    await watchlistItem.setValue({ uid: "u1", keys: ["p1/t1"] });
+    await progressItem.setValue({ uid: "u1", posts: { p1: { time: 30, updatedAt: 5 } } });
+    // Reports linger from an earlier user: a user who is not a moderator has none
+    useReportsStore.setState({ reports: [{ id: "r1", kind: "missing", postId: "p1", postTitle: "", note: "", reporterUid: "u2", reporterName: "", createdAt: 1 }] });
+    useWatchlistStore.setState({ posts: new Map() });
+    useProgressStore.setState({ posts: new Map() });
+
+    setup();
+
+    await waitFor(() => expect(useAuthStore.getState().user).toEqual(user));
+    await waitFor(() => expect([...useWatchlistStore.getState().posts.keys()]).toEqual(["p1"]));
+    await waitFor(() => expect(useProgressStore.getState().posts.get("p1")).toEqual({ time: 30, updatedAt: 5 }));
+    await waitFor(() => expect(useReportsStore.getState().reports).toEqual([]));
+  });
+
+  it("keeps the panels in Patreon's appearance, and the overlays too", () => {
+    const overlay = document.createElement("div");
+
+    useThemeStore.setState({ mode: "dark" });
+
+    const { host, mount } = setup(overlay);
+
+    mount({});
+
+    const container = host.shadowRoot?.querySelector("[data-kol-pt-container]");
+
+    expect(container?.classList.contains("dark")).toBe(true);
+    expect(overlay.classList.contains("dark")).toBe(true);
+    expect(document.documentElement.classList.contains("dark")).toBe(false);
+
+    act(() => useThemeStore.getState().setMode("light"));
+
+    expect(container?.classList.contains("dark")).toBe(false);
+    expect(overlay.classList.contains("dark")).toBe(false);
+  });
+
+  it("leaves the page's own appearance alone without an overlay container", () => {
+    useThemeStore.setState({ mode: "dark" });
+
+    const { host, mount } = setup();
+
+    mount({});
+
+    expect(host.shadowRoot?.querySelector("[data-kol-pt-container]")?.classList.contains("dark")).toBe(true);
+    expect(document.documentElement.classList.contains("dark")).toBe(false);
+  });
+
+  it("renders into the new host when a panel's host is replaced", () => {
+    const { card, mount } = setup();
+    const next = document.createElement("div");
+
+    card.append(next);
+    mount({});
+    mount({ host: next });
+
+    expect(next.shadowRoot?.textContent).toContain("Loading post info...");
   });
 });

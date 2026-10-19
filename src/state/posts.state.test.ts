@@ -25,6 +25,10 @@ describe("posts store", () => {
     usePostStore.setState({ posts: [], error: false, loading: false });
   });
 
+  it("starts with no posts, no error, and nothing loading", () => {
+    expect(usePostStore.getInitialState()).toMatchObject({ posts: [], error: false, loading: false });
+  });
+
   it("loads the posts newest first, joined to their entries, allowing the cache by default", async () => {
     requestMock.mockResolvedValue({ posts, entries });
 

@@ -183,6 +183,30 @@ describe("useAuthSync moderator", () => {
     await waitFor(() => expect(useAuthStore.getState().moderator).toBe(false));
   });
 
+  it("drops the status when storage no longer has one", async () => {
+    await authUserItem.setValue(user);
+    await moderatorItem.setValue({ uid: "u1", moderator: true });
+    renderHook(() => useAuthSync());
+    await waitFor(() => expect(useAuthStore.getState().moderator).toBe(true));
+
+    await moderatorItem.setValue(null);
+    await waitFor(() => expect(useAuthStore.getState().moderator).toBe(false));
+  });
+
+  it("stops following the status once unmounted", async () => {
+    await authUserItem.setValue(user);
+    const { unmount } = renderHook(() => useAuthSync());
+
+    await waitFor(() => expect(useAuthStore.getState().user).toEqual(user));
+    await new Promise(resolve => setTimeout(resolve, 20));
+    unmount();
+
+    await moderatorItem.setValue({ uid: "u1", moderator: true });
+    await new Promise(resolve => setTimeout(resolve, 20));
+
+    expect(useAuthStore.getState().moderator).toBe(false);
+  });
+
   it("ignores the stored status once unmounted", async () => {
     const read = deferred<{ uid: string; moderator: boolean } | null>();
 

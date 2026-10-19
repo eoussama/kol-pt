@@ -49,6 +49,26 @@ describe("moderation repository", () => {
     await expect(moderatorItem.getValue()).resolves.toBeNull();
   });
 
+  it("answers whether the user is a moderator", async () => {
+    db["moderators/u1"] = true;
+
+    await expect(refreshModerator("u1")).resolves.toBe(true);
+    await expect(refreshModerator("u2")).resolves.toBe(false);
+    await expect(moderatorItem.getValue()).resolves.toEqual({ uid: "u2", moderator: false });
+    await expect(refreshModerator(null)).resolves.toBe(false);
+  });
+
+  it("keys the reactions of posts that are keyed already", async () => {
+    db.posts = { "post-1": { id: "post-1", tags: [{ id: "t1" }] } };
+    db.entries = { e1: { id: "e1" } };
+
+    await deleteTag("post-1", "t1");
+
+    expect(writeValue).toHaveBeenNthCalledWith(1, "posts", { "post-1": { id: "post-1", tags: { t1: { id: "t1" } } } });
+    expect(writeValue).toHaveBeenNthCalledWith(2, "posts/post-1/tags/t1", null);
+    expect(writeValue).toHaveBeenCalledTimes(2);
+  });
+
   it("keys array-stored lists before the first change, then writes only the reaction", async () => {
     db.posts = [{ id: "post-1", title: "One", tags: [{ id: "t1" }] }];
     db.entries = [{ id: "e1", title: "Show" }];
@@ -115,5 +135,12 @@ describe("moderation repository", () => {
 
   it("merges over nothing", () => {
     expect(mergeEdit(null, { a: 1, b: undefined }, ["b"])).toEqual({ a: 1 });
+  });
+
+  it("merges over nothing when the stored value is not an object", () => {
+    expect(mergeEdit("text", { a: 1 }, [])).toStrictEqual({ a: 1 });
+    expect(mergeEdit(["x", "y"], { a: 1 }, [])).toStrictEqual({ a: 1 });
+    expect(mergeEdit(7, { a: 1 }, [])).toStrictEqual({ a: 1 });
+    expect(mergeEdit({ kept: true }, { a: 1 }, [])).toStrictEqual({ kept: true, a: 1 });
   });
 });

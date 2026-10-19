@@ -32,6 +32,11 @@ describe("readWatchlist", () => {
     ]);
   });
 
+  it("drops dates that are not positive finite numbers", () => {
+    expect(readWatchlistEntries({ p1: { t1: "5", t2: Number.POSITIVE_INFINITY, t3: Number.NaN, t4: -1, t5: 1, t6: null } })).toEqual([{ key: "p1/t5", watchedAt: 1 }]);
+    expect(readWatchlistEntries({ p1: null, p2: { t1: true } })).toEqual([{ key: "p2/t1", watchedAt: null }]);
+  });
+
   it.each([null, undefined, "x", ["t1", "t2"], { 1: "not a map" }])("reads %j as empty", (value) => {
     expect(readWatchlist(value)).toEqual([]);
   });

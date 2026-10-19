@@ -31,8 +31,90 @@ describe("embedController", () => {
   it("shows a loader in every unlocked card while posts load", () => {
     controller.sync();
 
-    expect(registry.getSnapshot().map(e => [e.postId, e.post])).toEqual([["1001", null], ["1002", null], ["1004", null]]);
+    expect(registry.getSnapshot().map(e => [e.postId, e.post, e.untracked])).toEqual([["1001", null, false], ["1002", null, false], ["1004", null, false]]);
+    expect(registry.getSnapshot().map(e => e.key)).toEqual(["1001-1", "1002-2", "1004-3"]);
     expect(hosts()).toHaveLength(3);
+    expect(hosts().every(host => host.getAttribute(HOST_ATTRIBUTE) === "" && host.className === "kol-pt-embed")).toBe(true);
+    expect(findCards(document).every(card => card.style.boxShadow === "" && card.style.borderRadius === "")).toBe(true);
+  });
+
+  it("highlights the cards of tracked posts as it mounts them", () => {
+    controller.setPosts([post("1001")]);
+
+    const [card] = findCards(document).filter(c => registry.get(c));
+
+    expect(card?.style.borderRadius).toBe("10px");
+    expect(card?.style.boxShadow).toBe("0 0 20px 0px rgba(25, 118, 210, 0.5)");
+  });
+
+  it("does not highlight the cards of untracked posts", () => {
+    controller = new EmbedController(registry, document, () => FEED_URL, "SomeCreator");
+    controller.setPosts([post("1002")]);
+
+    const [untracked, tracked] = registry.getSnapshot().map(e => e.card);
+
+    expect(untracked?.style.boxShadow).toBe("");
+    expect(untracked?.style.borderRadius).toBe("");
+    expect(tracked?.style.boxShadow).not.toBe("");
+  });
+
+  it("removes the highlight when a post stops being tracked", () => {
+    controller = new EmbedController(registry, document, () => FEED_URL, "SomeCreator");
+    controller.setPosts([post("1001")]);
+
+    const card = registry.getSnapshot()[0]!.card;
+
+    controller.setPosts([post("1002")]);
+
+    expect(registry.get(card)?.untracked).toBe(true);
+    expect(card.style.boxShadow).toBe("");
+    expect(card.style.borderRadius).toBe("");
+  });
+
+  it("marks posts untracked once posts load without them", () => {
+    controller = new EmbedController(registry, document, () => FEED_URL, "SomeCreator");
+    controller.sync();
+    controller.setPosts([]);
+
+    expect(registry.getSnapshot().map(e => [e.postId, e.untracked])).toEqual([["1001", true]]);
+  });
+
+  it("does not notify when nothing changed", () => {
+    const tracked = post("1001");
+
+    controller.setPosts([tracked]);
+
+    const listener = vi.fn();
+
+    registry.subscribe(listener);
+    controller.setPosts([tracked]);
+    controller.sync();
+
+    expect(listener).not.toHaveBeenCalled();
+  });
+
+  it("moves a panel to the card that now shows its post", () => {
+    controller.sync();
+
+    const card = findCards(document).find(c => registry.get(c)?.postId === "1002");
+
+    card?.querySelectorAll<HTMLAnchorElement>("a").forEach(link => link.setAttribute("href", "/posts/another-1009"));
+    controller.sync();
+
+    expect(card && registry.get(card)?.postId).toBe("1009");
+    expect(registry.getSnapshot().map(e => e.postId)).toEqual(["1001", "1004", "1009"]);
+    expect(hosts()).toHaveLength(3);
+  });
+
+  it("leaves a panel the page moved where it is", () => {
+    controller.sync();
+
+    const [embed] = registry.getSnapshot();
+
+    document.body.append(embed?.host as Element);
+    controller.sync();
+
+    expect(embed?.host.parentElement).toBe(document.body);
   });
 
   it("keeps panels for tracked posts only once posts arrive", () => {

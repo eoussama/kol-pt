@@ -54,13 +54,17 @@ describe("confirmDialog", () => {
     renderDialog({ onConfirm: () => new Promise<void>((resolve) => {
       finish = resolve;
     }) });
+    expect(screen.getByRole("button", { name: "Delete" }).querySelector("[data-icon=inline-start]")).toBeNull();
+
     fireEvent.click(screen.getByRole("button", { name: "Delete" }));
 
     await waitFor(() => expect(screen.getByRole("button", { name: "Delete" })).toBeDisabled());
+    expect(screen.getByRole("button", { name: "Delete" }).querySelector("[data-icon=inline-start]")).not.toBeNull();
 
     finish();
 
     await waitFor(() => expect(screen.getByRole("button", { name: "Delete" })).toBeEnabled());
+    expect(screen.getByRole("button", { name: "Delete" }).querySelector("[data-icon=inline-start]")).toBeNull();
   });
 
   it("stays open with the error when the action fails, and can be retried", async () => {

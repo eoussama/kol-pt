@@ -76,6 +76,7 @@ describe("reportsPage", () => {
     render(<ReportsPage />);
 
     expect(screen.getByLabelText("Loading reports")).toHaveAttribute("aria-busy", "true");
+    expect(screen.getByLabelText("Loading reports").children).toHaveLength(4);
     expect(screen.queryByText("No open reports. Nice!")).not.toBeInTheDocument();
   });
 
@@ -137,6 +138,16 @@ describe("reportsPage", () => {
     await waitFor(() => expect(request).toHaveBeenCalledWith("reports.resolve", { reportId: "r2" }));
     expect(window.open).not.toHaveBeenCalled();
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+  });
+
+  it("keeps the click on the dismiss button from reaching what holds the page", async () => {
+    const parentClick = vi.fn();
+
+    render(<div onClick={parentClick}><ReportsPage /></div>);
+    fireEvent.click(within((await screen.findAllByRole("listitem"))[1]!).getByRole("button", { name: "dismiss report" }));
+
+    await waitFor(() => expect(request).toHaveBeenCalledWith("reports.resolve", { reportId: "r2" }));
+    expect(parentClick).not.toHaveBeenCalled();
   });
 
   it("shows why a report could not be dismissed", async () => {

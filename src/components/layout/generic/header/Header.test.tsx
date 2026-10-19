@@ -96,8 +96,8 @@ describe("header", () => {
       const icons = container.querySelectorAll<HTMLElement>("span[aria-hidden='true'][style]");
 
       expect(icons).toHaveLength(2);
-      expect(icons[0]!.style.maskImage).toContain("discord");
-      expect(icons[1]!.style.maskImage).toContain("patreon");
+      expect(icons[0]!.style.maskImage).toContain("/images/platforms/discord.png");
+      expect(icons[1]!.style.maskImage).toContain("/images/platforms/patreon.png");
     });
   });
 

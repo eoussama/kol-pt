@@ -87,6 +87,87 @@ describe("watchCards", () => {
     expect(onChange).not.toHaveBeenCalled();
   });
 
+  it("rescans when a change deep in the page adds an element", async () => {
+    const onChange = vi.fn();
+
+    watchCards({ onChange, signal: controller.signal, debounceMs: 100 });
+    onChange.mockClear();
+
+    document.querySelector("main")?.append(document.createElement("div"));
+    await flushMutations();
+    vi.advanceTimersByTime(100);
+
+    expect(onChange).toHaveBeenCalledTimes(1);
+  });
+
+  it("rescans when a panel and a page element are added together", async () => {
+    const onChange = vi.fn();
+    const host = document.createElement("div");
+
+    host.setAttribute(HOST_ATTRIBUTE, "");
+    watchCards({ onChange, signal: controller.signal, debounceMs: 100 });
+    onChange.mockClear();
+
+    document.body.append(host, document.createElement("div"));
+    await flushMutations();
+    vi.advanceTimersByTime(100);
+
+    expect(onChange).toHaveBeenCalledTimes(1);
+  });
+
+  it("rescans when the page changes along with the extension's own panel", async () => {
+    const onChange = vi.fn();
+    const host = document.createElement("div");
+
+    host.setAttribute(HOST_ATTRIBUTE, "");
+    document.body.append(host);
+    watchCards({ onChange, signal: controller.signal, debounceMs: 100 });
+    onChange.mockClear();
+
+    // Both land in one batch of mutations
+    host.append(document.createElement("span"));
+    document.body.append(document.createElement("div"));
+    await flushMutations();
+    vi.advanceTimersByTime(100);
+
+    expect(onChange).toHaveBeenCalledTimes(1);
+  });
+
+  it("ignores text the page adds", async () => {
+    const onChange = vi.fn();
+
+    watchCards({ onChange, signal: controller.signal });
+    onChange.mockClear();
+
+    document.body.append("some text");
+    await flushMutations();
+    vi.advanceTimersByTime(1000);
+
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
+  it("does not scan a change that was pending when it is aborted", async () => {
+    const onChange = vi.fn();
+
+    watchCards({ onChange, signal: controller.signal, debounceMs: 100 });
+    onChange.mockClear();
+
+    document.body.append(document.createElement("div"));
+    await flushMutations();
+    controller.abort();
+    vi.advanceTimersByTime(1000);
+
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
+  it("listens for the abort once", () => {
+    const listen = vi.spyOn(controller.signal, "addEventListener");
+
+    watchCards({ onChange: vi.fn(), signal: controller.signal });
+
+    expect(listen).toHaveBeenCalledWith("abort", expect.any(Function), { once: true });
+  });
+
   it("stops when aborted", async () => {
     const onChange = vi.fn();
 

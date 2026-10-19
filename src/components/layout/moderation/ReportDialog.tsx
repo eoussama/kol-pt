@@ -20,7 +20,7 @@ import TimeField from "./TimeField";
  * @description
  * What a report form asks for, by kind.
  */
-const KINDS: Record<TReportKind, { title: string; summary: string; description: string; note: string; notePlaceholder: string; noteRequired: boolean; times: boolean }> = {
+const KINDS: Record<TReportKind, { title: string; summary?: string; description: string; note: string; notePlaceholder: string; noteRequired: boolean; times: boolean }> = {
   timestamp: {
     title: "Wrong timestamp",
     summary: "It starts or ends at the wrong time",
@@ -41,7 +41,6 @@ const KINDS: Record<TReportKind, { title: string; summary: string; description: 
   },
   missing: {
     title: "Missing reaction",
-    summary: "",
     description: "Tell the moderators what KOL reacts to, and when.",
     note: "What did KOL react to?",
     notePlaceholder: "e.g. One Piece episode 1100",
@@ -50,7 +49,6 @@ const KINDS: Record<TReportKind, { title: string; summary: string; description: 
   },
   untracked: {
     title: "Track this post",
-    summary: "",
     description: "Ask the moderators to add this post's reactions.",
     note: "Note",
     notePlaceholder: "e.g. What KOL reacts to in it",

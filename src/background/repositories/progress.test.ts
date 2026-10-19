@@ -61,6 +61,7 @@ describe("progress repository", () => {
 
     await setProgress("u1", "p1", 30, () => 2);
 
+    expect(readValue).toHaveBeenCalledWith("users/u1/progress");
     await expect(progressItem.getValue()).resolves.toEqual({ uid: "u1", posts: { p1: { time: 30, updatedAt: 2 } } });
   });
 });

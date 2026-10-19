@@ -79,7 +79,9 @@ function renderProvider(card: HTMLElement, postId = "p1") {
   const view = render(<PlayerProvider card={card} postId={postId}><Probe /></PlayerProvider>);
   const context = () => latest.current as IPlayerContext;
 
-  return { ...view, context };
+  const change = (nextCard: HTMLElement) => view.rerender(<PlayerProvider card={nextCard} postId={postId}><Probe /></PlayerProvider>);
+
+  return { ...view, context, change };
 }
 
 beforeEach(() => {
@@ -129,7 +131,7 @@ describe("playerProvider finding the player", () => {
 
     const { context } = renderProvider(card);
 
-    expect(context().ready).toBe(false);
+    expect(context()).toMatchObject({ ready: false, playing: false, currentTime: 0 });
 
     card.innerHTML = "<video></video>";
 
@@ -138,12 +140,18 @@ describe("playerProvider finding the player", () => {
 
   it("stops waiting for a player when unmounted", async () => {
     const card = document.createElement("div");
+    const disconnect = vi.spyOn(MutationObserver.prototype, "disconnect");
 
     document.body.append(card);
 
     const { context, unmount } = renderProvider(card);
 
+    expect(disconnect).not.toHaveBeenCalled();
+
     unmount();
+
+    expect(disconnect).toHaveBeenCalledTimes(1);
+    disconnect.mockRestore();
     card.innerHTML = "<video></video>";
     await new Promise(resolve => setTimeout(resolve, 0));
 
@@ -184,6 +192,20 @@ describe("playerProvider following the player", () => {
     emit("play");
 
     expect(usePlayerStore.getState().playerPostId).toBe("p7");
+  });
+
+  it("follows the post it is for, not the one it was for", async () => {
+    const { card, emit } = videoCard();
+    const { context, rerender } = renderProvider(card, "p1");
+    const seen: Array<string | null | undefined> = [];
+    const unsubscribe = usePlayerStore.subscribe(state => seen.push(state.playerPostId));
+
+    await waitFor(() => expect(context().ready).toBe(true));
+    rerender(<PlayerProvider card={card} postId="p2"><span /></PlayerProvider>);
+    emit("play");
+    unsubscribe();
+
+    expect(seen).toEqual(["p2"]);
   });
 
   it("stops following the player when unmounted", async () => {
@@ -258,6 +280,19 @@ describe("playerProvider controls", () => {
     await waitFor(() => expect(context().playing).toBe(true));
   });
 
+  it("makes the post the active one before the video starts playing", async () => {
+    const { card, video } = videoCard();
+    const { context } = renderProvider(card, "p3");
+
+    // A video that takes its time to start
+    video.play = vi.fn(async () => undefined);
+    await waitFor(() => expect(context().ready).toBe(true));
+    act(() => context().playFrom(95));
+
+    expect(video.play).toHaveBeenCalledTimes(1);
+    expect(usePlayerStore.getState().playerPostId).toBe("p3");
+  });
+
   it("does nothing before the player is found", () => {
     const card = document.createElement("div");
 
@@ -313,5 +348,18 @@ describe("playerProvider changing cards", () => {
     first.emit("play");
 
     expect(usePlayerStore.getState().playerPostId).toBeNull();
+  });
+
+  it("is not ready for a card that has no player yet", async () => {
+    const first = videoCard();
+    const bare = document.createElement("div");
+    const { context, change } = renderProvider(first.card, "p1");
+
+    document.body.append(bare);
+    await waitFor(() => expect(context().ready).toBe(true));
+
+    change(bare);
+
+    await waitFor(() => expect(context().ready).toBe(false));
   });
 });

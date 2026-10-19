@@ -68,7 +68,16 @@ describe("watchlist repository", () => {
     await watchlistItem.setValue({ uid: "someone-else", keys: ["p9/t9"] });
     await setWatched("u1", "p1", "t1", true);
 
+    expect(readValue).toHaveBeenCalledWith("users/u1/watchlist");
     await expect(watchlistItem.getValue()).resolves.toMatchObject({ uid: "u1", keys: ["p1/t1"] });
+  });
+
+  it("keeps reactions stored without dates", async () => {
+    await watchlistItem.setValue({ uid: "u1", keys: ["p9/t9"] });
+
+    await setWatched("u1", "p1", "t1", true, () => 7);
+
+    await expect(watchlistItem.getValue()).resolves.toEqual({ uid: "u1", keys: ["p9/t9", "p1/t1"], watchedAt: { "p1/t1": 7 } });
   });
 
   it("records when a reaction was watched and keeps older reactions' dates", async () => {

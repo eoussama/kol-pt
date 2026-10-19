@@ -153,7 +153,7 @@ export function useHistory(kind: THistoryKind) {
     () => kind === "continue" ? buildContinueList(posts, progress) : buildHistory(posts, marked, markedAt),
     [kind, posts, progress, marked, markedAt],
   );
-  const filtered = useMemo(() => history.filter(item => item.tag.entry?.match(search) || item.post.match(search) || item.tag.getTitle().toLowerCase().includes(search)), [history, search]);
+  const filtered = useMemo(() => history.filter(item => item.tag.entry?.match(search) || item.post.match(search)), [history, search]);
 
   /**
    * @description

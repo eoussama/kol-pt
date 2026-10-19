@@ -7,6 +7,7 @@ describe("resolveThemeMode", () => {
     ["light", false, "light"],
     ["light", true, "light"],
     ["dark", false, "dark"],
+    ["dark", true, "dark"],
     ["auto", true, "dark"],
     ["auto", false, "light"],
     ["inverted", false, "dark"],
@@ -34,8 +35,51 @@ describe("isDarkColor", () => {
     ["rgb(28, 28, 28)", true],
     ["rgba(255, 255, 255, 0.5)", false],
     [" #272727 ", true],
+    ["#000", true],
+    ["#222", true],
+    ["#eee", false],
+    ["#0008", true],
+    ["#ffff", false],
+    ["#FFFFFF", false],
+    ["rgb(0 0 0)", true],
+    ["rgb( 0, 0, 0)", true],
+    ["rgba(0,0,0,0.5)", true],
+    ["rgb(255, 255, 255)", false],
+    ["rgb(0, 190, 255)", false],
+    ["rgb(10.5, 20.5, 30.5)", true],
   ])("%s is dark: %s", (color, expected) => {
     expect(isDarkColor(color)).toBe(expected);
+  });
+
+  it("tells dark from light at the luminance threshold, weighing each channel", () => {
+    // Relative luminance: 0.2126 * r + 0.7152 * g + 0.0722 * b, dark below 0.4
+    expect(isDarkColor("#00ff00")).toBe(false);
+    expect(isDarkColor("#ff0000")).toBe(true);
+    expect(isDarkColor("#0000ff")).toBe(true);
+    expect(isDarkColor("#ff00ff")).toBe(true);
+    expect(isDarkColor("#ffff00")).toBe(false);
+    expect(isDarkColor("#00ffff")).toBe(false);
+    expect(isDarkColor("#00c8ff")).toBe(false);
+    expect(isDarkColor("#808080")).toBe(true);
+    expect(isDarkColor("#a9a9a9")).toBe(true);
+    expect(isDarkColor("#aaaaaa")).toBe(false);
+  });
+
+  it("reads dim colors with the linear part of the sRGB curve", () => {
+    // 10/255 sits under the 0.03928 cutoff, where lightness is linear
+    expect(isDarkColor("#0a0a0a")).toBe(true);
+    expect(isDarkColor("#090909")).toBe(true);
+  });
+
+  it("does not read colors that only contain one", () => {
+    expect(isDarkColor("not #fff")).toBeNull();
+    expect(isDarkColor("#fff not")).toBeNull();
+    expect(isDarkColor("#ffff0")).toBeNull();
+    expect(isDarkColor("#ggg")).toBeNull();
+    expect(isDarkColor("color-mix(rgb(0, 0, 0), white)")).toBeNull();
+    expect(isDarkColor("rgb(a, b, c)")).toBeNull();
+    expect(isDarkColor("rgb(0, 0)")).toBeNull();
+    expect(isDarkColor("rgb(0, 0, x)")).toBeNull();
   });
 
   it("cannot read named or var() colors", () => {
@@ -88,6 +132,7 @@ describe("isSystemDark", () => {
 
     expect(isSystemDark()).toBe(matches);
     expect(matchMedia).toHaveBeenCalledWith(DARK_SCHEME_QUERY);
+    expect(DARK_SCHEME_QUERY).toBe("(prefers-color-scheme: dark)");
   });
 
   it("counts as light where media queries are unavailable", () => {

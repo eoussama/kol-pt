@@ -115,6 +115,7 @@ describe("historyPage", () => {
     render(<HistoryPage />);
 
     expect(await screen.findByLabelText("Loading history")).toHaveAttribute("aria-busy", "true");
+    expect(screen.getByLabelText("Loading history").children).toHaveLength(6);
   });
 
   it("shows an error when the posts cannot be loaded", async () => {
@@ -135,6 +136,7 @@ describe("historyPage", () => {
     expect(rows[1]).toHaveTextContent(`FrierenAnime — Episode 4 · Old StreamWatched ${shown(watchedAt)}`);
     expect(rows[2]).toHaveTextContent("FrierenAnime — Episode 5 · New StreamWatched");
     expect(rows[2]).not.toHaveTextContent("Watched ");
+    expect(rows[2]!.querySelector("span.tabular-nums")!.textContent).toBe("Watched");
     expect(within(rows[1]!).getByRole("presentation")).toHaveAttribute("src", "https://example.com/old.png");
     expect(rows[1]!.querySelector("[aria-hidden=true]")).toBeNull();
     expect(screen.getByText("3")).toBeInTheDocument();
@@ -199,9 +201,29 @@ describe("historyPage", () => {
 
     expect(screen.getByRole("combobox", { name: "Show" })).toHaveTextContent("Watched");
 
+    fireEvent.focus(screen.getByText("3"));
+    expect(await screen.findByText("Watched Reactions")).toBeInTheDocument();
+
+    await pickFilter("Favorites");
+
+    fireEvent.focus(screen.getByText("1"));
+    expect(await screen.findByText("Favorite Reactions")).toBeInTheDocument();
+
     await pickFilter("Continue");
 
     expect(screen.getByRole("combobox", { name: "Show" })).toHaveTextContent("Continue");
+
+    fireEvent.focus(screen.getByText("1"));
+    expect(await screen.findByText("Posts to Continue")).toBeInTheDocument();
+  });
+
+  it("keys each row by its post and reaction", async () => {
+    const error = vi.spyOn(console, "error").mockImplementation(() => undefined);
+
+    render(<HistoryPage />);
+    await screen.findAllByRole("listitem");
+
+    expect(error).not.toHaveBeenCalled();
   });
 
   it("filters the history by the search", async () => {

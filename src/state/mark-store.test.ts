@@ -14,6 +14,14 @@ describe("createMarkStore", () => {
     expect(store.getState().markedAt.size).toBe(0);
   });
 
+  it("keeps a key without a reaction as a post with an empty reaction id", () => {
+    const store = createMarkStore(async () => []);
+
+    store.getState().setKeys(["p1"]);
+
+    expect([...store.getState().posts]).toEqual([["p1", new Set([""])]]);
+  });
+
   it("sends the change as given, and shows the marks the background answers with", async () => {
     const send = vi.fn(async () => ["p.1/t1", "p.1/t2"]);
     const store = createMarkStore(send);

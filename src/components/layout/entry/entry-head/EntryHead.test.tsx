@@ -66,6 +66,14 @@ describe("entryHead", () => {
     const { container } = renderHead();
 
     expect(container.querySelector("[data-slot=skeleton]")).toBeNull();
+    expect(container.querySelector(".h-28")).toBeEmptyDOMElement();
+  });
+
+  it("covers the room left for the cover with a flat placeholder while loading", () => {
+    const { container } = renderHead({ loading: true });
+    const loader = container.querySelector(".h-28 > [data-slot=skeleton]");
+
+    expect(loader).toHaveClass("rounded-none", "absolute", "inset-0");
   });
 
   it("has a back button only when it can go back", () => {

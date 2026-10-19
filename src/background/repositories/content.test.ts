@@ -101,6 +101,49 @@ describe("content repository", () => {
       expect((await entriesCacheItem.getValue())?.data).toHaveLength(2);
     });
 
+    it("refreshes the entries when any reaction of any post is unknown, not only all", async () => {
+      await cacheOutOfStep(11 * MINUTE_MS);
+      await postsCacheItem.setValue({
+        updatedAt: Date.now(),
+        data: [
+          { ...post, id: "known", tags: [post.tags[0]!] },
+          { ...post, id: "mixed", tags: [post.tags[0]!, { ...post.tags[0]!, id: "t2", entryId: "e2" }] },
+        ],
+      });
+
+      const result = await getPostsWithEntries();
+
+      expect(result.entries.map(({ id }) => id)).toEqual(["e1", "e2"]);
+    });
+
+    it("does not refresh old entries when every reaction's entry is known", async () => {
+      await entriesCacheItem.setValue({ updatedAt: Date.now() - 11 * MINUTE_MS, data: [entry] as never });
+      await postsCacheItem.setValue({ updatedAt: Date.now(), data: [post] });
+
+      const result = await getPostsWithEntries();
+
+      expect(result.entries.map(({ id }) => id)).toEqual(["e1"]);
+      expect(readValue).not.toHaveBeenCalled();
+    });
+
+    it("refreshes only after more than ten minutes, not at ten", async () => {
+      vi.useFakeTimers({ toFake: ["Date"] });
+      vi.setSystemTime(1_000_000_000_000);
+
+      try {
+        await cacheOutOfStep(10 * MINUTE_MS);
+        await expect(getPostsWithEntries()).resolves.toMatchObject({ entries: [entry] });
+        expect(readValue).not.toHaveBeenCalled();
+
+        vi.setSystemTime(1_000_000_000_000 + 1);
+        await expect(getPostsWithEntries()).resolves.toMatchObject({ entries: [entry, { id: "e2" }] });
+        expect(readValue).toHaveBeenCalledExactlyOnceWith("entries");
+      }
+      finally {
+        vi.useRealTimers();
+      }
+    });
+
     it("leaves recently fetched entries alone, as the post may point to nothing", async () => {
       await cacheOutOfStep(9 * MINUTE_MS);
 

@@ -87,7 +87,7 @@ describe("getChannelInfos", () => {
   });
 
   it("ignores malformed channels and unexpected answers", async () => {
-    vi.stubGlobal("fetch", vi.fn(async () => new Response(JSON.stringify({ items: [channel("a"), { id: "b" }, null] }))));
+    vi.stubGlobal("fetch", vi.fn(async () => new Response(JSON.stringify({ items: [{ id: "b" }, null, channel("a")] }))));
 
     const infos = await getChannelInfos(["a", "b"]);
 

@@ -1,4 +1,4 @@
-import { renderHook, waitFor } from "@testing-library/react";
+import { act, renderHook, waitFor } from "@testing-library/react";
 import { request } from "../core/messaging/client";
 import { useCoverImage } from "./cover-image.hook";
 
@@ -188,9 +188,10 @@ describe("useCoverImage", () => {
     rerender({ url: two });
     await waitFor(() => expect(result.current).toBe("data:two"));
 
-    slow.resolve("data:one");
-    await slow.promise;
-    await Promise.resolve();
+    await act(async () => {
+      slow.resolve("data:one");
+      await slow.promise;
+    });
     expect(result.current).toBe("data:two");
 
     rerender({ url: one });

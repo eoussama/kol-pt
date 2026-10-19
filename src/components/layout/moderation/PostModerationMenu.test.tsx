@@ -154,7 +154,16 @@ describe("postModerationMenu", () => {
   it("adds extra classes to the trigger", () => {
     openMenu({ className: "extra-class" });
 
-    expect(screen.getByRole("button", { name: "moderate" })).toHaveClass("extra-class");
+    expect(screen.getByRole("button", { name: "moderate" })).toHaveClass("relative", "extra-class");
+  });
+
+  it("keeps the tooltip short without open reports", async () => {
+    openMenu();
+    fireEvent.focus(screen.getByRole("button", { name: "moderate" }));
+    fireEvent.mouseEnter(screen.getByRole("button", { name: "moderate" }));
+
+    expect(await screen.findByText("Moderate")).toBeInTheDocument();
+    expect(screen.queryByText(/open reports/)).not.toBeInTheDocument();
   });
 
   it("names the open reports in the tooltip", async () => {

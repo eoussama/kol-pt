@@ -192,6 +192,22 @@ describe("untrackedPost", () => {
       expect(within(dialog).getByLabelText(/^Title/)).toHaveValue("Anime Tonight");
     });
 
+    it("forgets what Patreon said before when it fails the next time", async () => {
+      renderBar();
+
+      fireEvent.click(screen.getByRole("button", { name: "Track post" }));
+      fireEvent.click(within(await screen.findByRole("dialog")).getByRole("button", { name: "Cancel" }));
+      await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+
+      answerDetails(new Error("offline"));
+      fireEvent.click(screen.getByRole("button", { name: "Track post" }));
+
+      const dialog = await screen.findByRole("dialog");
+
+      expect(within(dialog).getByLabelText("Thumbnail link")).toHaveValue("");
+      expect(within(dialog).getByLabelText(/Posted on/)).not.toHaveValue("2024-01-15T13:45");
+    });
+
     it("uses no thumbnail and today's date when Patreon knows neither", async () => {
       answerDetails({ publishedAt: null, thumbnail: null });
       renderBar();

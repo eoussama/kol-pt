@@ -93,7 +93,7 @@ export function toForm(entry: Entry | null, title: string): TEntryForm {
  * @returns The entry, or why it is not valid and which field is at fault
  */
 export function toEntryInput(id: string, form: TEntryForm): { entry: TEntryInput } | { error: string; field?: keyof TEntryForm } {
-  const number = (value: string) => value.trim() ? Number(value.trim()) : undefined;
+  const number = (value: string) => value.trim() ? Number(value) : undefined;
   const fields = Object.fromEntries(TYPE_FIELDS[form.type].map(([field]) => {
     const value = form[field] as string;
 

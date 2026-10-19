@@ -2,6 +2,7 @@ import { EEntryType } from "../enums/entry-type.enum";
 import { EntryListSchema } from "./entry/entry.schema";
 import { PostListSchema, PostSchema } from "./post.schema";
 import { normalizeList } from "./primitives.schema";
+import { YouTubeContextSchema } from "./tag/tag.schema";
 
 
 
@@ -11,6 +12,9 @@ describe("normalizeList", () => {
   it.each([
     [["a", null, "b"], ["a", "b"]],
     [{ 0: "a", 2: "b" }, ["a", "b"]],
+    [{ 0: "a", 1: null, 2: "b" }, ["a", "b"]],
+    [["a", undefined, "b"], ["a", "b"]],
+    [[], []],
     [null, []],
     [undefined, []],
     ["text", []],
@@ -87,5 +91,21 @@ describe("entries with covers and TV shows", () => {
 
     expect(show).toMatchObject({ type: EEntryType.TV_SHOW, cover: "https://image.tmdb.org/t/p/w500/a.jpg" });
     expect(movie).not.toHaveProperty("cover");
+  });
+});
+
+describe("youTubeContextSchema", () => {
+  it("reads the fields of a channel's context and keeps others", () => {
+    expect(YouTubeContextSchema.parse({ title: "A video", videoId: "abc", altTitles: ["A"], extra: 1 })).toEqual({ title: "A video", videoId: "abc", altTitles: ["A"], extra: 1 });
+    expect(YouTubeContextSchema.parse({})).toEqual({});
+  });
+
+  it.each([
+    { title: 1 },
+    { videoId: ["abc"] },
+    { altTitles: "A" },
+    { altTitles: ["A", 2] },
+  ])("refuses fields of the wrong type: %j", (context) => {
+    expect(YouTubeContextSchema.safeParse(context).success).toBe(false);
   });
 });

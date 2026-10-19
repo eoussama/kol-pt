@@ -11,6 +11,12 @@ describe("isAllowedImageUrl", () => {
     "https://i.ytimg.com/vi/abc/hqdefault.jpg",
     "https://image.tmdb.org/t/p/w500/a.jpg",
     "https://m.media-amazon.com/images/M/a.jpg",
+    "https://s4.anilist.co/file/a.jpg",
+    "https://media.kitsu.app/anime/1/a.jpg",
+    "https://media.kitsu.io/anime/1/a.jpg",
+    "https://upload.wikimedia.org/wikipedia/a.jpg",
+    "https://resizing.flixster.com/a.jpg",
+    "https://sub.ggpht.com/a.jpg",
   ])("allows %s", (url) => {
     expect(isAllowedImageUrl(url)).toBe(true);
   });
@@ -20,6 +26,7 @@ describe("isAllowedImageUrl", () => {
     "https://evil.example/cdn.myanimelist.net.png",
     "https://cdn.myanimelist.net.evil.example/a.png",
     "https://notggpht.com/a.png",
+    "https://evil.example./a.png",
     "not a url",
   ])("refuses %s", (url) => {
     expect(isAllowedImageUrl(url)).toBe(false);

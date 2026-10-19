@@ -60,6 +60,22 @@ describe("toPlainText", () => {
   it("drops AniList's HTML and decodes its entities", () => {
     expect(toPlainText(media.description)).toBe("A hero's last fight.\n\n(Source: Crunchyroll)");
   });
+
+  it("turns every kind of line break into a new line", () => {
+    expect(toPlainText("a<br>b<br/>c<br />d<BR  />e")).toBe("a\nb\nc\nd\ne");
+  });
+
+  it("drops a tag left open, up to the end", () => {
+    expect(toPlainText("kept <i>this</i> <unclosed")).toBe("kept this");
+  });
+
+  it("decodes each entity once, in the right order", () => {
+    expect(toPlainText("&quot;a&quot; &#039;b&#039; &#39;c&#39; &apos;d&apos; &lt;e&gt; &amp;f&amp; &amp;lt;")).toBe("\"a\" 'b' 'c' 'd' <e> &f& &lt;");
+  });
+
+  it("trims the text", () => {
+    expect(toPlainText("  \n text \n  ")).toBe("text");
+  });
 });
 
 describe("getAniListInfo", () => {
@@ -126,6 +142,51 @@ describe("getAniListInfo", () => {
   });
 });
 
+describe("aniList requests", () => {
+  it("post the query, asking for the details wanted, as JSON", async () => {
+    const fetch = stubFetch({ anilist: media });
+    const timeout = vi.spyOn(AbortSignal, "timeout");
+
+    await getAniListInfo({ anilistId: 1 });
+
+    const [url, init] = fetch.mock.calls[0] ?? [];
+
+    expect(url).toBe("https://graphql.anilist.co");
+    expect(init?.method).toBe("POST");
+    expect(init?.headers).toEqual({ "Content-Type": "application/json", "Accept": "application/json" });
+    expect(init?.signal).toBeInstanceOf(AbortSignal);
+    expect(timeout).toHaveBeenCalledWith(8000);
+
+    const { query } = JSON.parse(init?.body as string);
+
+    expect(query).toContain("query ($id: Int, $idMal: Int)");
+    expect(query).toContain("Media(id: $id, idMal: $idMal, type: ANIME)");
+    expect(query).toContain("title { romaji english native }");
+    expect(query).toContain("description(asHtml: false)");
+    expect(query).toContain("genres");
+    expect(query).toContain("coverImage { extraLarge large }");
+    timeout.mockRestore();
+  });
+
+  it("post the covers query as JSON too", async () => {
+    const fetch = vi.fn(async (_url: string, _init?: RequestInit) => new Response(JSON.stringify({ data: { Page: { media: [] } } })));
+    const timeout = vi.spyOn(AbortSignal, "timeout");
+
+    vi.stubGlobal("fetch", fetch);
+    await getAniListCovers({ anilistIds: [1], malIds: [] });
+
+    const [url, init] = fetch.mock.calls[0] ?? [];
+
+    expect(url).toBe("https://graphql.anilist.co");
+    expect(init?.method).toBe("POST");
+    expect(init?.headers).toEqual({ "Content-Type": "application/json", "Accept": "application/json" });
+    expect(init?.signal).toBeInstanceOf(AbortSignal);
+    expect(timeout).toHaveBeenCalledWith(8000);
+    expect(JSON.parse(init?.body as string).query).toContain("Page(perPage: 50) { media(id_in: $ids, type: ANIME) { id idMal coverImage { large } } }");
+    timeout.mockRestore();
+  });
+});
+
 describe("getAnimeInfo", () => {
   it("prefers AniList", async () => {
     const fetch = stubFetch({ anilist: media, jikan });
@@ -148,6 +209,19 @@ describe("getAnimeInfo", () => {
 
     expect(fetch).toHaveBeenCalledTimes(1);
     expect(Object.keys(await animeInfoCacheItem.getValue())).toEqual(["anilist:2"]);
+  });
+
+  it("keeps it for exactly seven days", async () => {
+    const week = 7 * 24 * 60 * 60 * 1000;
+    const fetch = stubFetch({ anilist: media });
+
+    await animeInfoCacheItem.setValue({ "anilist:2": { updatedAt: Date.now() - week + 60_000, data: { description: "cached", genres: [], altTitles: [], photo: "https://s4.anilist.co/x.jpg" } } });
+    await expect(getAnimeInfo({ anilistId: 2 })).resolves.toMatchObject({ description: "cached" });
+    expect(fetch).not.toHaveBeenCalled();
+
+    await animeInfoCacheItem.setValue({ "anilist:2": { updatedAt: Date.now() - week - 60_000, data: { description: "cached", genres: [], altTitles: [], photo: "https://s4.anilist.co/x.jpg" } } });
+    await expect(getAnimeInfo({ anilistId: 2 })).resolves.toMatchObject({ description: "A hero's last fight.\n\n(Source: Crunchyroll)" });
+    expect(fetch).toHaveBeenCalledTimes(1);
   });
 
   it("does not keep the placeholder, so it asks again", async () => {
@@ -197,6 +271,17 @@ describe("getJikanInfo", () => {
 
     await expect(getJikanInfo(42)).resolves.toMatchObject({ description: "From Jikan.", photo: "https://cdn.myanimelist.net/a.webp" });
     expect(fetch.mock.calls[0]?.[0]).toBe("https://api.jikan.moe/v4/anime/42");
+    expect(fetch.mock.calls[0]?.[1]?.signal).toBeInstanceOf(AbortSignal);
+  });
+
+  it("gives up after eight seconds", async () => {
+    const timeout = vi.spyOn(AbortSignal, "timeout");
+
+    stubFetch({ jikan });
+    await getJikanInfo(1);
+
+    expect(timeout).toHaveBeenCalledWith(8000);
+    timeout.mockRestore();
   });
 
   it("has nothing for an unexpected answer or a failure", async () => {
@@ -291,6 +376,22 @@ describe("getEntryCovers", () => {
     expect(Object.keys(await coversCacheItem.getValue()).sort()).toEqual(["anilist:2", "mal:7"]);
   });
 
+  it("keeps covers for a week", async () => {
+    const week = 7 * 24 * 60 * 60 * 1000;
+    const fetch = vi.fn(async (_url: string, _init?: RequestInit) => new Response(JSON.stringify({ data: { Page: { media: [{ id: 2, idMal: null, coverImage: { large: "https://s4.anilist.co/new.jpg" } }] } } })));
+    const entry = [{ id: "a", type: 0, title: "A", altTitles: [], anilistId: 2 }] as never;
+
+    vi.stubGlobal("fetch", fetch);
+
+    await coversCacheItem.setValue({ "anilist:2": { updatedAt: Date.now() - week + 60_000, data: "https://s4.anilist.co/old.jpg" } });
+    await expect(getEntryCovers(entry)).resolves.toEqual({ a: "https://s4.anilist.co/old.jpg" });
+    expect(fetch).not.toHaveBeenCalled();
+
+    await coversCacheItem.setValue({ "anilist:2": { updatedAt: Date.now() - week - 60_000, data: "https://s4.anilist.co/old.jpg" } });
+    await expect(getEntryCovers(entry)).resolves.toEqual({ a: "https://s4.anilist.co/new.jpg" });
+    expect(fetch).toHaveBeenCalledTimes(1);
+  });
+
   it("does not ask AniList when the cached details cover every anime", async () => {
     await animeInfoCacheItem.setValue({ "anilist:2": { updatedAt: Date.now(), data: { description: "", genres: [], altTitles: [], photo: "https://s4.anilist.co/known.jpg" } } });
 
@@ -314,7 +415,7 @@ describe("getEntryCovers", () => {
       { id: "b", type: 0, title: "B", altTitles: [], anilistId: 3 },
     ] as never);
 
-    expect(covers).toEqual({ a: "https://s4.anilist.co/two.jpg" });
+    expect(covers).toStrictEqual({ a: "https://s4.anilist.co/two.jpg" });
     expect(JSON.parse(fetch.mock.calls[0]?.[1]?.body as string).variables).toEqual({ ids: [2, 3] });
   });
 
@@ -328,6 +429,7 @@ describe("getEntryCovers", () => {
       { id: "b", type: 0, title: "B", altTitles: [], anilistId: -1, malId: 8 },
       { id: "c", type: 0, title: "C", altTitles: [], anilistId: 4, malId: 9 },
       { id: "d", type: 0, title: "D", altTitles: [] },
+      { id: "e", type: 0, title: "E", altTitles: [], malId: -3 },
     ] as never);
 
     expect(Object.keys(await coversCacheItem.getValue())).toEqual([]);
@@ -360,9 +462,10 @@ describe("getEntryCovers", () => {
       { id: "y3", type: 3, title: "No channel", altTitles: [] },
       { id: "y4", type: 3, title: "Own", altTitles: [], channelId: "UC-own", cover: "https://example.com/own.jpg" },
       { id: "m1", type: 1, title: "Movie", altTitles: [] },
+      { id: "m2", type: 1, title: "Movie", altTitles: [], channelId: "UC-movie" },
     ] as never);
 
-    expect(covers).toEqual({ y1: "https://yt3.ggpht.com/UC-known" });
+    expect(covers).toStrictEqual({ y1: "https://yt3.ggpht.com/UC-known" });
     expect(fetch).toHaveBeenCalledTimes(1);
     expect((fetch.mock.calls[0]?.[0] as URL).searchParams.get("id")).toBe("UC-known,UC-unknown");
     vi.unstubAllEnvs();

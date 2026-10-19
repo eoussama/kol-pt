@@ -20,6 +20,10 @@ describe("reports store", () => {
     useReportsStore.setState({ reports: [] });
   });
 
+  it("starts with no reports", () => {
+    expect(useReportsStore.getInitialState().reports).toEqual([]);
+  });
+
   it("replaces the reports with the stored ones", () => {
     useReportsStore.getState().setReports(reports);
     expect(useReportsStore.getState().reports).toBe(reports);

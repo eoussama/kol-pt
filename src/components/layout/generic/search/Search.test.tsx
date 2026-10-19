@@ -40,8 +40,16 @@ describe("search", () => {
     expect(screen.queryByText("12")).not.toBeInTheDocument();
   });
 
+  it("has no count badge without a count", () => {
+    const { container } = render(<Search onSearch={vi.fn()} />);
+
+    expect(container.querySelectorAll("[data-slot=input-group-addon]")).toHaveLength(1);
+  });
+
   it("explains the count when hovering it", async () => {
     render(<Search count={3} countLabel="posts listed" onSearch={vi.fn()} />);
+
+    expect(screen.queryByText("posts listed")).not.toBeInTheDocument();
 
     fireEvent.focus(screen.getByText("3"));
 
@@ -49,11 +57,16 @@ describe("search", () => {
   });
 
   it("renders the actions next to the input", () => {
-    const { rerender } = render(<Search onSearch={vi.fn()} />);
+    const { container, rerender } = render(<Search onSearch={vi.fn()} />);
+    const root = container.firstElementChild as HTMLElement;
 
     expect(screen.queryByRole("button", { name: "Filter" })).not.toBeInTheDocument();
+    expect(root.children).toHaveLength(1);
 
     rerender(<Search actions={<button type="button">Filter</button>} onSearch={vi.fn()} />);
     expect(screen.getByRole("button", { name: "Filter" })).toBeInTheDocument();
+    expect(root.children).toHaveLength(2);
+    expect(root.children[1]).toContainElement(screen.getByRole("button", { name: "Filter" }));
+    expect(root.children[1]).not.toBe(screen.getByRole("button", { name: "Filter" }));
   });
 });

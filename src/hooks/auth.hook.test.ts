@@ -27,6 +27,9 @@ describe("useAuth", () => {
 
     await waitFor(() => expect(create).toHaveBeenCalledWith(expect.objectContaining({
       type: "popup",
+      focused: true,
+      width: 500,
+      height: 400,
       url: browser.runtime.getURL("/auth.html" as never),
     })));
   });

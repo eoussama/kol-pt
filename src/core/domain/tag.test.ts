@@ -32,6 +32,19 @@ describe("tag hover text", () => {
     expect(tagOf(EEntryType.ANIME, "").getHoverText()).toBe("Severance");
   });
 
+  it("ignores blank descriptions and spaces around the label", () => {
+    const entry = createEntry({ id: "e1", type: EEntryType.TV_SHOW, title: "Severance" } as never);
+    const tag = new Tag({ id: "t1", entryId: "e1", label: " 7 ", description: "   ", startTime: 0, endTime: 60, context: {} }, entry);
+
+    expect(tag.getHoverText()).toBe("Episode 7 of Severance");
+  });
+
+  it("trims the reaction's own description", () => {
+    const tag = new Tag({ id: "t1", entryId: "e1", label: "1", description: "  This was big \n", startTime: 0, endTime: 60, context: {} }, null);
+
+    expect(tag.getHoverText()).toBe("This was big");
+  });
+
   it("prefers the reaction's own description", () => {
     const entry = createEntry({ id: "e1", type: EEntryType.MOVIE, title: "One Piece" } as never);
     const tag = new Tag({ id: "t1", entryId: "e1", label: "1", description: "This was big", startTime: 0, endTime: 60, context: {} }, entry);

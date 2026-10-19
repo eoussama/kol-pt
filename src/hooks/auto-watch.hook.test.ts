@@ -29,6 +29,16 @@ describe("findFinishedReactions", () => {
     expect(findFinishedReactions(tags, 100.2, 100.5)).toEqual([]);
   });
 
+  it("counts a jump of up to three seconds as playing, and anything more as seeking", () => {
+    expect(findFinishedReactions(tags, 97, 100).map(t => t.id)).toEqual(["a"]);
+    expect(findFinishedReactions(tags, 96.9, 100)).toEqual([]);
+  });
+
+  it("finds a reaction ending exactly at the new position, but not one ending exactly at the old", () => {
+    expect(findFinishedReactions(tags, 99.5, 100).map(t => t.id)).toEqual(["a"]);
+    expect(findFinishedReactions(tags, 100, 100.5)).toEqual([]);
+  });
+
   it("ignores seeking past the end, forward or back", () => {
     expect(findFinishedReactions(tags, 90, 120)).toEqual([]);
     expect(findFinishedReactions(tags, 120, 99)).toEqual([]);
@@ -74,6 +84,15 @@ describe("useAutoWatch", () => {
 
     player.playing = true;
     play([50, 120]);
+
+    expect(toggle).not.toHaveBeenCalled();
+  });
+
+  it("does not count the first position it sees as playing from the start", () => {
+    const short = { id: "p3", tags: [tag("s", 0, 1)] } as unknown as Post;
+
+    player.currentTime = 2;
+    renderHook(() => useAutoWatch(short));
 
     expect(toggle).not.toHaveBeenCalled();
   });

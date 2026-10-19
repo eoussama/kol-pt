@@ -37,6 +37,22 @@ describe("keyed lists", () => {
     expect(isKeyed(null)).toBe(true);
   });
 
+  it("is only keyed when every item is stored under its own id", () => {
+    expect(isKeyed({ a: { id: "a" }, wrong: { id: "b" } })).toBe(false);
+    expect(isKeyed({ wrong: { id: "b" }, a: { id: "a" } })).toBe(false);
+    expect(isKeyed({ a: { id: "a" }, b: { id: "b" } })).toBe(true);
+  });
+
+  it("is not keyed when a value is not a database object", () => {
+    expect(isKeyed({ a: null })).toBe(false);
+    expect(isKeyed({ a: "text" })).toBe(false);
+    expect(isKeyed({ 0: [{ id: "0" }] })).toBe(false);
+    expect(isKeyed([{ id: "0" }])).toBe(false);
+    expect(isKeyed([])).toBe(false);
+    expect(isKeyed("")).toBe(false);
+    expect(isKeyed(0)).toBe(false);
+  });
+
   it("drops undefined fields", () => {
     expect(withoutUndefined({ a: 1, b: undefined, c: { d: undefined } })).toEqual({ a: 1, c: {} });
   });

@@ -73,7 +73,7 @@ function Actions(): JSX.Element {
 function renderProvider() {
   const view = render(<ModerationProvider post={post}><Actions /></ModerationProvider>);
 
-  return () => view.rerender(<ModerationProvider post={post}><Actions /></ModerationProvider>);
+  return (next: Post = post) => view.rerender(<ModerationProvider post={next}><Actions /></ModerationProvider>);
 }
 
 /**
@@ -109,6 +109,23 @@ describe("moderationProvider", () => {
     rerender();
 
     expect(actions).toBe(before);
+  });
+
+  it("acts on the post it is given, as that changes", async () => {
+    const rerender = renderProvider();
+    const other = new Post({ id: "other-2002", title: "Other Post", description: "", creationDate: 0, thumbnail: "", tags: [] }, [opening]);
+
+    rerender(other);
+
+    perform(() => actions.untrackPost());
+    expect(screen.getByRole("alertdialog", { name: "Stop tracking this post?" })).toHaveTextContent("“Other Post” and its 1 reactions will be removed for everyone.");
+    fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
+    await waitFor(() => expect(screen.queryByRole("alertdialog")).not.toBeInTheDocument());
+
+    perform(() => actions.deleteTag(opening));
+    fireEvent.click(screen.getByRole("button", { name: "Delete" }));
+
+    await waitFor(() => expect(requestMock).toHaveBeenCalledExactlyOnceWith("tags.delete", { postId: "other-2002", tagId: "t2" }));
   });
 
   describe("reporting", () => {
@@ -329,6 +346,15 @@ describe("moderationProvider", () => {
       expect(within(untracked!).queryByRole("button", { name: "Fix" })).not.toBeInTheDocument();
     });
 
+    it("offers no fix for an untracked post, even when it names a reaction", () => {
+      useReportsStore.setState({ reports: [reportWith("r8", { kind: "untracked", tagId: "t1" })] });
+      renderProvider();
+      perform(() => actions.review("t1"));
+
+      expect(screen.getAllByRole("listitem")).toHaveLength(1);
+      expect(screen.queryByRole("button", { name: "Fix" })).not.toBeInTheDocument();
+    });
+
     it("offers no fix for a report that names no reaction", () => {
       useReportsStore.setState({ reports: [reportWith("r8", { kind: "timestamp" }), reportWith("r9", { kind: "entry" })] });
       renderProvider();
@@ -375,6 +401,17 @@ describe("moderationProvider", () => {
       renderProvider();
       perform(() => actions.review("t1"));
       fireEvent.click(within(screen.getAllByRole("listitem")[1]!).getByRole("button", { name: "Fix" }));
+
+      expect(await screen.findByRole("heading", { name: "Edit reaction" })).toBeInTheDocument();
+      expect(screen.getByRole("textbox", { name: "Starts at" })).toHaveValue("0:01:00");
+      expect(screen.getByRole("textbox", { name: "Ends at" })).toHaveValue("0:02:00");
+    });
+
+    it("ignores the times a wrong show or episode report carries", async () => {
+      useReportsStore.setState({ reports: [reportWith("r8", { kind: "entry", tagId: "t1", tagTitle: "Frieren — Episode 4", startTime: 900, endTime: 1000 })] });
+      renderProvider();
+      perform(() => actions.review("t1"));
+      fireEvent.click(screen.getByRole("button", { name: "Fix" }));
 
       expect(await screen.findByRole("heading", { name: "Edit reaction" })).toBeInTheDocument();
       expect(screen.getByRole("textbox", { name: "Starts at" })).toHaveValue("0:01:00");

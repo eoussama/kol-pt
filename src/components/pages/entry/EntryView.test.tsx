@@ -116,6 +116,8 @@ describe("entryView", () => {
 
     expect(skeleton).not.toBeEmptyDOMElement();
     expect(skeleton.querySelector(".grid-cols-2")).toBeNull();
+    // The cover, 9 in the head (4 of them tags), 4 in the aliases (3 chips), 2 links and 6 in the reactions (2 rows)
+    expect(skeleton.querySelectorAll("[data-slot=skeleton]")).toHaveLength(22);
   });
 
   it("lays the skeleton's links side by side in a dialog", () => {
