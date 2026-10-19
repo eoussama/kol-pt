@@ -1,6 +1,6 @@
 import type { TAnimeInfo } from "../../core/schemas/api/anime-info.schema";
 
-import { AniListResponseSchema } from "../../core/schemas/api/anilist-response.schema";
+import { AniListCoversResponseSchema, AniListResponseSchema } from "../../core/schemas/api/anilist-response.schema";
 
 
 
@@ -90,4 +90,65 @@ export async function getAniListInfo(ids: { anilistId?: number; malId?: number }
   catch {
     return null;
   }
+}
+
+/**
+ * @description
+ * The most anime AniList returns per page.
+ */
+const PAGE_SIZE = 50;
+
+/**
+ * @description
+ * Gets many anime's covers from AniList at once, for lists.
+ *
+ * @param ids - The anime's IDs: AniList IDs and, for anime without one, MyAnimeList IDs
+ * @param ids.anilistIds - AniList IDs
+ * @param ids.malIds - MyAnimeList IDs
+ * @returns Promise resolving to the covers found, by `anilist:<id>` and `mal:<id>`
+ */
+export async function getAniListCovers(ids: { anilistIds: ReadonlyArray<number>; malIds: ReadonlyArray<number> }): Promise<Map<string, string>> {
+  const covers = new Map<string, string>();
+  const chunk = (list: ReadonlyArray<number>) => Array.from({ length: Math.ceil(list.length / PAGE_SIZE) }, (_, i) => list.slice(i * PAGE_SIZE, (i + 1) * PAGE_SIZE));
+
+  // An empty ID list would match every anime, so each kind is only asked for when it has IDs
+  const pages = [
+    ...chunk(ids.anilistIds).map(list => ({ filter: "id_in", list })),
+    ...chunk(ids.malIds).map(list => ({ filter: "idMal_in", list })),
+  ];
+
+  await Promise.all(pages.map(async ({ filter, list }) => {
+    const query = `query ($ids: [Int]) {
+      Page(perPage: ${PAGE_SIZE}) { media(${filter}: $ids, type: ANIME) { id idMal coverImage { large } } }
+    }`;
+
+    try {
+      const response = await fetch("https://graphql.anilist.co", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        body: JSON.stringify({ query, variables: { ids: list } }),
+        signal: AbortSignal.timeout(TIMEOUT_MS),
+      });
+      const parsed = AniListCoversResponseSchema.safeParse((await response.json())?.data?.Page?.media);
+
+      if (!response.ok || !parsed.success) {
+        return;
+      }
+
+      for (const anime of parsed.data) {
+        if (anime.coverImage.large) {
+          covers.set(`anilist:${anime.id}`, anime.coverImage.large);
+
+          if (anime.idMal) {
+            covers.set(`mal:${anime.idMal}`, anime.coverImage.large);
+          }
+        }
+      }
+    }
+    catch {
+      // Those anime keep their placeholder
+    }
+  }));
+
+  return covers;
 }

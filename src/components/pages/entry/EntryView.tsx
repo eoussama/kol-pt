@@ -4,6 +4,7 @@ import { useState } from "react";
 import { getPlaceholderUrl } from "../../../core/utils/assets";
 import { cn } from "../../../core/utils/cn";
 import { useCoverImage } from "../../../hooks/cover-image.hook";
+import { useDelayed } from "../../../hooks/delayed.hook";
 import { useEntry } from "../../../hooks/entry.hook";
 import EntryAka from "../../layout/entry/entry-aka/EntryAka";
 import EntryHead from "../../layout/entry/entry-head/EntryHead";
@@ -72,10 +73,18 @@ function EntrySkeleton(props: { isDialog: boolean }): JSX.Element {
 
 /**
  * @description
+ * How long an entry may take to load before its skeleton shows, in
+ * milliseconds. Entries cached by the background load faster than that.
+ */
+const SKELETON_DELAY_MS = 200;
+
+/**
+ * @description
  * The entry detail, shown as a popup page and as a dialog on Patreon.
  * It does not depend on a router. It shows its skeleton until the entry and
- * its details from other sites are in, then appears at once, so nothing
- * moves as they arrive; the cover fades in once loaded.
+ * its details from other sites are in (unless they are in quickly), then
+ * appears at once, so nothing moves as they arrive; a cover not seen before
+ * fades in once loaded.
  *
  * @param props - The entry to show, and how it is shown
  * @returns The rendered entry detail
@@ -84,13 +93,14 @@ function EntryView(props: IEntryViewProps): JSX.Element {
   const { entryId, isDialog = false, onBack } = props;
   const { loading, entry, description, photo, subscribers, altTitles, genres, reactions } = useEntry(entryId);
   const coverImage = useCoverImage(photo);
-  const [coverShown, setCoverShown] = useState(false);
+  const slow = useDelayed(loading, SKELETON_DELAY_MS);
+  const [coverShown, setCoverShown] = useState(() => coverImage !== null);
   const [coverFailed, setCoverFailed] = useState(false);
 
   const cover = coverFailed || !photo ? getPlaceholderUrl() : coverImage;
 
   if (loading) {
-    return <EntrySkeleton isDialog={isDialog} />;
+    return slow ? <EntrySkeleton isDialog={isDialog} /> : <div role="status" aria-label="Loading entry" className="min-h-44" />;
   }
 
   if (!entry) {

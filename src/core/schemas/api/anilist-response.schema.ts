@@ -22,3 +22,14 @@ export const AniListResponseSchema = z.object({
 });
 
 export type TAniListResponse = z.infer<typeof AniListResponseSchema>;
+
+/**
+ * @description
+ * Zod schema for the anime an AniList cover lookup returns
+ * (`data.Page.media`).
+ */
+export const AniListCoversResponseSchema = z.array(z.object({
+  id: z.number(),
+  idMal: z.number().nullable(),
+  coverImage: z.object({ large: z.string().nullable() }),
+}));

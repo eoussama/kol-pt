@@ -1,12 +1,12 @@
 import type { TPost } from "../core/schemas/post.schema";
 
 import { hydratePosts } from "../core/domain/hydrate";
-import { buildContinueList, buildHistory } from "./history.hook";
+import { buildContinueList, buildHistory, describeLeft } from "./history.hook";
 
 
 
-function tag(id: string) {
-  return { id, entryId: "e1", label: id, description: "", startTime: 0, endTime: 60, context: {} };
+function tag(id: string, startTime = 0, endTime = 60) {
+  return { id, entryId: "e1", label: id, description: "", startTime, endTime, context: {} };
 }
 
 const posts = hydratePosts([
@@ -39,5 +39,24 @@ describe("buildContinueList", () => {
 
     expect(items.map(item => [item.post.id, item.tag.id, item.resumeAt])).toEqual([["old-post-1", "t1", 30], ["new-post-2", "t3", 10]]);
     expect(items[0]?.markedAt?.getTime()).toBe(100);
+  });
+});
+
+describe("time left to continue", () => {
+  it("counts what is left of the reaction and of the post", () => {
+    const [post] = hydratePosts([{ id: "p", title: "P", description: "", thumbnail: "", creationDate: 0, tags: [tag("a", 0, 600), tag("b", 700, 4300)] }] as Array<TPost>, []);
+
+    const left = (time: number) => buildContinueList([post!], new Map([["p", { time, updatedAt: 0 }]]))[0]?.left;
+
+    expect(left(100)).toEqual({ reaction: 500, post: 4200 });
+    expect(left(650)).toEqual({ reaction: 0, post: 3650 });
+    expect(left(5000)).toEqual({ reaction: 0, post: 0 });
+  });
+
+  it("describes it", () => {
+    expect(describeLeft({ reaction: 500, post: 4200 })).toBe("8m left in this reaction · 1h 10m in the post");
+    expect(describeLeft({ reaction: 0, post: 3650 })).toBe("1h left");
+    expect(describeLeft({ reaction: 40, post: 40 })).toBe("40s left");
+    expect(describeLeft({ reaction: 0, post: 0 })).toBe("Finished");
   });
 });

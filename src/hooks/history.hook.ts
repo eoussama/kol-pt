@@ -4,6 +4,7 @@ import type { IProgress } from "../core/utils/progress";
 
 import { useEffect, useMemo, useState } from "react";
 import { findReactionAt } from "../core/utils/progress";
+import { formatShortDuration } from "../core/utils/time";
 import { toDatabaseKey, watchlistKey } from "../core/utils/watchlist";
 import { useFavoritesStore } from "../state/favorites.state";
 import { usePostStore } from "../state/posts.state";
@@ -38,6 +39,13 @@ export interface IHistoryItem {
    * For a post to continue, where the user stopped watching, in seconds.
    */
   resumeAt?: number;
+
+  /**
+   * @description
+   * For a post to continue, how much is left to watch, in seconds: of the
+   * reaction it stopped in, and of the post (up to its last reaction's end).
+   */
+  left?: { reaction: number; post: number };
 }
 
 /**
@@ -81,10 +89,39 @@ export function buildContinueList(posts: ReadonlyArray<Post>, progress: Readonly
     const saved = progress.get(toDatabaseKey(post.id));
     const tag = saved ? findReactionAt(post.tags, saved.time) : null;
 
-    return saved && tag ? [{ post, tag, markedAt: new Date(saved.updatedAt), resumeAt: saved.time }] : [];
+    if (!saved || !tag) {
+      return [];
+    }
+
+    const end = Math.max(...post.tags.map(candidate => candidate.endTime));
+    const left = { reaction: Math.max(0, tag.endTime - Math.max(saved.time, tag.startTime)), post: Math.max(0, end - saved.time) };
+
+    return [{ post, tag, markedAt: new Date(saved.updatedAt), resumeAt: saved.time, left }];
   });
 
   return items.sort((a, b) => (b.markedAt?.getTime() ?? 0) - (a.markedAt?.getTime() ?? 0));
+}
+
+/**
+ * @description
+ * Describes how much is left of a post to continue: of the reaction it
+ * stopped in and, when more follow, of the post.
+ *
+ * @param left - What is left, in seconds
+ * @param left.reaction - Of the reaction it stopped in
+ * @param left.post - Of the post
+ * @returns The description
+ */
+export function describeLeft(left: { reaction: number; post: number }): string {
+  if (left.post <= 0) {
+    return "Finished";
+  }
+
+  if (left.reaction <= 0 || left.reaction >= left.post) {
+    return `${formatShortDuration(left.post)} left`;
+  }
+
+  return `${formatShortDuration(left.reaction)} left in this reaction · ${formatShortDuration(left.post)} in the post`;
 }
 
 /**

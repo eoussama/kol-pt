@@ -16,6 +16,7 @@ export const RequestSchema = z.discriminatedUnion("type", [
   message("posts.list").extend({ force: z.boolean().optional() }),
   message("posts.details").extend({ postId: z.string().regex(/^\d+$/) }),
   message("entries.list").extend({ force: z.boolean().optional() }),
+  message("entries.covers"),
   message("anime.info")
     .extend({ malId: z.number().int().positive().optional(), anilistId: z.number().int().positive().optional() })
     .refine(request => request.malId !== undefined || request.anilistId !== undefined, { message: "An anime ID is required" }),

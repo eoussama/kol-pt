@@ -1,5 +1,5 @@
 import type { WxtStorageItem } from "wxt/utils/storage";
-import type { ICached } from "../core/storage/items";
+import type { ICached, TKeyedCache } from "../core/storage/items";
 
 
 
@@ -49,4 +49,69 @@ export async function cached<T>(
 
     throw error;
   }
+}
+
+/**
+ * @description
+ * Returns values kept by key from their cache while fresh, and loads the
+ * missing or expired ones together, caching what was found. Keys the loader
+ * does not find are not cached, so they are asked for again next time. If
+ * loading fails, stale values are returned for the keys that have any.
+ *
+ * @param item - The cache entry, by key
+ * @param keys - The keys wanted
+ * @param load - Loads the values of the keys given, leaving out those it cannot find
+ * @param options - Override the age limit, or the clock in tests
+ * @param options.ttlMs - How long cached values stay fresh
+ * @param options.now - The current time
+ * @returns Promise resolving to the values found, by key
+ */
+export async function cachedEach<T>(
+  item: WxtStorageItem<TKeyedCache<T>, Record<string, unknown>>,
+  keys: ReadonlyArray<string>,
+  load: (keys: Array<string>) => Promise<Map<string, T>>,
+  options: { ttlMs?: number; now?: () => number } = {},
+): Promise<Map<string, T>> {
+  const { ttlMs = CACHE_TTL_MS, now = Date.now } = options;
+  const current = await item.getValue();
+  const found = new Map<string, T>();
+  const missing: Array<string> = [];
+
+  for (const key of new Set(keys)) {
+    const entry = current[key];
+
+    if (entry && now() - entry.updatedAt < ttlMs) {
+      found.set(key, entry.data);
+    }
+    else {
+      missing.push(key);
+    }
+  }
+
+  if (missing.length === 0) {
+    return found;
+  }
+
+  const loaded = await load(missing).catch(() => new Map<string, T>());
+
+  missing.forEach((key) => {
+    const stale = current[key];
+
+    if (!loaded.has(key) && stale) {
+      found.set(key, stale.data);
+    }
+  });
+
+  if (loaded.size > 0) {
+    // Read again, as other requests may have cached values meanwhile, and
+    // drop what has expired so the cache does not grow forever
+    const latest = await item.getValue();
+    const kept = Object.entries(latest).filter(([, entry]) => now() - entry.updatedAt < ttlMs);
+    const added = [...loaded].map(([key, data]) => [key, { updatedAt: now(), data }] as const);
+
+    await item.setValue(Object.fromEntries([...kept, ...added]));
+    loaded.forEach((data, key) => found.set(key, data));
+  }
+
+  return found;
 }

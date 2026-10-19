@@ -52,6 +52,15 @@ export interface IRequestMap {
 
   /**
    * @description
+   * A thumbnail for each entry without a cover of its own, by entry ID.
+   */
+  "entries.covers": {
+    payload: Record<never, never>;
+    response: Record<string, string>;
+  };
+
+  /**
+   * @description
    * An anime's details from AniList or MyAnimeList, by either ID.
    */
   "anime.info": {

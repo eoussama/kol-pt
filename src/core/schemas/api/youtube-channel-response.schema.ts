@@ -7,6 +7,7 @@ import { z } from "zod";
  * Zod schema for the YouTube Data API channel response.
  */
 export const YouTubeChannelResponseSchema = z.object({
+  id: z.string(),
   snippet: z.object({
     description: z.string(),
     thumbnails: z.object({

@@ -1,6 +1,5 @@
 import type { Entry } from "../core/domain/entry";
 import type { IReaction } from "../core/domain/hydrate";
-import type { TAnimeInfo } from "../core/schemas/api/anime-info.schema";
 
 import { useEffect, useState } from "react";
 import { Anime } from "../core/domain/anime";
@@ -37,13 +36,20 @@ export interface IEntryState {
 
 /**
  * @description
- * The state before anything is loaded.
+ * The entries already shown, kept while the page is open so they show at
+ * once when opened again.
+ */
+const shownEntries = new Map<string, IEntryState>();
+
+/**
+ * @description
+ * The state before anything is loaded, or the one an entry last showed.
  *
  * @param entryId - The entry about to load, if any
  * @returns The initial state
  */
 function initialState(entryId: string): IEntryState {
-  return {
+  return shownEntries.get(entryId) ?? {
     loading: entryId.length > 0,
     entry: null,
     photo: getPlaceholderUrl(),
@@ -57,15 +63,15 @@ function initialState(entryId: string): IEntryState {
 
 /**
  * @description
- * Merges MyAnimeList's official titles with KOL's own, without duplicates or
- * the main title.
+ * Merges an entry's official titles, from AniList or MyAnimeList, with KOL's
+ * own, without duplicates or the main title.
  *
- * @param info - The anime's MyAnimeList info
  * @param entry - The entry
+ * @param officialTitles - Its official titles, if any are known
  * @returns The alternative titles
  */
-function mergeAltTitles(info: TAnimeInfo, entry: Entry): Array<IAltTitle> {
-  const official = info.altTitles
+export function mergeAltTitles(entry: Entry, officialTitles: ReadonlyArray<IAltTitle> = []): Array<IAltTitle> {
+  const official = officialTitles
     .map(alt => ({ ...alt, title: alt.title.trim() }))
     .filter(alt => alt.title.length > 0);
   const kol = entry.altTitles.map(title => ({ title, official: false }));
@@ -90,7 +96,7 @@ async function loadDetails(entry: Entry): Promise<Partial<IEntryState>> {
       ...(entry.anilistId > 0 && { anilistId: entry.anilistId }),
     });
 
-    return { photo: info.photo, genres: info.genres, description: info.description, altTitles: mergeAltTitles(info, entry) };
+    return { photo: info.photo, genres: info.genres, description: info.description, altTitles: mergeAltTitles(entry, info.altTitles) };
   }
 
   if (entry instanceof YouTube && entry.channelId) {
@@ -104,8 +110,38 @@ async function loadDetails(entry: Entry): Promise<Partial<IEntryState>> {
 
 /**
  * @description
- * Handles data fetching for the entry detail: the entry and its reactions
- * first, then its third-party details.
+ * Loads everything the entry detail shows: the entry and its reactions, then
+ * its third-party details (cached by the background).
+ *
+ * @param entryId - The ID of the entry
+ * @returns Promise resolving to the loaded state
+ */
+async function loadEntry(entryId: string): Promise<IEntryState> {
+  const { posts, entries } = await request("posts.list", {});
+  const data = entries.find(candidate => candidate.id === entryId);
+  const entry = data ? createEntry(data) : null;
+  const state: IEntryState = { ...initialState(""), loading: false, entry };
+
+  if (!entry) {
+    return state;
+  }
+
+  const { photo, ...details } = await loadDetails(entry).catch((): Partial<IEntryState> => ({}));
+
+  return {
+    ...state,
+    reactions: findReactions(hydratePosts(posts, entries), entryId),
+    altTitles: mergeAltTitles(entry),
+    ...details,
+    // An entry's own cover wins over the one a third party provides
+    photo: entry.cover || photo || state.photo,
+  };
+}
+
+/**
+ * @description
+ * Handles data fetching for the entry detail. An entry already shown while
+ * the page is open shows at once, and is refreshed quietly.
  *
  * @param entryId - The ID of the entry
  * @returns Entry state including loading, entry data, media info, and reactions
@@ -115,31 +151,25 @@ export function useEntry(entryId: string): IEntryState {
 
   useEffect(() => {
     let cancelled = false;
-    const update = (patch: Partial<IEntryState>) => {
-      if (!cancelled) {
-        setState(current => ({ ...current, ...patch }));
-      }
-    };
 
     setState(initialState(entryId));
 
     if (entryId) {
-      (async () => {
-        const { posts, entries } = await request("posts.list", {});
-        const data = entries.find(candidate => candidate.id === entryId);
-        const entry = data ? createEntry(data) : null;
+      loadEntry(entryId)
+        .then((loaded) => {
+          if (loaded.entry) {
+            shownEntries.set(entryId, loaded);
+          }
 
-        update({ entry, reactions: findReactions(hydratePosts(posts, entries), entryId), ...(entry?.cover ? { photo: entry.cover } : {}) });
-
-        if (entry) {
-          const { photo, ...details } = await loadDetails(entry);
-
-          // An entry's own cover wins over the one a third party provides
-          update(entry.cover ? details : { ...details, ...(photo ? { photo } : {}) });
-        }
-      })()
-        .catch(() => undefined)
-        .finally(() => update({ loading: false }));
+          if (!cancelled) {
+            setState(loaded);
+          }
+        })
+        .catch(() => {
+          if (!cancelled) {
+            setState(current => ({ ...current, loading: false }));
+          }
+        });
     }
 
     return () => {

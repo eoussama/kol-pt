@@ -16,6 +16,7 @@ function stubHandlers(overrides: Partial<THandlers> = {}): THandlers {
     "posts.list": async () => ({ posts: [], entries: [] }),
     "posts.details": fail,
     "entries.list": fail,
+    "entries.covers": fail,
     "anime.info": fail,
     "youtube.channel": fail,
     "images.fetch": fail,

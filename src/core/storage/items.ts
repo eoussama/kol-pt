@@ -1,3 +1,5 @@
+import type { TAnimeInfo } from "../schemas/api/anime-info.schema";
+import type { TYouTubeInfo } from "../schemas/api/youtube-info.schema";
 import type { TEntry } from "../schemas/entry/entry.schema";
 import type { TReport } from "../schemas/moderation.schema";
 import type { TPost } from "../schemas/post.schema";
@@ -132,6 +134,31 @@ export const postsCacheItem = storage.defineItem<ICached<Array<TPost>> | null>("
  * Cached entries.
  */
 export const entriesCacheItem = storage.defineItem<ICached<Array<TEntry>> | null>("local:cache-entries", { fallback: null });
+
+/**
+ * @description
+ * Cached copies of values kept by key, each with its own age.
+ */
+export type TKeyedCache<T> = Record<string, ICached<T>>;
+
+/**
+ * @description
+ * Cached anime details, by `anilist:<id>` or `mal:<id>`.
+ */
+export const animeInfoCacheItem = storage.defineItem<TKeyedCache<TAnimeInfo>>("local:cache-anime-info", { fallback: {} });
+
+/**
+ * @description
+ * Cached YouTube channel details, by channel ID.
+ */
+export const channelInfoCacheItem = storage.defineItem<TKeyedCache<TYouTubeInfo>>("local:cache-channel-info", { fallback: {} });
+
+/**
+ * @description
+ * Cached thumbnails for the entries list, by `anilist:<id>`, `mal:<id>` or
+ * `youtube:<channel ID>`.
+ */
+export const coversCacheItem = storage.defineItem<TKeyedCache<string>>("local:cache-covers", { fallback: {} });
 
 /**
  * @description

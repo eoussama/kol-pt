@@ -1,5 +1,8 @@
-import { getAniListInfo, toPlainText } from "./anilist";
+import { fakeBrowser } from "wxt/testing/fake-browser";
+import { animeInfoCacheItem, coversCacheItem } from "../../core/storage/items";
+import { getAniListCovers, getAniListInfo, toPlainText } from "./anilist";
 import { getAnimeInfo } from "./anime";
+import { getEntryCovers } from "./covers";
 import { getJikanInfo } from "./jikan";
 
 
@@ -44,6 +47,10 @@ function stubFetch(answers: { anilist?: unknown; jikan?: unknown }) {
 
   return fetch;
 }
+
+beforeEach(() => {
+  fakeBrowser.reset();
+});
 
 afterEach(() => {
   vi.unstubAllGlobals();
@@ -108,6 +115,26 @@ describe("getAnimeInfo", () => {
     await expect(getAnimeInfo({ malId: 1, anilistId: 2 })).resolves.toMatchObject({ description: "From Jikan.", photo: "https://cdn.myanimelist.net/a.webp" });
   });
 
+  it("keeps what it found for a week, by the ID it asked with", async () => {
+    const fetch = stubFetch({ anilist: media });
+
+    await getAnimeInfo({ malId: 1, anilistId: 2 });
+    await getAnimeInfo({ anilistId: 2 });
+
+    expect(fetch).toHaveBeenCalledTimes(1);
+    expect(Object.keys(await animeInfoCacheItem.getValue())).toEqual(["anilist:2"]);
+  });
+
+  it("does not keep the placeholder, so it asks again", async () => {
+    const fetch = stubFetch({});
+
+    await getAnimeInfo({ malId: 1 });
+    await getAnimeInfo({ malId: 1 });
+
+    expect(fetch.mock.calls.length).toBeGreaterThan(2);
+    await expect(animeInfoCacheItem.getValue()).resolves.toEqual({});
+  });
+
   it("gives a placeholder when neither answers", async () => {
     stubFetch({});
 
@@ -123,5 +150,43 @@ describe("getJikanInfo", () => {
     stubFetch({ jikan });
 
     await expect(getJikanInfo(1)).resolves.toMatchObject({ genres: ["Action"], altTitles: [{ title: "Shikabane", official: true }, { title: "", official: true }, { title: "屍", official: true }] });
+  });
+});
+
+describe("getAniListCovers", () => {
+  it("asks for each kind of ID only when there are some, and finds covers by both", async () => {
+    const fetch = vi.fn(async (_url: string, _init?: RequestInit) => new Response(JSON.stringify({
+      data: { Page: { media: [{ id: 2, idMal: 1, coverImage: { large: "https://s4.anilist.co/c.jpg" } }, { id: 3, idMal: null, coverImage: { large: null } }] } },
+    })));
+
+    vi.stubGlobal("fetch", fetch);
+
+    const covers = await getAniListCovers({ anilistIds: [2, 3], malIds: [] });
+
+    expect(fetch).toHaveBeenCalledTimes(1);
+    expect(fetch.mock.calls[0]?.[1]?.body).toContain("id_in");
+    expect([...covers]).toEqual([["anilist:2", "https://s4.anilist.co/c.jpg"], ["mal:1", "https://s4.anilist.co/c.jpg"]]);
+  });
+});
+
+describe("getEntryCovers", () => {
+  const entries = [
+    { id: "a", type: 0, title: "A", altTitles: [], anilistId: 2 },
+    { id: "b", type: 0, title: "B", altTitles: [], malId: 7 },
+    { id: "c", type: 0, title: "C", altTitles: [], anilistId: 9, cover: "https://example.com/own.jpg" },
+    { id: "d", type: 1, title: "D", altTitles: [] },
+  ] as never;
+
+  it("reuses anime details already cached, and asks AniList for the rest once", async () => {
+    await animeInfoCacheItem.setValue({ "anilist:2": { updatedAt: Date.now(), data: { description: "", genres: [], altTitles: [], photo: "https://s4.anilist.co/known.jpg" } } });
+
+    const fetch = vi.fn(async () => new Response(JSON.stringify({ data: { Page: { media: [{ id: 5, idMal: 7, coverImage: { large: "https://s4.anilist.co/b.jpg" } }] } } })));
+
+    vi.stubGlobal("fetch", fetch);
+
+    await expect(getEntryCovers(entries)).resolves.toEqual({ a: "https://s4.anilist.co/known.jpg", b: "https://s4.anilist.co/b.jpg" });
+    await expect(getEntryCovers(entries)).resolves.toEqual({ a: "https://s4.anilist.co/known.jpg", b: "https://s4.anilist.co/b.jpg" });
+    expect(fetch).toHaveBeenCalledTimes(1);
+    expect(Object.keys(await coversCacheItem.getValue()).sort()).toEqual(["anilist:2", "mal:7"]);
   });
 });

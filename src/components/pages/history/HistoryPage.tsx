@@ -2,8 +2,7 @@ import type { IHistoryItem, THistoryKind } from "../../../hooks/history.hook";
 
 import { useState } from "react";
 import { openPost } from "../../../core/utils/links";
-import { formatTimestamp } from "../../../core/utils/time";
-import { useHistory } from "../../../hooks/history.hook";
+import { describeLeft, useHistory } from "../../../hooks/history.hook";
 import { useAuthStore } from "../../../state/auth.state";
 import Empty from "../../layout/generic/empty/Empty";
 import Error from "../../layout/generic/error/Error";
@@ -27,7 +26,7 @@ function describeMarked(item: IHistoryItem, kind: THistoryKind): string {
     : "";
 
   if (kind === "continue") {
-    return `Left off at ${formatTimestamp(item.resumeAt ?? 0)}${date ? ` ·${date}` : ""}`;
+    return `${describeLeft(item.left ?? { reaction: 0, post: 0 })}${date ? ` ·${date}` : ""}`;
   }
 
   return `${kind === "watched" ? "Watched" : "Favorited"}${date}`;
@@ -140,8 +139,14 @@ function HistoryPage(): JSX.Element {
                               onClick={() => item.resumeAt === undefined ? openPost(item.post.id, item.tag.id) : openPost(item.post.id, undefined, item.resumeAt)}
                               className="flex w-full items-center gap-3 px-3 py-2.5 text-left outline-none transition-colors hover:bg-muted/50 focus-visible:bg-muted/50 focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:ring-inset"
                             >
-                              <span className="aspect-video w-16 shrink-0 self-start overflow-hidden rounded-md bg-muted">
+                              <span className="relative aspect-video w-16 shrink-0 self-start overflow-hidden rounded-md bg-muted">
                                 <img src={item.post.thumbnail} alt="" loading="lazy" className="size-full object-cover" />
+                                {item.left && item.resumeAt !== undefined && (
+                                  // How far into the post, like video sites show
+                                  <span aria-hidden="true" className="absolute inset-x-0 bottom-0 h-1 bg-black/40">
+                                    <span className="block h-full bg-primary" style={{ width: `${Math.min(100, (item.resumeAt / Math.max(1, item.resumeAt + item.left.post)) * 100)}%` }} />
+                                  </span>
+                                )}
                               </span>
 
                               <span className="flex min-w-0 flex-1 flex-col gap-0.5">

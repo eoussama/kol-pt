@@ -40,6 +40,26 @@ export function formatDuration(seconds: number): string {
 
 /**
  * @description
+ * Formats a number of seconds as a short duration, to the minute once it is
+ * a minute or more, e.g. `1h 5m`, `12m` or `40s`.
+ *
+ * @param seconds - The number of seconds, fractions are dropped
+ * @returns The duration
+ */
+export function formatShortDuration(seconds: number): string {
+  const total = Math.max(0, Math.floor(seconds));
+  const hours = Math.floor(total / 3600);
+  const minutes = Math.floor((total % 3600) / 60);
+
+  if (total < 60) {
+    return `${total}s`;
+  }
+
+  return hours > 0 ? `${hours}h${minutes > 0 ? ` ${minutes}m` : ""}` : `${minutes}m`;
+}
+
+/**
+ * @description
  * Reads a timestamp typed by a person: `h:mm:ss`, `m:ss` or plain seconds.
  *
  * @param text - The typed timestamp

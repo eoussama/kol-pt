@@ -6,6 +6,7 @@ import { useNavigate } from "react-router";
 import { EEntryType } from "../../../core/enums/entry-type.enum";
 import { EPage } from "../../../core/enums/page.enum";
 import { useEntries } from "../../../hooks/entries.hook";
+import { useEntryCovers } from "../../../hooks/entry-covers.hook";
 import Empty from "../../layout/generic/empty/Empty";
 import Error from "../../layout/generic/error/Error";
 import Search from "../../layout/generic/search/Search";
@@ -48,6 +49,7 @@ function EntriesSkeleton(): JSX.Element {
 function EntriesPage(): JSX.Element {
   const navigate = useNavigate();
   const { entries, error, loading, search, entriesCount, onSearch } = useEntries();
+  const covers = useEntryCovers();
   const emptyMessage = entriesCount > 0
     ? (
         <>
@@ -107,7 +109,7 @@ function EntriesPage(): JSX.Element {
                               className="group/entry flex w-full items-center gap-3 px-3 py-2.5 text-left outline-none transition-colors hover:bg-muted/50 focus-visible:bg-muted/50 focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:ring-inset"
                             >
                               <Avatar className="size-9 rounded-lg after:rounded-lg">
-                                <AvatarImage src={entry.cover} alt="" className="rounded-lg" />
+                                <AvatarImage src={entry.cover || covers[entry.id]} alt="" className="rounded-lg object-cover" />
                                 <AvatarFallback className="rounded-lg text-xs font-semibold">
                                   {entry.getTypeName()[0]}
                                 </AvatarFallback>

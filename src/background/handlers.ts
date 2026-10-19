@@ -1,6 +1,7 @@
 import type { THandlers } from "./messaging/server";
 
 import { getAnimeInfo } from "./api/anime";
+import { getEntryCovers } from "./api/covers";
 import { getPatreonPostDetails } from "./api/patreon";
 import { getChannelInfo } from "./api/youtube";
 import { requireUser, signInWithGoogleToken, signOutUser, toAuthUser } from "./auth";
@@ -41,6 +42,8 @@ export const handlers: THandlers = {
   "posts.details": ({ postId }) => getPatreonPostDetails(postId),
 
   "entries.list": ({ force }) => getEntries(force),
+
+  "entries.covers": async () => getEntryCovers(await getEntries()),
 
   "anime.info": ({ malId, anilistId }) => getAnimeInfo({ malId, anilistId }),
 
