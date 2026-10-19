@@ -65,7 +65,7 @@ const TYPE_FIELDS: Record<TEntryType, Array<[keyof TEntryForm, string, string?]>
  * @param title - The title to start a new entry with
  * @returns The form's fields
  */
-function toForm(entry: Entry | null, title: string): TEntryForm {
+export function toForm(entry: Entry | null, title: string): TEntryForm {
   const model = (entry?.model ?? {}) as Partial<Record<keyof TEntryForm, unknown>>;
   const text = (value: unknown) => value === undefined || value === null ? "" : String(value);
 

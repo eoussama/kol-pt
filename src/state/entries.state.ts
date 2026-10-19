@@ -10,7 +10,7 @@ import { request } from "../core/messaging/client";
  * @description
  * State management for entries.
  */
-export const useEntriesStore = create<IEntriesState>(set => ({
+export const useEntriesStore = create<IEntriesState>((set, get) => ({
 
   /**
    * @description
@@ -41,7 +41,8 @@ export const useEntriesStore = create<IEntriesState>(set => ({
   loadEntries: async (cache: boolean = true) => {
     try {
       set({ error: false });
-      set({ loading: true });
+      // Reloads keep what is shown until the new entries are in
+      set({ loading: get().entries.length === 0 });
 
       const entries = await request("entries.list", { force: !cache });
 

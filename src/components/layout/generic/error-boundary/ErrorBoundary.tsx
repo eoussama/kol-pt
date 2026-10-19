@@ -1,6 +1,7 @@
 import type { ErrorInfo, ReactNode } from "react";
 
 import { Component } from "react";
+import { isContextInvalidated } from "../../../../core/utils/extension-context";
 
 
 
@@ -51,13 +52,16 @@ export class ErrorBoundary extends Component<IErrorBoundaryProps, IErrorBoundary
 
   /**
    * @description
-   * Reports the error.
+   * Reports the error, unless the extension was reloaded under the page:
+   * that is expected, and the panel simply goes away.
    *
    * @param error - The error thrown
    * @param info - Where it was thrown
    */
   override componentDidCatch(error: Error, info: ErrorInfo): void {
-    console.error("[KOL PT]", error, info.componentStack);
+    if (!isContextInvalidated(error)) {
+      console.error("[KOL PT]", error, info.componentStack);
+    }
   }
 
   /**

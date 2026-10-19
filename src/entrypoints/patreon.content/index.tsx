@@ -10,6 +10,7 @@ import { watchPatreonTheme } from "../../content/patreon/theme-watcher";
 import { hydratePosts } from "../../core/domain/hydrate";
 import { request } from "../../core/messaging/client";
 import { patreonColorModeItem, postsCacheItem } from "../../core/storage/items";
+import { isContextInvalidated } from "../../core/utils/extension-context";
 import { useThemeStore } from "../../state/theme.state";
 
 
@@ -39,7 +40,17 @@ export default defineContentScript({
 
     // Panels render into their cards through portals, so the root itself
     // never needs to be attached to the page
-    const root = createRoot(document.createElement("div"));
+    // Errors a panel's error boundary catches, it reports itself. Once the
+    // extension is reloaded under the page, renders fail until WXT notices
+    // and unmounts everything: those are not worth reporting.
+    const root = createRoot(document.createElement("div"), {
+      onCaughtError: () => undefined,
+      onUncaughtError: (error) => {
+        if (!isContextInvalidated(error)) {
+          reportError(error);
+        }
+      },
+    });
     const overlays = createOverlayContainer();
 
     root.render(<EmbedRoot registry={registry} overlayContainer={overlays.container} />);

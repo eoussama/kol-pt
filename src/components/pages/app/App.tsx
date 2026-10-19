@@ -1,6 +1,7 @@
 import { Outlet } from "react-router";
 
 import { useAuthSync } from "../../../hooks/auth-sync.hook";
+import { useContentSync } from "../../../hooks/content-sync.hook";
 import { useProgressSync } from "../../../hooks/progress-sync.hook";
 import { useReportsSync } from "../../../hooks/reports-sync.hook";
 import { useWatchlistSync } from "../../../hooks/watchlist-sync.hook";
@@ -21,6 +22,7 @@ function App(): JSX.Element {
   useWatchlistSync();
   useProgressSync();
   useReportsSync();
+  useContentSync();
 
   return (
     <main className="flex h-full w-full flex-col bg-background text-sm text-foreground">

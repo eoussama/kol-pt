@@ -16,8 +16,9 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel, FieldSet } from "../../ui/field";
 import { Input } from "../../ui/input";
 import { Spinner } from "../../ui/spinner";
+import { Textarea } from "../../ui/textarea";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../../ui/tooltip";
-import EntryEditorDialog from "./EntryEditorDialog";
+import EntryEditorDialog, { toEntryInput, toForm } from "./EntryEditorDialog";
 import { describeError } from "./errors";
 import TimeField from "./TimeField";
 
@@ -27,7 +28,18 @@ import TimeField from "./TimeField";
  * @description
  * The reaction fields a problem can be shown under.
  */
-type TTagField = "entryId" | "label" | "description" | "startTime" | "endTime" | "context";
+type TTagField = "entryId" | "label" | "description" | "startTime" | "endTime" | "context" | "altTitles";
+
+/**
+ * @description
+ * Reads titles typed one per line.
+ *
+ * @param text - The typed titles
+ * @returns The titles, trimmed, without blank lines
+ */
+function toTitles(text: string): Array<string> {
+  return text.split("\n").map(title => title.trim()).filter(Boolean);
+}
 
 /**
  * @description
@@ -112,6 +124,8 @@ function ReactionEditorDialog(props: IReactionEditorDialogProps): JSX.Element {
   const [endTime, setEndTime] = useState<number | null>(null);
   const [videoTitle, setVideoTitle] = useState("");
   const [videoId, setVideoId] = useState("");
+  // A YouTube video's own titles, or else the entry's, one per line
+  const [altTitles, setAltTitles] = useState("");
   const [entryEditor, setEntryEditor] = useState<{ entry: Entry | null; title: string } | null>(null);
   const [typed, setTyped] = useState("");
   const [saving, setSaving] = useState(false);
@@ -141,6 +155,17 @@ function ReactionEditorDialog(props: IReactionEditorDialogProps): JSX.Element {
     setError(null);
   }, [open, tag, initial, loadEntries]);
 
+  // Follows the entry picked, and the entry once it is saved
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+
+    const videoTitles = entry?.id === tag?.entryId ? readYouTubeContext(tag?.context ?? {}).altTitles ?? [] : [];
+
+    setAltTitles((isYouTube ? videoTitles : entry?.altTitles ?? []).join("\n"));
+  }, [open, tag, entry, isYouTube]);
+
   const save = async () => {
     const parsed = TagInputSchema.safeParse({
       id: tag?.id ?? crypto.randomUUID(),
@@ -150,7 +175,7 @@ function ReactionEditorDialog(props: IReactionEditorDialogProps): JSX.Element {
       startTime: startTime ?? Number.NaN,
       endTime: endTime ?? Number.NaN,
       context: isYouTube
-        ? { title: videoTitle.trim() || undefined, videoId: toYouTubeVideoId(videoId) || undefined, altTitles: readYouTubeContext(tag?.context ?? {}).altTitles }
+        ? { title: videoTitle.trim() || undefined, videoId: toYouTubeVideoId(videoId) || undefined, altTitles: toTitles(altTitles).length > 0 ? toTitles(altTitles) : undefined }
         : {},
     });
 
@@ -166,10 +191,25 @@ function ReactionEditorDialog(props: IReactionEditorDialogProps): JSX.Element {
       return;
     }
 
+    // Other entries' titles belong to the entry, saved with the reaction
+    const entryTitles = toTitles(altTitles);
+    const entryChanged = entry !== null && !isYouTube && entryTitles.join("\n") !== entry.altTitles.join("\n");
+    const entryInput = entryChanged ? toEntryInput(entry.id, { ...toForm(entry, ""), altTitles: entryTitles.join("\n") }) : null;
+
+    if (entryInput && "error" in entryInput) {
+      setError({ message: entryInput.error, field: "altTitles" });
+
+      return;
+    }
+
     setSaving(true);
     setError(null);
 
     try {
+      if (entryInput) {
+        await request("entries.save", entryInput);
+      }
+
       await request("tags.save", { postId, tag: parsed.data });
       onClose(true);
     }
@@ -297,6 +337,27 @@ function ReactionEditorDialog(props: IReactionEditorDialogProps): JSX.Element {
 
                     {fieldError("context") && <FieldError className="col-span-2">{fieldError("context")}</FieldError>}
                   </div>
+                )}
+
+                {entry && (
+                  <Field data-invalid={Boolean(fieldError("altTitles"))}>
+                    <FieldLabel htmlFor={`${formId}-alt-titles`}>{isYouTube ? "Other video titles" : `Other titles of ${entry.title}`}</FieldLabel>
+                    <Textarea
+                      id={`${formId}-alt-titles`}
+                      rows={2}
+                      placeholder="e.g. short names KOL uses"
+                      value={altTitles}
+                      aria-invalid={Boolean(fieldError("altTitles"))}
+                      onChange={e => setAltTitles(e.target.value)}
+                    />
+                    {fieldError("altTitles")
+                      ? <FieldError>{fieldError("altTitles")}</FieldError>
+                      : (
+                          <FieldDescription className="text-xs">
+                            {isYouTube ? "One per line. The shortest shows on the chip" : "One per line. Saved to the entry, for every reaction to it"}
+                          </FieldDescription>
+                        )}
+                  </Field>
                 )}
 
                 <div className="grid grid-cols-2 gap-3">

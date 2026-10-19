@@ -1,17 +1,21 @@
 import type { IPostCardProps } from "../../../../core/types/props/post-card-props.type";
 
 import { useLayoutEffect, useRef, useState } from "react";
+import { ModerationProvider } from "../../../../context/ModerationContext";
 import { EViewMode } from "../../../../core/enums/view-mode.enum";
 import { cn } from "../../../../core/utils/cn";
 import { openPost } from "../../../../core/utils/links";
+import { useAuthStore } from "../../../../state/auth.state";
 import { badgeVariants } from "../../../ui/badge";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../../../ui/tooltip";
+import PostModerationMenu from "../../moderation/PostModerationMenu";
 
 
 
 /**
  * @description
  * Renders a card for displaying a post, with an image, title, date, description and tags.
+ * Moderators also get the post's moderation menu in its corner.
  *
  * @param props - The post card props
  * @returns The rendered post card
@@ -20,6 +24,7 @@ function PostCard(props: IPostCardProps): JSX.Element {
   const { post } = props;
   const { viewMode } = props;
 
+  const moderator = useAuthStore(e => e.moderator);
   const compact = viewMode === EViewMode.COMPACT;
   const chipsRef = useRef<HTMLDivElement>(null);
   const [chipsOpen, setChipsOpen] = useState(false);
@@ -97,6 +102,7 @@ function PostCard(props: IPostCardProps): JSX.Element {
             className={cn(
               "text-left font-semibold leading-snug outline-none after:absolute after:inset-0 after:content-['']",
               compact ? "truncate text-sm" : "line-clamp-2 text-[0.9375rem]",
+              compact && moderator && "pr-8",
             )}
           >
             {post.title}
@@ -155,6 +161,18 @@ function PostCard(props: IPostCardProps): JSX.Element {
           </button>
         )}
       </div>
+
+      {moderator && (
+        <div className={cn("absolute z-10", compact ? "top-1.5 right-1.5" : "top-2 right-2")}>
+          <ModerationProvider post={post}>
+            <PostModerationMenu
+              post={post}
+              listReactions={true}
+              className={cn(!compact && "rounded-full bg-background/80 text-foreground shadow-sm backdrop-blur-sm hover:bg-background")}
+            />
+          </ModerationProvider>
+        </div>
+      )}
     </article>
   );
 }

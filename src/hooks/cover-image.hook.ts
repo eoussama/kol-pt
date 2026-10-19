@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { request } from "../core/messaging/client";
+import { isFetchableImageUrl } from "../core/utils/image-hosts";
 
 
 
@@ -36,14 +37,20 @@ function keep(url: string, result: string): void {
  * @description
  * Fetches an external image through the background and returns it as a data
  * URL, so it shows on pages whose content security policy blocks its host.
- * Some hosts refuse the background (AniList answers it without CORS): their
- * images are then used as they are.
+ * Images the background cannot fetch (AniList refuses it) are used as they
+ * are, as is any image it fails to fetch.
  *
  * @param url - The external image URL
  * @returns The image as a data URL or, failing that, its URL; null while loading or for non-https URLs
  */
 export function useCoverImage(url: string | null | undefined): string | null {
-  const [dataUrl, setDataUrl] = useState<string | null>(() => (url && fetchedImages.get(url)) ?? null);
+  const [dataUrl, setDataUrl] = useState<string | null>(() => {
+    if (!url?.startsWith("https://")) {
+      return null;
+    }
+
+    return fetchedImages.get(url) ?? (isFetchableImageUrl(url) ? null : url);
+  });
 
   useEffect(() => {
     const known = url ? fetchedImages.get(url) : undefined;
@@ -51,6 +58,12 @@ export function useCoverImage(url: string | null | undefined): string | null {
     setDataUrl(known ?? null);
 
     if (known || !url?.startsWith("https://")) {
+      return;
+    }
+
+    if (!isFetchableImageUrl(url)) {
+      setDataUrl(url);
+
       return;
     }
 

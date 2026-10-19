@@ -1,17 +1,22 @@
 import type { IEntryViewProps } from "../../../core/types/props/entry-page-props.type";
 
+import { Pencil } from "lucide-react";
 import { useState } from "react";
 import { getPlaceholderUrl } from "../../../core/utils/assets";
 import { cn } from "../../../core/utils/cn";
 import { useCoverImage } from "../../../hooks/cover-image.hook";
 import { useDelayed } from "../../../hooks/delayed.hook";
 import { useEntry } from "../../../hooks/entry.hook";
+import { useAuthStore } from "../../../state/auth.state";
 import EntryAka from "../../layout/entry/entry-aka/EntryAka";
 import EntryHead from "../../layout/entry/entry-head/EntryHead";
 import EntryLinks from "../../layout/entry/entry-links/EntryLinks";
 import EntryReactions from "../../layout/entry/entry-reactions/EntryReactions";
 import Error from "../../layout/generic/error/Error";
+import EntryEditorDialog from "../../layout/moderation/EntryEditorDialog";
+import { Button } from "../../ui/button";
 import { Skeleton } from "../../ui/skeleton";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../../ui/tooltip";
 
 
 
@@ -91,7 +96,10 @@ const SKELETON_DELAY_MS = 200;
  */
 function EntryView(props: IEntryViewProps): JSX.Element {
   const { entryId, isDialog = false, onBack } = props;
-  const { loading, entry, description, photo, subscribers, altTitles, genres, reactions } = useEntry(entryId);
+  const moderator = useAuthStore(e => e.moderator);
+  const [editing, setEditing] = useState(false);
+  const [revision, setRevision] = useState(0);
+  const { loading, entry, description, photo, subscribers, altTitles, genres, reactions } = useEntry(entryId, revision);
   const coverImage = useCoverImage(photo);
   const slow = useDelayed(loading, SKELETON_DELAY_MS);
   const [coverShown, setCoverShown] = useState(() => coverImage !== null);
@@ -130,6 +138,39 @@ function EntryView(props: IEntryViewProps): JSX.Element {
           )}
         />
       </div>
+
+      {moderator && (
+        <>
+          <Tooltip>
+            <TooltipTrigger
+              render={(
+                <Button
+                  size="icon-sm"
+                  variant="secondary"
+                  onClick={() => setEditing(true)}
+                  aria-label="Edit entry"
+                  className="absolute top-3 right-3 z-10 rounded-full bg-background/80 shadow-sm backdrop-blur-sm hover:bg-background"
+                />
+              )}
+            >
+              <Pencil />
+            </TooltipTrigger>
+            <TooltipContent side="left">Edit entry</TooltipContent>
+          </Tooltip>
+
+          <EntryEditorDialog
+            open={editing}
+            entry={entry}
+            onClose={(savedId) => {
+              setEditing(false);
+
+              if (savedId) {
+                setRevision(current => current + 1);
+              }
+            }}
+          />
+        </>
+      )}
 
       <EntryHead
         entry={entry}

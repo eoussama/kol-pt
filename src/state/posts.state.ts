@@ -10,7 +10,7 @@ import { request } from "../core/messaging/client";
  * @description
  * State management for posts.
  */
-export const usePostStore = create<IPostsState>(set => ({
+export const usePostStore = create<IPostsState>((set, get) => ({
 
   /**
    * @description
@@ -41,7 +41,8 @@ export const usePostStore = create<IPostsState>(set => ({
   loadPosts: async (cache: boolean = true) => {
     try {
       set({ error: false });
-      set({ loading: true });
+      // Reloads keep what is shown until the new posts are in
+      set({ loading: get().posts.length === 0 });
 
       const { posts, entries } = await request("posts.list", { force: !cache });
 

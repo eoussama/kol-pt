@@ -60,3 +60,15 @@ describe("fetchImageAsDataUrl", () => {
     await expect(fetchImageAsDataUrl("https://cdn.myanimelist.net/a.png")).resolves.toBeNull();
   });
 });
+
+describe("images the background cannot fetch", () => {
+  it("leaves AniList's to be shown as they are, without asking for them", async () => {
+    const fetch = vi.fn();
+
+    vi.stubGlobal("fetch", fetch);
+
+    await expect(fetchImageAsDataUrl("https://s4.anilist.co/file/a.jpg")).resolves.toBeNull();
+    expect(fetch).not.toHaveBeenCalled();
+    vi.unstubAllGlobals();
+  });
+});

@@ -41,3 +41,22 @@ export function isAllowedImageUrl(url: string): boolean {
  * The hosts, as a readable list for messages.
  */
 export const ALLOWED_IMAGE_SITES = "MyAnimeList, AniList, Kitsu, TMDB, IMDb, Wikimedia, Rotten Tomatoes or YouTube";
+
+/**
+ * @description
+ * Allowed hosts that refuse the background's requests (AniList's CDN answers
+ * them without a usable CORS header), so their images are shown as they are
+ * instead of failing, and logging an error, on every fetch.
+ */
+const UNFETCHABLE_IMAGE_HOSTS = ["s4.anilist.co"];
+
+/**
+ * @description
+ * Whether the background can fetch an image, to pass it on as a data URL.
+ *
+ * @param url - The image URL
+ * @returns True for allowed images whose host accepts the background's requests
+ */
+export function isFetchableImageUrl(url: string): boolean {
+  return isAllowedImageUrl(url) && !UNFETCHABLE_IMAGE_HOSTS.includes(new URL(url).hostname);
+}

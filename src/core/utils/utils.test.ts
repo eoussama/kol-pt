@@ -1,4 +1,5 @@
 import { shortest } from "./array";
+import { isContextInvalidated } from "./extension-context";
 import { formatDuration, formatTimestamp, parseTimestamp } from "./time";
 
 
@@ -58,5 +59,13 @@ describe("parseTimestamp", () => {
 
   it("reads back what it formats", () => {
     expect(parseTimestamp(formatTimestamp(4321))).toBe(4321);
+  });
+});
+
+describe("isContextInvalidated", () => {
+  it("recognizes the error a content script gets once its extension is reloaded", () => {
+    expect(isContextInvalidated(new Error("Extension context invalidated."))).toBe(true);
+    expect(isContextInvalidated(new Error("Network error"))).toBe(false);
+    expect(isContextInvalidated("Extension context invalidated.")).toBe(false);
   });
 });

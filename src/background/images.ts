@@ -1,4 +1,4 @@
-import { isAllowedImageUrl } from "../core/utils/image-hosts";
+import { isAllowedImageUrl, isFetchableImageUrl } from "../core/utils/image-hosts";
 
 
 
@@ -38,7 +38,7 @@ export function bytesToBase64(bytes: Uint8Array): string {
  * @returns Promise resolving to the data URL, or null if refused or failed
  */
 export async function fetchImageAsDataUrl(url: string): Promise<string | null> {
-  if (!isAllowedImageUrl(url)) {
+  if (!isFetchableImageUrl(url)) {
     return null;
   }
 

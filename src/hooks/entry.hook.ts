@@ -144,9 +144,10 @@ async function loadEntry(entryId: string): Promise<IEntryState> {
  * the page is open shows at once, and is refreshed quietly.
  *
  * @param entryId - The ID of the entry
+ * @param revision - Changed to load the entry again, e.g. once it is edited
  * @returns Entry state including loading, entry data, media info, and reactions
  */
-export function useEntry(entryId: string): IEntryState {
+export function useEntry(entryId: string, revision = 0): IEntryState {
   const [state, setState] = useState<IEntryState>(() => initialState(entryId));
 
   useEffect(() => {
@@ -175,7 +176,7 @@ export function useEntry(entryId: string): IEntryState {
     return () => {
       cancelled = true;
     };
-  }, [entryId]);
+  }, [entryId, revision]);
 
   return state;
 }
