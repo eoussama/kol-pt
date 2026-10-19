@@ -37,7 +37,7 @@ You need access to KOL's posts on Patreon to watch them; the extension does not 
 
 ## Building from source
 
-Requirements: Node.js 24 (see `.nvmrc`) and pnpm 11 (`corepack enable` picks the version from `package.json`).
+Requirements: Node.js 24 (see `.nvmrc`) and pnpm 12 (`corepack enable` picks the version from `package.json`).
 
 ```sh
 pnpm install
@@ -51,7 +51,10 @@ cp .env.example .env   # then fill in the Firebase and YouTube values
 | `pnpm build:edge`, `build:firefox`, `build:safari` | The other browsers, in `.output/<browser>-mv3` |
 | `pnpm build:all` | All four builds |
 | `pnpm zip:all` | Store-ready zips in `.output`, plus the Firefox sources zip |
-| `pnpm test` / `pnpm lint` / `pnpm typecheck` | Checks |
+| `pnpm test` | Unit tests, then the same tests with coverage |
+| `pnpm test:unit` / `pnpm test:coverage` | Unit tests alone, or with a coverage report in `coverage/` |
+| `pnpm test:mutation` | Mutation tests (Stryker), report in `reports/mutation/` |
+| `pnpm lint` / `pnpm typecheck` | Checks |
 | `pnpm check` | Audit, lint, type-check, test and zip everything |
 
 ### Loading the build
@@ -88,6 +91,7 @@ The first change a moderator makes rewrites `posts` and `entries` from arrays in
 - `src/entrypoints/patreon.content`: runs on patreon.com. It finds post cards through Patreon's stable `data-tag` attributes (`src/content/patreon/selectors.ts` owns every selector), inserts a panel into each tracked post, and drives Patreon's video player.
 - `src/entrypoints/background.ts`: the only part that talks to Firebase and third-party APIs. Pages ask it for data through a typed request protocol (`src/core/messaging`), and it caches data in extension storage.
 - `src/entrypoints/popup` and `src/entrypoints/auth`: the toolbar popup and the sign-in window.
+- The UI is built with [shadcn/ui](https://ui.shadcn.com) components on [Base UI](https://base-ui.com) (`src/components/ui`) and Tailwind CSS (`src/styles`). On Patreon, each panel renders in its own shadow root, so the extension's styles and Patreon's never touch; dialogs, menus and tooltips render in a shadow root of their own on the page.
 
 If Patreon changes its markup again, start with `src/content/patreon/selectors.ts` and the fixture next to its tests.
 

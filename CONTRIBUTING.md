@@ -61,6 +61,7 @@ Please read and follow our [Code of Conduct](CODE_OF_CONDUCT.md) before contribu
 - Write comments only for non-obvious logic
 - Follow the existing project code style and linting rules: `pnpm lint`
 - Write unit tests for new features
+- Build UI from the shadcn/ui components in `src/components/ui` and Tailwind classes, with the design tokens in `src/styles/globals.css` rather than hard-coded colors. Those components come from the shadcn registry (Base UI, nova style); keep changes to them minimal
 - Keep Patreon selectors in `src/content/patreon/selectors.ts`, and only rely on `data-tag` attributes, ids and ARIA labels: Patreon's class names change with every deploy
 - Only the background script may talk to Firebase or third-party APIs; other parts of the extension go through the request protocol in `src/core/messaging`
 

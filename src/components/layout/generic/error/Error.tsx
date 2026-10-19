@@ -1,9 +1,8 @@
 import type { IPostErrorProps } from "../../../../core/types/props/post-error.type";
 
-import WarningIcon from "@mui/icons-material/Warning";
+import { TriangleAlert } from "lucide-react";
 import { Fragment } from "react";
-
-import styles from "./Error.module.scss";
+import { Empty, EmptyHeader, EmptyMedia, EmptyTitle } from "../../../ui/empty";
 
 
 
@@ -22,12 +21,15 @@ function Error(props: IPostErrorProps): JSX.Element {
   }
 
   return (
-    <>
-      <div className={styles.error}>
-        <WarningIcon className={styles.error__icon} />
-        <span className={styles.error__message}>{message}</span>
-      </div>
-    </>
+    <Empty role="alert" className="py-10">
+      <EmptyHeader>
+        <EmptyMedia variant="icon" className="size-10 rounded-xl bg-destructive/10 text-destructive">
+          <TriangleAlert className="size-5" />
+        </EmptyMedia>
+
+        <EmptyTitle className="text-muted-foreground">{message}</EmptyTitle>
+      </EmptyHeader>
+    </Empty>
   );
 }
 

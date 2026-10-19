@@ -1,29 +1,14 @@
-import AddIcon from "@mui/icons-material/Add";
-import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettingsOutlined";
-import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
-import EditIcon from "@mui/icons-material/Edit";
-import FlagIcon from "@mui/icons-material/Flag";
-import OutlinedFlagIcon from "@mui/icons-material/OutlinedFlag";
-import { Badge, Divider, IconButton, ListItemIcon, Menu, MenuItem, Tooltip } from "@mui/material";
-import { useContext, useState } from "react";
+import { Flag, Pencil, Plus, ShieldCheck, Trash2 } from "lucide-react";
+import { useContext } from "react";
 import { useModeration } from "../../../../context/ModerationContext";
 import { PostContext } from "../../../../context/PostContext";
 import { useAuthStore } from "../../../../state/auth.state";
 import { selectReports, useReportsStore } from "../../../../state/reports.state";
+import { Button } from "../../../ui/button";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "../../../ui/dropdown-menu";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../../../ui/tooltip";
 
-import styles from "./PostModeration.module.scss";
 
-
-
-/**
- * @description
- * Stops a click in the panel's header from toggling the panel.
- *
- * @param e - The click
- */
-function keepPanel(e: React.MouseEvent): void {
-  e.stopPropagation();
-}
 
 /**
  * @description
@@ -38,7 +23,6 @@ function PostModeration(): JSX.Element | null {
   const moderator = useAuthStore(e => e.moderator);
   const allReports = useReportsStore(e => e.reports);
   const moderation = useModeration();
-  const [anchor, setAnchor] = useState<HTMLElement | null>(null);
   const postReports = moderator ? selectReports(allReports, post.id, undefined) : [];
   const reportCount = moderator ? selectReports(allReports, post.id, null).length : 0;
 
@@ -46,51 +30,61 @@ function PostModeration(): JSX.Element | null {
     return null;
   }
 
-  const run = (action: () => void) => () => {
-    setAnchor(null);
-    action();
-  };
-
   return (
-    <span className={styles.moderation} onClick={keepPanel}>
-      <Tooltip title="Report a missing reaction">
-        <IconButton size="small" aria-label="report a missing reaction" onClick={() => moderation.report("missing")}>
-          <OutlinedFlagIcon fontSize="small" />
-        </IconButton>
+    <span className="inline-flex items-center gap-0.5">
+      <Tooltip>
+        <TooltipTrigger
+          render={<Button variant="ghost" size="icon-sm" aria-label="report a missing reaction" className="text-muted-foreground" onClick={() => moderation.report("missing")} />}
+        >
+          <Flag />
+        </TooltipTrigger>
+        <TooltipContent>Report a missing reaction</TooltipContent>
       </Tooltip>
 
       {moderator && (
-        <>
-          <Tooltip title={reportCount > 0 ? `Moderate (${reportCount} open reports)` : "Moderate"}>
-            <IconButton size="small" aria-label="moderate" onClick={e => setAnchor(e.currentTarget)}>
-              <Badge badgeContent={reportCount} color="warning" max={99}>
-                <AdminPanelSettingsIcon fontSize="small" />
-              </Badge>
-            </IconButton>
+        <DropdownMenu>
+          <Tooltip>
+            <TooltipTrigger
+              render={(
+                <DropdownMenuTrigger
+                  render={<Button variant="ghost" size="icon-sm" aria-label="moderate" className="relative text-muted-foreground" />}
+                />
+              )}
+            >
+              <ShieldCheck />
+              {reportCount > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-warning px-1 text-[10px] leading-none font-semibold text-white tabular-nums ring-2 ring-card">
+                  {reportCount > 99 ? "99+" : reportCount}
+                </span>
+              )}
+            </TooltipTrigger>
+            <TooltipContent>{reportCount > 0 ? `Moderate (${reportCount} open reports)` : "Moderate"}</TooltipContent>
           </Tooltip>
 
-          <Menu anchorEl={anchor} open={anchor !== null} onClose={() => setAnchor(null)} onClick={keepPanel}>
-            <MenuItem onClick={run(() => moderation.editTag(null))}>
-              <ListItemIcon><AddIcon fontSize="small" /></ListItemIcon>
-              Add a reaction
-            </MenuItem>
-            {postReports.length > 0 && (
-              <MenuItem onClick={run(() => moderation.review())}>
-                <ListItemIcon><FlagIcon fontSize="small" color="warning" /></ListItemIcon>
-                {`Review post reports (${postReports.length})`}
-              </MenuItem>
-            )}
-            <MenuItem onClick={run(moderation.editPost)}>
-              <ListItemIcon><EditIcon fontSize="small" /></ListItemIcon>
-              Edit post details
-            </MenuItem>
-            <Divider />
-            <MenuItem onClick={run(moderation.untrackPost)} sx={{ color: "error.main" }}>
-              <ListItemIcon><DeleteOutlinedIcon fontSize="small" color="error" /></ListItemIcon>
+          <DropdownMenuContent align="end" className="w-56">
+            <DropdownMenuGroup>
+              <DropdownMenuItem onClick={() => moderation.editTag(null)}>
+                <Plus />
+                Add a reaction
+              </DropdownMenuItem>
+              {postReports.length > 0 && (
+                <DropdownMenuItem onClick={() => moderation.review()}>
+                  <Flag className="text-warning" />
+                  {`Review post reports (${postReports.length})`}
+                </DropdownMenuItem>
+              )}
+              <DropdownMenuItem onClick={() => moderation.editPost()}>
+                <Pencil />
+                Edit post details
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem variant="destructive" onClick={() => moderation.untrackPost()}>
+              <Trash2 />
               Stop tracking this post
-            </MenuItem>
-          </Menu>
-        </>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       )}
     </span>
   );

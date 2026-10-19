@@ -2,11 +2,11 @@ import React from "react";
 
 import ReactDOM from "react-dom/client";
 import { RouterProvider } from "react-router/dom";
-import { ThemeRoot } from "../../components/theme/ThemeRoot";
+import { TooltipProvider } from "../../components/ui/tooltip";
 import { router } from "../../core/const/router.const";
 import { usePopupTheme } from "../../hooks/popup-theme.hook";
 
-import "../../styles/index.scss";
+import "../../styles/popup.css";
 
 
 
@@ -20,9 +20,9 @@ function Popup(): JSX.Element {
   usePopupTheme();
 
   return (
-    <ThemeRoot>
+    <TooltipProvider delay={300}>
       <RouterProvider router={router} />
-    </ThemeRoot>
+    </TooltipProvider>
   );
 }
 

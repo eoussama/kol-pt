@@ -1,15 +1,17 @@
-import FlagIcon from "@mui/icons-material/Flag";
-import { Button, Chip } from "@mui/material";
+import type { IPostDetails } from "../../../../core/schemas/api/patreon-post.schema";
+
+import { Flag, Zap } from "lucide-react";
 import { useMemo, useState } from "react";
 import { readPostDetails } from "../../../../content/patreon/post-card";
 import { request } from "../../../../core/messaging/client";
 import { useAuthStore } from "../../../../state/auth.state";
 import { selectReports, useReportsStore } from "../../../../state/reports.state";
+import { Badge } from "../../../ui/badge";
+import { Button } from "../../../ui/button";
+import { Spinner } from "../../../ui/spinner";
 import PostDetailsDialog from "../../moderation/PostDetailsDialog";
 import ReportDialog from "../../moderation/ReportDialog";
 import ReportsReviewDialog from "../../moderation/ReportsReviewDialog";
-
-import styles from "./UntrackedPost.module.scss";
 
 
 
@@ -41,10 +43,33 @@ function UntrackedPost(props: IUntrackedPostProps): JSX.Element | null {
   const moderator = useAuthStore(e => e.moderator);
   const allReports = useReportsStore(e => e.reports);
   const [dialog, setDialog] = useState<"report" | "track" | "review" | null>(null);
+  const [published, setPublished] = useState<IPostDetails | null>(null);
+  const [fetching, setFetching] = useState(false);
   const reports = moderator ? selectReports(allReports, postId, undefined) : [];
 
-  // Read when a dialog opens, as Patreon fills the card in over time
-  const details = useMemo(() => ({ ...readPostDetails(card, postId, window.location.href), creationDate: Date.now(), thumbnail: "" }), [card, postId, dialog]);
+  // Read when a dialog opens, as Patreon fills the card in over time. The
+  // post is dated when it was published, not when it gets tracked.
+  const details = useMemo(() => ({
+    ...readPostDetails(card, postId, window.location.href),
+    creationDate: published?.publishedAt ?? Date.now(),
+    thumbnail: published?.thumbnail ?? "",
+  }), [card, postId, dialog, published]);
+
+  /**
+   * @description
+   * Opens the tracking form once Patreon told when the post was published,
+   * and its video's thumbnail, so they are filled in from the start.
+   */
+  const openTrack = () => {
+    setFetching(true);
+    request("posts.details", { postId })
+      .then(setPublished)
+      .catch(() => setPublished(null))
+      .finally(() => {
+        setFetching(false);
+        setDialog("track");
+      });
+  };
 
   if (!user) {
     return null;
@@ -59,20 +84,23 @@ function UntrackedPost(props: IUntrackedPostProps): JSX.Element | null {
   };
 
   return (
-    <div className={styles.untracked}>
-      <span className={styles.untracked__text}>KOL PT does not track this post yet.</span>
+    <div className="my-2.5 mb-4 flex flex-wrap items-center gap-2 rounded-xl border border-dashed bg-card py-2 pr-2 pl-3">
+      <Zap className="size-4 text-muted-foreground" />
+      <span className="text-sm text-muted-foreground">KOL PT does not track this post yet.</span>
 
       {reports.length > 0 && (
-        <Chip
-          size="small"
-          color="warning"
-          icon={<FlagIcon />}
-          label={reports.length === 1 ? "1 request" : `${reports.length} requests`}
-          onClick={() => setDialog("review")}
-        />
+        <Badge
+          variant="outline"
+          className="cursor-pointer border-warning/40 text-warning hover:bg-warning/10"
+          render={<button type="button" onClick={() => setDialog("review")} />}
+        >
+          <Flag />
+          {reports.length === 1 ? "1 request" : `${reports.length} requests`}
+        </Badge>
       )}
 
-      <Button size="small" variant={moderator ? "contained" : "outlined"} disableElevation className={styles.untracked__action} onClick={() => setDialog(moderator ? "track" : "report")}>
+      <Button size="sm" variant={moderator ? "default" : "outline"} className="ml-auto" disabled={fetching} onClick={() => moderator ? openTrack() : setDialog("report")}>
+        {fetching && <Spinner data-icon="inline-start" aria-hidden />}
         {moderator ? "Track post" : "Ask to track"}
       </Button>
 
@@ -86,7 +114,7 @@ function UntrackedPost(props: IUntrackedPostProps): JSX.Element | null {
             title="Requests to track this post"
             reports={reports}
             canApply={() => true}
-            onApply={() => setDialog("track")}
+            onApply={openTrack}
             onClose={() => setDialog(null)}
           />
         </>

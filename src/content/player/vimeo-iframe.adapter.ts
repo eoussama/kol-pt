@@ -69,11 +69,23 @@ export class VimeoIframeAdapter implements IPlayerAdapter {
    * Creates an adapter for a Vimeo iframe, pointing it at the Vimeo player
    * directly if it goes through a wrapper page.
    *
+   * The iframe is also allowed to autoplay: without it, the browser refuses
+   * to start the video from the panel, a click outside the iframe, until the
+   * viewer has clicked the player itself. The permission only applies to the
+   * next page the iframe loads, so it is reloaded for it.
+   *
    * @param iframe - The iframe element
    * @param playerUrl - The direct Vimeo player URL
    */
   constructor(iframe: HTMLIFrameElement, playerUrl: string) {
-    if (iframe.src !== playerUrl) {
+    const allowed = (iframe.getAttribute("allow") ?? "").split(";").map(feature => feature.trim()).filter(Boolean);
+    const canAutoplay = allowed.some(feature => feature.split(/\s+/)[0] === "autoplay");
+
+    if (!canAutoplay) {
+      iframe.setAttribute("allow", [...allowed, "autoplay"].join("; "));
+    }
+
+    if (iframe.src !== playerUrl || !canAutoplay) {
       iframe.src = playerUrl;
     }
 
@@ -124,14 +136,22 @@ export class VimeoIframeAdapter implements IPlayerAdapter {
 
   /**
    * @description
-   * Moves the playhead and starts playback.
+   * Moves the playhead and starts playback. Should the browser still refuse
+   * to start it with sound, it starts muted, which is always allowed.
    *
    * @param seconds - Where to start, in seconds
    * @returns Promise that resolves once playback was requested
    */
   async playFrom(seconds: number): Promise<void> {
     await this.player.setCurrentTime(seconds);
-    await this.player.play();
+
+    try {
+      await this.player.play();
+    }
+    catch {
+      await this.player.setMuted(true);
+      await this.player.play();
+    }
   }
 
   /**

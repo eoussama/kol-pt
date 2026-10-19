@@ -1,5 +1,9 @@
-import { Alert, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
+import { CircleAlert, TriangleAlert } from "lucide-react";
 import { useState } from "react";
+import { Alert, AlertDescription } from "../../ui/alert";
+import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogMedia, AlertDialogTitle } from "../../ui/alert-dialog";
+import { Button } from "../../ui/button";
+import { Spinner } from "../../ui/spinner";
 import { describeError } from "./errors";
 
 
@@ -51,17 +55,32 @@ function ConfirmDialog(props: IConfirmDialogProps): JSX.Element {
   };
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="xs">
-      <DialogTitle>{title}</DialogTitle>
-      <DialogContent>
-        <DialogContentText>{message}</DialogContentText>
-        {error && <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>}
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose}>Cancel</Button>
-        <Button color="error" variant="contained" disableElevation disabled={busy} onClick={confirm}>{confirmLabel}</Button>
-      </DialogActions>
-    </Dialog>
+    <AlertDialog open={open} onOpenChange={next => !next && onClose()}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogMedia className="bg-destructive/10 text-destructive">
+            <TriangleAlert />
+          </AlertDialogMedia>
+          <AlertDialogTitle>{title}</AlertDialogTitle>
+          <AlertDialogDescription>{message}</AlertDialogDescription>
+        </AlertDialogHeader>
+
+        {error && (
+          <Alert variant="destructive">
+            <CircleAlert />
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
+
+        <AlertDialogFooter>
+          <Button variant="outline" onClick={onClose}>Cancel</Button>
+          <Button variant="destructive" disabled={busy} onClick={confirm}>
+            {busy && <Spinner data-icon="inline-start" aria-hidden />}
+            {confirmLabel}
+          </Button>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }
 

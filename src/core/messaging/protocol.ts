@@ -1,4 +1,5 @@
 import type { TAnimeInfo } from "../schemas/api/anime-info.schema";
+import type { IPostDetails } from "../schemas/api/patreon-post.schema";
 import type { TYouTubeInfo } from "../schemas/api/youtube-info.schema";
 import type { TEntry } from "../schemas/entry/entry.schema";
 import type { TEntryInput, TPostInput, TReportInput, TTagInput } from "../schemas/moderation.schema";
@@ -33,6 +34,15 @@ export interface IRequestMap {
 
   /**
    * @description
+   * A Patreon post's publication date and thumbnail, for tracking it.
+   */
+  "posts.details": {
+    payload: { postId: string };
+    response: IPostDetails;
+  };
+
+  /**
+   * @description
    * Every entry.
    */
   "entries.list": {
@@ -42,10 +52,10 @@ export interface IRequestMap {
 
   /**
    * @description
-   * An anime's details from MyAnimeList.
+   * An anime's details from AniList or MyAnimeList, by either ID.
    */
   "anime.info": {
-    payload: { malId: number };
+    payload: { malId?: number; anilistId?: number };
     response: TAnimeInfo;
   };
 

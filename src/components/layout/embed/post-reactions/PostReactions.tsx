@@ -1,6 +1,4 @@
-import CloseIcon from "@mui/icons-material/Close";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { AccordionDetails, AccordionSummary, Alert, Collapse, Dialog, DialogContent, DialogTitle, IconButton, Tooltip } from "@mui/material";
+import { ChevronDown, Info, X } from "lucide-react";
 import { useContext, useEffect, useState } from "react";
 
 import { usePlayer } from "../../../../content/player/PlayerProvider";
@@ -11,16 +9,24 @@ import { openPassione } from "../../../../core/utils/links";
 import { useAutoWatch } from "../../../../hooks/auto-watch.hook";
 import { useProgressTracking } from "../../../../hooks/progress.hook";
 import { useAuthStore } from "../../../../state/auth.state";
+import { usePostWatchlist } from "../../../../state/watchlist.state";
 import EntryView from "../../../pages/entry/EntryView";
-import { PostAccordion } from "../post-accordion/PostAccordion";
+import { Alert, AlertAction, AlertDescription } from "../../../ui/alert";
+import { Button } from "../../../ui/button";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../../../ui/collapsible";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../../ui/dialog";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../../../ui/tooltip";
 import PostModeration from "../post-moderation/PostModeration";
-import PostReactionMenu from "../post-reaction-menu/PostReactionMenu";
 import PostReaction from "../post-reaction/PostReaction";
 import PostResume from "../post-resume/PostResume";
 
-import styles from "./PostReactions.module.scss";
 
 
+/**
+ * @description
+ * Animates a collapsible's height as it opens and closes.
+ */
+const COLLAPSE = "h-(--collapsible-panel-height) overflow-hidden transition-[height] duration-200 ease-out data-ending-style:h-0 data-starting-style:h-0 motion-reduce:transition-none";
 
 /**
  * @description
@@ -36,16 +42,18 @@ function PostReactions(): JSX.Element {
   useProgressTracking(post);
   const user = useAuthStore(e => e.user);
   const authReady = useAuthStore(e => e.ready);
+  const { isWatched } = usePostWatchlist(post.id);
   const [dismissed, setDismissed] = useState(false);
   const [expanded, setExpanded] = useState<boolean>(true);
   const { tag, dialogOpened, setDialogOpened } = useContext(ReactionOverlayContext);
 
   // Nothing to show, so the panel stays closed
   const empty = post.tags.length === 0;
+  const watchedCount = post.tags.filter(tag => isWatched(tag.id)).length;
 
   /**
    * @description
-   * Generates proper title for the accordion
+   * Generates proper title for the panel
    *
    * @returns The reactions count label
    */
@@ -58,22 +66,9 @@ function PostReactions(): JSX.Element {
 
   /**
    * @description
-   * Closes the dialog
-   */
-  const onClose = () => {
-    setDialogOpened(false);
-  };
-
-  /**
-   * @description
    * Opens the Passione channel
-   *
-   * @param e The mouse click event object
    */
-  const onPassioneOpen = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    e.stopPropagation();
-    e.preventDefault();
-
+  const onPassioneOpen = () => {
     openPassione();
   };
 
@@ -106,96 +101,91 @@ function PostReactions(): JSX.Element {
 
   return (
     <>
-
-      <div>
-        <Collapse in={alertOpen}>
-          <Alert
-            severity="info"
-            sx={{ mb: 2 }}
-            action={(
-              <IconButton
-                size="small"
-                aria-label="Login in notice"
-                onClick={() => setDismissed(true)}
-              >
-                <CloseIcon />
-              </IconButton>
-            )}
-          >
-            <Tooltip
-              title="Open the KOL PT extension popup and login to enable progress tracking"
-            >
-              <span className={styles.post__login}>Login to KOL PT</span>
-            </Tooltip>
-            in order to track your progress.
-          </Alert>
-        </Collapse>
-      </div>
-
-      <PostAccordion
-        expanded={expanded && !empty}
-        className={styles.post}
-        onChange={() => !empty && setExpanded(!expanded)}
-      >
-        <AccordionSummary
-          className={styles.post__head}
-          expandIcon={empty ? undefined : <ExpandMoreIcon />}
-          sx={empty ? { cursor: "default !important" } : undefined}
-        >
-          <div className={styles["post__head-wrapper"]}>
-            <h3 className={styles.post__title}>{getReactionsTitle()}</h3>
-
-            <span className={styles.post__actions}>
-              <PostModeration />
-
-              <Tooltip title="Open Passione Club Channel">
-                <IconButton
-                  aria-label="Opens KOl's Discord server"
-                  onClick={onPassioneOpen}
-                  className={`${styles.post__action} ${styles["post__action--discord"]}`}
-                >
-                  <img src={getImageUrl("discord", "platforms")} alt="Discord icon" />
-                </IconButton>
-              </Tooltip>
-            </span>
+      <Collapsible open={alertOpen}>
+        <CollapsibleContent keepMounted className={COLLAPSE}>
+          <div className="pb-2">
+            <Alert>
+              <Info />
+              <AlertDescription className="text-foreground">
+                <Tooltip>
+                  <TooltipTrigger render={<span className="cursor-help font-medium underline decoration-dotted underline-offset-2" />}>
+                    Login to KOL PT
+                  </TooltipTrigger>
+                  <TooltipContent>Open the KOL PT extension popup and login to enable progress tracking</TooltipContent>
+                </Tooltip>
+                {" "}
+                in order to track your progress.
+              </AlertDescription>
+              <AlertAction>
+                <Tooltip>
+                  <TooltipTrigger
+                    render={<Button variant="ghost" size="icon-xs" aria-label="Login in notice" onClick={() => setDismissed(true)} />}
+                  >
+                    <X />
+                  </TooltipTrigger>
+                  <TooltipContent>Dismiss</TooltipContent>
+                </Tooltip>
+              </AlertAction>
+            </Alert>
           </div>
-        </AccordionSummary>
+        </CollapsibleContent>
+      </Collapsible>
 
-        <AccordionDetails className={styles.post__body}>
-          <PostResume />
-
-          <ul className={styles.reactions}>
-            {post.tags.map(tag => <PostReaction key={tag.id} tag={tag} />)}
-          </ul>
-        </AccordionDetails>
-      </PostAccordion>
-
-      <PostReactionMenu />
-
-      <Dialog
-        scroll="paper"
-        open={dialogOpened}
-        className={styles.post__dialog}
+      <Collapsible
+        open={expanded && !empty}
+        onOpenChange={open => !empty && setExpanded(open)}
+        className="overflow-hidden rounded-xl border bg-card text-card-foreground shadow-xs"
       >
-        <DialogTitle>
-          Reaction Info
-
-          <IconButton
-            aria-label="close"
-            onClick={onClose}
-            sx={{
-              position: "absolute",
-              right: 8,
-              top: 8,
-              color: theme => theme.palette.grey[500],
-            }}
+        <div className="flex items-center gap-2 py-1.5 pr-1.5 pl-2">
+          <CollapsibleTrigger
+            disabled={empty}
+            className="group/trigger flex min-w-0 flex-1 items-center gap-2 rounded-md p-1 text-left outline-none focus-visible:ring-3 focus-visible:ring-ring/50 disabled:cursor-default"
           >
-            <CloseIcon />
-          </IconButton>
-        </DialogTitle>
+            <span className="text-sm font-semibold">{getReactionsTitle()}</span>
+            {user && !empty && (
+              <span className="text-xs text-muted-foreground tabular-nums">
+                {`${watchedCount}/${post.tags.length} watched`}
+              </span>
+            )}
+            {!empty && (
+              <ChevronDown className="size-4 text-muted-foreground transition-transform duration-200 group-data-panel-open/trigger:rotate-180" />
+            )}
+          </CollapsibleTrigger>
 
-        <DialogContent className={styles["post__dialog-content"]}>
-          <EntryView entryId={tag?.entry?.id ?? ""} isDialog={true} />
+          <span className="flex shrink-0 items-center gap-0.5">
+            <PostModeration />
+
+            <Tooltip>
+              <TooltipTrigger
+                render={<Button variant="ghost" size="icon-sm" aria-label="Opens KOl's Discord server" onClick={onPassioneOpen} />}
+              >
+                <img src={getImageUrl("discord", "platforms")} alt="Discord icon" className="size-4 object-contain" />
+              </TooltipTrigger>
+              <TooltipContent>Open Passione Club Channel</TooltipContent>
+            </Tooltip>
+          </span>
+        </div>
+
+        <CollapsibleContent className={COLLAPSE}>
+          <div className="border-t">
+            <PostResume />
+
+            <ul className="m-0 list-none divide-y p-0">
+              {post.tags.map(tag => <PostReaction key={tag.id} tag={tag} />)}
+            </ul>
+          </div>
+        </CollapsibleContent>
+      </Collapsible>
+
+      <Dialog open={dialogOpened} onOpenChange={setDialogOpened}>
+        <DialogContent className="max-h-[85vh] gap-0 overflow-hidden p-0 sm:max-w-md">
+          <DialogHeader className="border-b px-4 py-3">
+            <DialogTitle>Reaction info</DialogTitle>
+          </DialogHeader>
+
+          <div className="max-h-[calc(85vh-3.25rem)] overflow-y-auto">
+            <EntryView entryId={tag?.entry?.id ?? ""} isDialog={true} />
+          </div>
         </DialogContent>
       </Dialog>
     </>

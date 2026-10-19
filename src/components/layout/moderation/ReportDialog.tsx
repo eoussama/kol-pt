@@ -1,9 +1,16 @@
 import type { Tag } from "../../../core/domain/tag";
 import type { TReportKind } from "../../../core/schemas/moderation.schema";
 
-import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle, Stack, TextField, ToggleButton, ToggleButtonGroup } from "@mui/material";
-import { useEffect, useState } from "react";
+import { CircleAlert, CircleCheck } from "lucide-react";
+import { useEffect, useId, useState } from "react";
 import { request } from "../../../core/messaging/client";
+import { Alert, AlertDescription } from "../../ui/alert";
+import { Button } from "../../ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../../ui/dialog";
+import { Field, FieldContent, FieldDescription, FieldGroup, FieldLabel, FieldLegend, FieldSet, FieldTitle } from "../../ui/field";
+import { RadioGroup, RadioGroupItem } from "../../ui/radio-group";
+import { Spinner } from "../../ui/spinner";
+import { Textarea } from "../../ui/textarea";
 import { describeError } from "./errors";
 import TimeField from "./TimeField";
 
@@ -13,9 +20,11 @@ import TimeField from "./TimeField";
  * @description
  * What a report form asks for, by kind.
  */
-const KINDS: Record<TReportKind, { title: string; note: string; notePlaceholder: string; noteRequired: boolean; times: boolean }> = {
+const KINDS: Record<TReportKind, { title: string; summary: string; description: string; note: string; notePlaceholder: string; noteRequired: boolean; times: boolean }> = {
   timestamp: {
     title: "Wrong timestamp",
+    summary: "It starts or ends at the wrong time",
+    description: "Suggest when the reaction really starts and ends.",
     note: "Note",
     notePlaceholder: "Anything else a moderator should know",
     noteRequired: false,
@@ -23,6 +32,8 @@ const KINDS: Record<TReportKind, { title: string; note: string; notePlaceholder:
   },
   entry: {
     title: "Wrong show or episode",
+    summary: "KOL reacts to something else",
+    description: "Tell the moderators what KOL really reacts to.",
     note: "What is it really?",
     notePlaceholder: "e.g. It's episode 5, not 4",
     noteRequired: true,
@@ -30,6 +41,8 @@ const KINDS: Record<TReportKind, { title: string; note: string; notePlaceholder:
   },
   missing: {
     title: "Missing reaction",
+    summary: "",
+    description: "Tell the moderators what KOL reacts to, and when.",
     note: "What did KOL react to?",
     notePlaceholder: "e.g. One Piece episode 1100",
     noteRequired: true,
@@ -37,12 +50,20 @@ const KINDS: Record<TReportKind, { title: string; note: string; notePlaceholder:
   },
   untracked: {
     title: "Track this post",
+    summary: "",
+    description: "Ask the moderators to add this post's reactions.",
     note: "Note",
     notePlaceholder: "e.g. What KOL reacts to in it",
     noteRequired: false,
     times: false,
   },
 };
+
+/**
+ * @description
+ * The kinds a viewer picks between when reporting a reaction.
+ */
+const TAG_KINDS: ReadonlyArray<TReportKind> = ["timestamp", "entry"];
 
 /**
  * @description
@@ -77,6 +98,7 @@ export interface IReportDialogProps {
  */
 function ReportDialog(props: IReportDialogProps): JSX.Element {
   const { open, onClose, post, tag } = props;
+  const id = useId();
   const [kind, setKind] = useState<TReportKind>(props.kind);
   const [note, setNote] = useState("");
   const [startTime, setStartTime] = useState<number | null>(null);
@@ -127,55 +149,87 @@ function ReportDialog(props: IReportDialogProps): JSX.Element {
   };
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="xs">
-      <DialogTitle>{tag ? "Report a problem" : form.title}</DialogTitle>
+    <Dialog open={open} onOpenChange={next => !next && onClose()}>
+      <DialogContent className="flex max-h-[calc(100dvh-2rem)] flex-col gap-0 p-0 sm:max-w-md">
+        <DialogHeader className="p-4 pr-10 pb-3">
+          <DialogTitle>{tag ? "Report a problem" : form.title}</DialogTitle>
+          <DialogDescription>{form.description}</DialogDescription>
+        </DialogHeader>
 
-      <DialogContent>
-        {sent
-          ? <Alert severity="success">Thanks! A moderator will look at it.</Alert>
-          : (
-              <Stack spacing={2} sx={{ pt: 1 }}>
-                {tag && (
-                  <ToggleButtonGroup
-                    exclusive
-                    fullWidth
-                    size="small"
-                    value={kind}
-                    onChange={(_, value: TReportKind | null) => value && setKind(value)}
-                  >
-                    <ToggleButton value="timestamp">{KINDS.timestamp.title}</ToggleButton>
-                    <ToggleButton value="entry">{KINDS.entry.title}</ToggleButton>
-                  </ToggleButtonGroup>
-                )}
+        <div className="min-h-0 flex-1 overflow-y-auto px-4 pt-1 pb-4">
+          {sent
+            ? (
+                <div className="flex flex-col items-center gap-2 rounded-xl bg-muted/50 px-4 py-6 text-center">
+                  <CircleCheck className="size-6 text-muted-foreground" />
+                  <p className="font-medium">Thanks! A moderator will look at it.</p>
+                </div>
+              )
+            : (
+                <FieldSet disabled={sending}>
+                  <FieldGroup className="gap-4">
+                    {tag && (
+                      <FieldSet className="gap-2">
+                        <FieldLegend variant="label" className="mb-0">What is wrong?</FieldLegend>
+                        <RadioGroup value={kind} className="grid-cols-2" onValueChange={value => setKind(value as TReportKind)}>
+                          {TAG_KINDS.map(option => (
+                            <FieldLabel key={option} htmlFor={`${id}-${option}`}>
+                              <Field orientation="horizontal">
+                                <RadioGroupItem id={`${id}-${option}`} value={option} />
+                                <FieldContent>
+                                  <FieldTitle>{KINDS[option].title}</FieldTitle>
+                                  <FieldDescription className="text-xs">{KINDS[option].summary}</FieldDescription>
+                                </FieldContent>
+                              </Field>
+                            </FieldLabel>
+                          ))}
+                        </RadioGroup>
+                      </FieldSet>
+                    )}
 
-                {form.times && (
-                  <Stack direction="row" spacing={1}>
-                    <TimeField label="Starts at" value={startTime} onChange={setStartTime} />
-                    <TimeField label="Ends at" value={endTime} onChange={setEndTime} error={timesInvalid ? "Must be after the start" : undefined} />
-                  </Stack>
-                )}
+                    {form.times && (
+                      <div className="grid grid-cols-2 gap-3">
+                        <TimeField label="Starts at" value={startTime} onChange={setStartTime} />
+                        <TimeField label="Ends at" value={endTime} onChange={setEndTime} error={timesInvalid ? "Must be after the start" : undefined} />
+                      </div>
+                    )}
 
-                <TextField
-                  multiline
-                  minRows={2}
-                  size="small"
-                  label={form.note}
-                  value={note}
-                  required={form.noteRequired}
-                  placeholder={form.notePlaceholder}
-                  onChange={e => setNote(e.target.value.slice(0, 500))}
-                  helperText={`${note.length}/500`}
-                />
+                    <Field>
+                      <FieldLabel htmlFor={`${id}-note`}>
+                        {form.note}
+                        {form.noteRequired && <span aria-hidden className="-ml-1.5 text-muted-foreground">*</span>}
+                      </FieldLabel>
+                      <Textarea
+                        id={`${id}-note`}
+                        value={note}
+                        required={form.noteRequired}
+                        placeholder={form.notePlaceholder}
+                        className="max-h-40 min-h-20"
+                        onChange={e => setNote(e.target.value.slice(0, 500))}
+                      />
+                      <FieldDescription className="text-right text-xs tabular-nums">{`${note.length}/500`}</FieldDescription>
+                    </Field>
 
-                {error && <Alert severity="error">{error}</Alert>}
-              </Stack>
-            )}
+                    {error && (
+                      <Alert variant="destructive">
+                        <CircleAlert />
+                        <AlertDescription>{error}</AlertDescription>
+                      </Alert>
+                    )}
+                  </FieldGroup>
+                </FieldSet>
+              )}
+        </div>
+
+        <DialogFooter className="m-0">
+          <Button variant="outline" onClick={onClose}>{sent ? "Close" : "Cancel"}</Button>
+          {!sent && (
+            <Button disabled={!canSend} onClick={send}>
+              {sending && <Spinner data-icon="inline-start" aria-hidden />}
+              Send report
+            </Button>
+          )}
+        </DialogFooter>
       </DialogContent>
-
-      <DialogActions>
-        <Button onClick={onClose}>{sent ? "Close" : "Cancel"}</Button>
-        {!sent && <Button variant="contained" disableElevation disabled={!canSend} onClick={send}>Send report</Button>}
-      </DialogActions>
     </Dialog>
   );
 }

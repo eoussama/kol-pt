@@ -15,7 +15,7 @@ vi.mock("../../../../hooks/progress.hook", () => ({ useProgressTracking: () => u
 const user = { uid: "u1", email: null, displayName: null, photoURL: null };
 
 function renderPanel() {
-  const overlay = { tag: null, dialogOpened: false, setDialogOpened: vi.fn(), setAnchorOpened: vi.fn(), setAnchorEl: vi.fn(), setTag: vi.fn() };
+  const overlay = { tag: null, dialogOpened: false, setDialogOpened: vi.fn(), setTag: vi.fn() };
 
   return render(
     <PostContext.Provider value={{ post: { id: "p1", tags: [] } as never }}>
@@ -26,18 +26,20 @@ function renderPanel() {
   );
 }
 
-const callout = () => screen.getByText(/in order to track your progress/).closest(".MuiCollapse-root");
-const expectShown = () => waitFor(() => expect(callout()).not.toHaveClass("MuiCollapse-hidden"));
-const expectHidden = () => waitFor(() => expect(callout()).toHaveClass("MuiCollapse-hidden"));
+// The callout stays mounted while collapsed, hidden from view and from assistive technologies
+const callout = () => screen.getByText(/in order to track your progress/);
+const expectShown = () => waitFor(() => expect(callout()).toBeVisible());
+const expectHidden = () => waitFor(() => expect(callout()).not.toBeVisible());
 
 describe("empty reactions panel", () => {
   it("stays closed with no toggle", () => {
     renderPanel();
 
-    const summary = screen.getByText("0 reactions").closest(".MuiAccordionSummary-root")!;
+    const summary = screen.getByRole("button", { name: /0 reactions/ });
 
     expect(summary).toHaveAttribute("aria-expanded", "false");
-    expect(summary.querySelector(".MuiAccordionSummary-expandIconWrapper")).toBeNull();
+    expect(summary).toBeDisabled();
+    expect(summary.querySelector("svg.lucide-chevron-down")).toBeNull();
 
     fireEvent.click(summary);
     expect(summary).toHaveAttribute("aria-expanded", "false");
@@ -52,7 +54,7 @@ describe("login callout", () => {
   it("stays hidden until the stored sign-in is known, so it never flashes", async () => {
     renderPanel();
 
-    expect(callout()).toHaveClass("MuiCollapse-hidden");
+    expect(callout()).not.toBeVisible();
 
     act(() => useAuthStore.getState().setUser(user));
     await expectHidden();

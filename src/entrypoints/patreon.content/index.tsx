@@ -4,15 +4,22 @@ import { appConfig } from "../../config/app";
 import { CardRegistry } from "../../content/mount/card-registry";
 import { EmbedController } from "../../content/mount/embed-controller";
 import { EmbedRoot } from "../../content/mount/EmbedRoot";
+import { createOverlayContainer } from "../../content/mount/shadow";
 import { watchCards } from "../../content/patreon/card-watcher";
 import { watchPatreonTheme } from "../../content/patreon/theme-watcher";
 import { hydratePosts } from "../../core/domain/hydrate";
 import { request } from "../../core/messaging/client";
 import { patreonColorModeItem, postsCacheItem } from "../../core/storage/items";
-import { applyThemeAttribute } from "../../core/theme/color-mode";
 import { useThemeStore } from "../../state/theme.state";
 
 
+
+/**
+ * @description
+ * How long the post cards' loaders wait for the tracked posts, in
+ * milliseconds. Posts arriving later still get their panels.
+ */
+const POSTS_TIMEOUT_MS = 15_000;
 
 export default defineContentScript({
   matches: ["https://www.patreon.com/*"],
@@ -21,7 +28,6 @@ export default defineContentScript({
     // Panels follow Patreon's appearance; the popup follows the last one seen
     const refreshTheme = watchPatreonTheme({
       signal: ctx.signal,
-      onCheck: mode => applyThemeAttribute(mode),
       onChange: (mode, patreonMode) => {
         useThemeStore.getState().setMode(mode);
         patreonColorModeItem.setValue(patreonMode).catch(() => undefined);
@@ -34,8 +40,9 @@ export default defineContentScript({
     // Panels render into their cards through portals, so the root itself
     // never needs to be attached to the page
     const root = createRoot(document.createElement("div"));
+    const overlays = createOverlayContainer();
 
-    root.render(<EmbedRoot registry={registry} />);
+    root.render(<EmbedRoot registry={registry} overlayContainer={overlays.container} />);
 
     // The background serves posts from its cache, so they are asked for again
     // on every client-side navigation: this picks up newly tracked posts and
@@ -58,6 +65,14 @@ export default defineContentScript({
 
     loadPosts();
 
+    // An unreachable database can leave the first request unanswered rather
+    // than failed: the loaders do not wait for it forever
+    ctx.setTimeout(() => {
+      if (!loaded) {
+        controller.setPosts([]);
+      }
+    }, POSTS_TIMEOUT_MS);
+
     // Cards appear after load, on infinite scroll and on client-side navigation
     watchCards({
       signal: ctx.signal,
@@ -76,9 +91,9 @@ export default defineContentScript({
 
     ctx.onInvalidated(() => {
       unwatchPosts();
-      applyThemeAttribute("light");
       controller.dispose();
       root.unmount();
+      overlays.remove();
     });
   },
 });

@@ -1,9 +1,9 @@
 import type { IEntryPageLinksSectionProps } from "../../../../core/types/props/entry-links.props.type";
 
-import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+import { ExternalLink } from "lucide-react";
 import { useMemo } from "react";
-
-import styles from "./EntryLinks.module.scss";
+import { cn } from "../../../../core/utils/cn";
+import { Button } from "../../../ui/button";
 
 
 
@@ -18,30 +18,25 @@ function EntryLinks(props: IEntryPageLinksSectionProps): JSX.Element {
   const { entry, isDialog } = props;
   const links = useMemo(() => entry.getOptions().filter(option => option.canShow()), [entry.id]);
 
-  const dialogClass = isDialog ? styles["entry-links--dialog"] : "";
-  const classes = `${styles["entry-links"]} ${dialogClass}`;
-
   return (
-    <div className={classes}>
-      <div className={styles.links}>
-        {links.map((link, i) => (
-          <div
-            key={i}
-            className={styles.link}
-            onClick={() => link.action()}
-          >
-            <span className={styles.link__icon}>
-              <img src={link.icon} alt="Link icon" />
-            </span>
-
-            <span className={styles.link__label}>{link.label}</span>
-
-            <OpenInNewIcon className={styles.link__nav} />
-          </div>
-        ),
-        )}
-      </div>
-    </div>
+    <>
+      {links.length > 0 && (
+        <section className={cn("grid gap-1.5 px-4", isDialog && "grid-cols-2")}>
+          {links.map((link, i) => (
+            <Button
+              key={i}
+              variant="outline"
+              onClick={() => link.action()}
+              className="group/link h-9 min-w-0 justify-start gap-2.5 px-2.5"
+            >
+              <img src={link.icon} alt="" className="size-5 shrink-0 rounded-sm object-contain" />
+              <span className="truncate">{link.label}</span>
+              <ExternalLink className="ml-auto text-muted-foreground opacity-60 transition-opacity group-hover/link:opacity-100 group-focus-visible/link:opacity-100" />
+            </Button>
+          ))}
+        </section>
+      )}
+    </>
   );
 }
 

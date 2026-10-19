@@ -1,5 +1,6 @@
 import { readFileSync } from "node:fs";
 
+import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "wxt";
 
 
@@ -27,9 +28,10 @@ export default defineConfig({
   zip: {
     // Replaces the default ("**/*", which skips dotfiles), so it is restated
     includeSources: ["**/*", ".env.example", ".nvmrc"],
-    excludeSources: ["html.txt", "build/**", "coverage/**"],
+    excludeSources: ["html.txt", "build/**", "coverage/**", "reports/**", ".stryker-tmp/**"],
   },
   vite: () => ({
+    plugins: [tailwindcss()],
     define: {
       __APP_VERSION__: JSON.stringify(pkg.version),
     },
@@ -47,11 +49,12 @@ export default defineConfig({
     host_permissions: [PATREON_MATCH],
     web_accessible_resources: [
       {
-        resources: ["images/platforms/*.png", "images/graphs/*.png", "images/graphs/*.svg"],
+        resources: ["images/platforms/*.png", "images/graphs/*.png"],
         matches: [PATREON_MATCH],
       },
     ],
-    // Material UI 9's browser baseline: Chrome/Edge 117, Firefox 121, Safari 17
+    // Above Tailwind CSS 4's browser baseline (Chrome/Edge 111, Firefox 128,
+    // Safari 16.4), which the UI's styles need
     ...((browser === "chrome" || browser === "edge") && {
       minimum_chrome_version: "117",
     }),

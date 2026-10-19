@@ -1,19 +1,21 @@
 import type { IEntryPageHeadSectionProps } from "../../../../core/types/props/entry-head.props.type";
 
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { Chip } from "@mui/material";
+import { ArrowLeft } from "lucide-react";
 import { millify } from "millify";
 import { EEntryType } from "../../../../core/enums/entry-type.enum";
+import { Badge } from "../../../ui/badge";
+import { Button } from "../../../ui/button";
+import { Skeleton } from "../../../ui/skeleton";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../../../ui/tooltip";
 import Loader from "../../generic/loader/Loader";
 import TextExpand from "../../generic/text-expand/TextExpand";
-
-import styles from "./EntryHead.module.scss";
 
 
 
 /**
  * @description
- * The entry head component.
+ * The entry head component. It leaves room at the top for the cover, which
+ * the entry view draws behind it.
  *
  * @param props - Component props
  * @returns The rendered entry head section
@@ -22,57 +24,70 @@ function EntryHead(props: IEntryPageHeadSectionProps): JSX.Element {
   const { entry, loading, subscribers, description, genres, onBack } = props;
 
   return (
-    <div className={styles["entry-head"]}>
+    <section className="relative flex flex-col">
       {onBack
         && (
-          <div className={styles.head__back} onClick={onBack}>
-            <ArrowBackIcon />
-          </div>
+          <Tooltip>
+            <TooltipTrigger
+              render={(
+                <Button
+                  size="icon-sm"
+                  variant="secondary"
+                  onClick={onBack}
+                  aria-label="Back to entries"
+                  className="absolute top-3 left-3 z-10 rounded-full bg-background/80 shadow-sm backdrop-blur-sm hover:bg-background"
+                />
+              )}
+            >
+              <ArrowLeft />
+            </TooltipTrigger>
+            <TooltipContent side="right">Back to entries</TooltipContent>
+          </Tooltip>
         )}
 
-      <div className={styles.head__hero}>
-        {loading ? <Loader height="250px" flat={true} overlay={true} /> : ""}
+      <div className="relative h-28">
+        {loading ? <Loader flat={true} overlay={true} /> : ""}
       </div>
 
-      <div className={styles.head__content}>
-        <h5 className={styles.head__type}>
-          {entry.getTypeName()}
+      <div className="flex flex-col gap-1.5 px-4">
+        <div className="flex items-center gap-2">
+          <Badge variant="secondary" className="bg-background/80 backdrop-blur-sm">{entry.getTypeName()}</Badge>
           {entry.type === EEntryType.YOUTUBE
             && (
-              <>
-                {" - "}
+              <span className="text-xs text-muted-foreground tabular-nums">
                 {millify(subscribers)}
                 {" "}
                 subscribers
-              </>
+              </span>
             )}
-        </h5>
+        </div>
 
-        <h3 className={styles.head__title}>{entry.title}</h3>
+        <h2 className="line-clamp-3 text-lg leading-tight font-semibold tracking-tight">{entry.title}</h2>
       </div>
 
-      <div className={styles["head__description-wrapper"]}>
-        <div className={styles.head__description}>
-          {loading
-            ? <Loader height="100px" />
-            : <TextExpand content={description} />}
-        </div>
+      <div className="px-4 pt-2 text-sm leading-relaxed text-muted-foreground">
+        {loading
+          ? (
+              <div className="flex flex-col gap-1.5 py-1">
+                <Skeleton className="h-3 w-full" />
+                <Skeleton className="h-3 w-full" />
+                <Skeleton className="h-3 w-2/3" />
+              </div>
+            )
+          : <TextExpand content={description} />}
       </div>
 
       {genres.length > 0
         && (
-          <div className={styles.head__genres}>
+          <ul aria-label="Genres" className="flex flex-wrap gap-1 px-4 pt-3">
             {genres.map((e, i) => (
-              <Chip
-                key={i}
-                label={e}
-                size="small"
-                className={styles.head__genre}
-              />
+              <li key={i}>
+                <Badge variant="outline" className="text-muted-foreground">{e}</Badge>
+              </li>
             ))}
-          </div>
+          </ul>
         )}
-    </div>
+    </section>
   );
 }
 

@@ -1,10 +1,11 @@
 import type { IPostCardProps } from "../../../../core/types/props/post-card-props.type";
 
-import { Box, Card, CardContent, CardMedia, Chip, Tooltip, Typography } from "@mui/material";
+import { useLayoutEffect, useRef, useState } from "react";
 import { EViewMode } from "../../../../core/enums/view-mode.enum";
+import { cn } from "../../../../core/utils/cn";
 import { openPost } from "../../../../core/utils/links";
-
-import styles from "./PostCard.module.scss";
+import { badgeVariants } from "../../../ui/badge";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../../../ui/tooltip";
 
 
 
@@ -19,8 +20,28 @@ function PostCard(props: IPostCardProps): JSX.Element {
   const { post } = props;
   const { viewMode } = props;
 
-  const viewModeClasses = viewMode === EViewMode.COMPACT ? styles["card--compact"] : styles["card--expanded"];
-  const cardClasses = `${styles.card} ${viewModeClasses}`;
+  const compact = viewMode === EViewMode.COMPACT;
+  const chipsRef = useRef<HTMLDivElement>(null);
+  const [chipsOpen, setChipsOpen] = useState(false);
+  const [chipsOverflow, setChipsOverflow] = useState(false);
+
+  // Expanded cards show one row of chips; whether more wrap below it decides
+  // if the toggle shows. Measured while collapsed, and again on resize.
+  useLayoutEffect(() => {
+    const chips = chipsRef.current;
+
+    if (compact || !chips || chipsOpen) {
+      return;
+    }
+
+    const measure = () => setChipsOverflow(chips.scrollHeight > chips.clientHeight + 1);
+    const observer = new ResizeObserver(measure);
+
+    measure();
+    observer.observe(chips);
+
+    return () => observer.disconnect();
+  }, [compact, chipsOpen, post.tags.length]);
 
   /**
    * @description
@@ -37,7 +58,7 @@ function PostCard(props: IPostCardProps): JSX.Element {
    * @param e The mouse click event
    * @param reactionId The id of the reaction
    */
-  const goToReaction = (e: React.MouseEvent<HTMLDivElement, MouseEvent>, reactionId: string) => {
+  const goToReaction = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, reactionId: string) => {
     e.stopPropagation();
     e.preventDefault();
 
@@ -45,47 +66,96 @@ function PostCard(props: IPostCardProps): JSX.Element {
   };
 
   return (
-    <>
-      <Card sx={{ display: "flex" }} className={cardClasses} onClick={() => goToPost()}>
-        <CardMedia
-          component="img"
+    <article
+      data-view-mode={compact ? "compact" : "expanded"}
+      className={cn(
+        "group/card relative overflow-hidden rounded-xl border bg-card text-card-foreground transition-colors hover:bg-muted/40 has-[[data-slot=post-open]:focus-visible]:ring-3 has-[[data-slot=post-open]:focus-visible]:ring-ring/50",
+        compact ? "flex gap-3 p-2" : "flex flex-col",
+      )}
+    >
+      <div
+        className={cn(
+          "shrink-0 overflow-hidden bg-muted",
+          compact ? "aspect-video w-24 self-start rounded-lg" : "aspect-2/1 w-full",
+        )}
+      >
+        <img
           alt={post.title}
-          image={post.thumbnail}
-          className={styles.card__thumbnail}
+          loading="lazy"
+          src={post.thumbnail}
+          className="size-full object-cover transition-transform duration-500 ease-out group-hover/card:scale-[1.03] motion-reduce:transition-none motion-reduce:group-hover/card:scale-100"
         />
+      </div>
 
-        <CardContent sx={{ flex: "1 0 auto" }} className={styles.card__body}>
-          <div className={styles.card__info}>
-            <Typography component="div" variant="h5" className={styles.card__title}>
-              {post.title}
-            </Typography>
+      <div className={cn("flex min-w-0 flex-1 flex-col", compact ? "gap-1" : "gap-1.5 p-3")}>
+        <div className="flex min-w-0 flex-col gap-0.5">
+          {/* The whole card opens the post, through this button stretched over it */}
+          <button
+            type="button"
+            data-slot="post-open"
+            onClick={goToPost}
+            className={cn(
+              "text-left font-semibold leading-snug outline-none after:absolute after:inset-0 after:content-['']",
+              compact ? "truncate text-sm" : "line-clamp-2 text-[0.9375rem]",
+            )}
+          >
+            {post.title}
+          </button>
 
-            <Typography variant="subtitle1" sx={{ color: "text.secondary" }} className={styles.card__subtitle} component="div">
-              {post.creationDate.toLocaleString()}
-            </Typography>
+          <time
+            dateTime={post.creationDate.toISOString()}
+            className="text-xs text-muted-foreground tabular-nums"
+          >
+            {post.creationDate.toLocaleString()}
+          </time>
+        </div>
 
-            <Typography variant="subtitle1" sx={{ color: "text.secondary" }} className={styles.card__description} component="div">
-              {post.description}
-            </Typography>
-          </div>
+        {!compact && post.description && (
+          <p className="line-clamp-2 text-xs leading-relaxed text-muted-foreground">
+            {post.description}
+          </p>
+        )}
 
-          <div className={styles.card__tags}>
+        {post.tags.length > 0 && (
+          <div
+            ref={chipsRef}
+            className={cn(
+              "relative z-10 flex w-fit max-w-full gap-1",
+              compact ? "overflow-x-auto [scrollbar-width:none]" : "mt-0.5 flex-wrap",
+              !compact && !chipsOpen && "max-h-5 overflow-hidden",
+            )}
+          >
             {post.tags.map(tag => (
-              <Box key={tag.id} sx={{ ml: 1 }}>
-                <Tooltip title={tag.getHoverText()}>
-                  <Chip
-                    size="small"
-                    className={styles.tag}
-                    label={tag.getShortTitle()}
-                    onClick={e => goToReaction(e, tag.id)}
-                  />
-                </Tooltip>
-              </Box>
+              <Tooltip key={tag.id}>
+                <TooltipTrigger
+                  render={(
+                    <button
+                      type="button"
+                      onClick={e => goToReaction(e, tag.id)}
+                      className={cn(badgeVariants({ variant: "outline" }), "cursor-pointer bg-background hover:bg-muted")}
+                    />
+                  )}
+                >
+                  {tag.getShortTitle()}
+                </TooltipTrigger>
+                <TooltipContent>{tag.getHoverText()}</TooltipContent>
+              </Tooltip>
             ))}
           </div>
-        </CardContent>
-      </Card>
-    </>
+        )}
+
+        {!compact && (chipsOverflow || chipsOpen) && (
+          <button
+            type="button"
+            aria-expanded={chipsOpen}
+            onClick={() => setChipsOpen(!chipsOpen)}
+            className="relative z-10 w-fit cursor-pointer rounded-sm text-xs font-medium text-muted-foreground underline-offset-2 outline-none hover:text-foreground hover:underline focus-visible:ring-3 focus-visible:ring-ring/50"
+          >
+            {chipsOpen ? "Show less" : "Show more"}
+          </button>
+        )}
+      </div>
+    </article>
   );
 }
 

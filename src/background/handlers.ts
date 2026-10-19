@@ -1,6 +1,7 @@
 import type { THandlers } from "./messaging/server";
 
-import { getAnimeInfo } from "./api/jikan";
+import { getAnimeInfo } from "./api/anime";
+import { getPatreonPostDetails } from "./api/patreon";
 import { getChannelInfo } from "./api/youtube";
 import { requireUser, signInWithGoogleToken, signOutUser, toAuthUser } from "./auth";
 import { fetchImageAsDataUrl } from "./images";
@@ -37,10 +38,11 @@ async function requireModerator(): Promise<string> {
  */
 export const handlers: THandlers = {
   "posts.list": ({ force }) => getPostsWithEntries(force),
+  "posts.details": ({ postId }) => getPatreonPostDetails(postId),
 
   "entries.list": ({ force }) => getEntries(force),
 
-  "anime.info": ({ malId }) => getAnimeInfo(malId),
+  "anime.info": ({ malId, anilistId }) => getAnimeInfo({ malId, anilistId }),
 
   "youtube.channel": ({ channelId }) => getChannelInfo(channelId),
 

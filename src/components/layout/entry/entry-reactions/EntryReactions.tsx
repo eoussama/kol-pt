@@ -1,13 +1,12 @@
 import type { IReaction } from "../../../../core/domain/hydrate";
 import type { IEntryPageReactionsSectionProps } from "../../../../core/types/props/entry-reactions.props.type";
 
-import PlayArrowIcon from "@mui/icons-material/PlayArrow";
-import SearchIcon from "@mui/icons-material/Search";
-import { IconButton, InputAdornment, InputBase, Tooltip } from "@mui/material";
+import { Play, Search } from "lucide-react";
 import { openPost } from "../../../../core/utils/links";
 import { useSearch } from "../../../../hooks/search.hook";
-
-import styles from "./EntryReactions.module.scss";
+import { Button } from "../../../ui/button";
+import { InputGroup, InputGroupAddon, InputGroupInput } from "../../../ui/input-group";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../../../ui/tooltip";
 
 
 
@@ -48,60 +47,74 @@ function EntryReactions(props: IEntryPageReactionsSectionProps): JSX.Element | n
   }
 
   return (
-    <div className={styles["entry-reactions"]}>
-      <div className={styles.title}>Reactions</div>
+    <section className="flex flex-col gap-2 px-4">
+      <h3 className="flex items-center gap-1.5 text-sm font-semibold">
+        Reactions
+        <span className="text-xs font-normal text-muted-foreground tabular-nums">{reactions.length}</span>
+      </h3>
 
       {reactions.length > 1 && (
-        <InputBase
-          type="search"
-          onChange={onSearch}
-          placeholder="Search reactions..."
-          className={styles.search}
-          inputProps={{ "aria-label": "Search reactions" }}
-          startAdornment={<InputAdornment position="start"><SearchIcon fontSize="small" /></InputAdornment>}
-        />
+        <InputGroup>
+          <InputGroupAddon>
+            <Search />
+          </InputGroupAddon>
+
+          <InputGroupInput
+            type="search"
+            className="text-sm"
+            onChange={onSearch}
+            placeholder="Search reactions..."
+            aria-label="Search reactions"
+          />
+        </InputGroup>
       )}
 
       {filtered.length === 0 && search.trim() && (
-        <div className={styles.empty}>
+        <p className="py-4 text-center text-xs text-muted-foreground">
           No reactions match
           {" "}
-          <b>{search.trim()}</b>
-        </div>
+          <b className="font-medium text-foreground">{search.trim()}</b>
+        </p>
       )}
 
-      <ul className={styles.reactions}>
-        {filtered.map((reaction, i) => (
-          <li
-            key={i}
-            className={styles.reaction}
-          >
-            <div className={styles.reaction__left}>
-              <div className={styles.reaction__title}>
-                {reaction.tag.getDetailDescription()}
+      {filtered.length > 0 && (
+        <ul className="divide-y overflow-hidden rounded-xl border bg-card">
+          {filtered.map((reaction, i) => (
+            <li
+              key={i}
+              className="group flex items-center gap-2 py-2 pr-2 pl-3 transition-colors hover:bg-muted/50"
+            >
+              <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+                <span className="truncate text-sm font-medium">
+                  {reaction.tag.getDetailDescription()}
+                </span>
+
+                <span className="text-xs text-muted-foreground tabular-nums">
+                  {reaction.date.toLocaleDateString()}
+                </span>
               </div>
 
-              <div className={styles.reaction__date}>
-                {reaction.date.toLocaleDateString()}
-              </div>
-            </div>
-
-            <div className={styles.reaction__right}>
-              <Tooltip title="Watch reaction">
-                <IconButton
-                  size="small"
-                  aria-label="restart reaction"
-                  className={styles.reaction__skip}
-                  onClick={() => onWatch(reaction)}
+              <Tooltip>
+                <TooltipTrigger
+                  render={(
+                    <Button
+                      size="icon-sm"
+                      variant="ghost"
+                      aria-label="restart reaction"
+                      onClick={() => onWatch(reaction)}
+                      className="shrink-0 text-muted-foreground opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100 hover:text-foreground motion-reduce:transition-none"
+                    />
+                  )}
                 >
-                  <PlayArrowIcon />
-                </IconButton>
+                  <Play />
+                </TooltipTrigger>
+                <TooltipContent side="left">Watch reaction</TooltipContent>
               </Tooltip>
-            </div>
-          </li>
-        ))}
-      </ul>
-    </div>
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
   );
 }
 

@@ -1,21 +1,33 @@
 import type { Entry } from "../../../core/domain/entry";
 import type { Tag } from "../../../core/domain/tag";
 
-import AddIcon from "@mui/icons-material/Add";
-import EditIcon from "@mui/icons-material/Edit";
-import { Alert, Autocomplete, Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Stack, TextField, Tooltip } from "@mui/material";
-import { useEffect, useMemo, useState } from "react";
+import { CircleAlert, Pencil, Plus } from "lucide-react";
+import { useEffect, useId, useMemo, useState } from "react";
 import { readYouTubeContext } from "../../../core/domain/context";
 import { describeReaction } from "../../../core/domain/tag";
 import { EEntryType, hasEpisodes } from "../../../core/enums/entry-type.enum";
 import { request } from "../../../core/messaging/client";
 import { TagInputSchema } from "../../../core/schemas/moderation.schema";
 import { useEntriesStore } from "../../../state/entries.state";
+import { Alert, AlertDescription } from "../../ui/alert";
+import { Button } from "../../ui/button";
+import { Combobox, ComboboxContent, ComboboxEmpty, ComboboxInput, ComboboxItem, ComboboxList } from "../../ui/combobox";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../../ui/dialog";
+import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel, FieldSet } from "../../ui/field";
+import { Input } from "../../ui/input";
+import { Spinner } from "../../ui/spinner";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../../ui/tooltip";
 import EntryEditorDialog from "./EntryEditorDialog";
 import { describeError } from "./errors";
 import TimeField from "./TimeField";
 
 
+
+/**
+ * @description
+ * The reaction fields a problem can be shown under.
+ */
+type TTagField = "entryId" | "label" | "description" | "startTime" | "endTime" | "context";
 
 /**
  * @description
@@ -39,6 +51,17 @@ export function toYouTubeVideoId(text: string): string {
   catch {
     return value;
   }
+}
+
+/**
+ * @description
+ * Names an entry in the picker.
+ *
+ * @param entry - The entry
+ * @returns e.g. `Frieren · Anime`
+ */
+function toEntryLabel(entry: Entry): string {
+  return `${entry.title} · ${entry.getTypeName()}`;
 }
 
 /**
@@ -78,6 +101,7 @@ export interface IReactionEditorDialogProps {
  */
 function ReactionEditorDialog(props: IReactionEditorDialogProps): JSX.Element {
   const { open, postId, tag, initial, onClose } = props;
+  const formId = useId();
   const entries = useEntriesStore(e => e.entries);
   const loadEntries = useEntriesStore(e => e.loadEntries);
   const [entryId, setEntryId] = useState<string | null>(null);
@@ -91,11 +115,13 @@ function ReactionEditorDialog(props: IReactionEditorDialogProps): JSX.Element {
   const [entryEditor, setEntryEditor] = useState<{ entry: Entry | null; title: string } | null>(null);
   const [typed, setTyped] = useState("");
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  // A problem with a field is shown under it, any other one under the form
+  const [error, setError] = useState<{ message: string; field?: TTagField } | null>(null);
   const entry = useMemo(() => entries.find(candidate => candidate.id === entryId) ?? null, [entries, entryId]);
   const isYouTube = entry?.type === EEntryType.YOUTUBE;
   const timesInvalid = startTime !== null && endTime !== null && endTime <= startTime;
   const hoverText = description ?? (entry ? describeReaction(entry, label.trim()) : "");
+  const fieldError = (field: TTagField) => error?.field === field ? error.message : undefined;
 
   useEffect(() => {
     if (!open) {
@@ -130,8 +156,12 @@ function ReactionEditorDialog(props: IReactionEditorDialogProps): JSX.Element {
 
     if (!parsed.success) {
       const issue = parsed.error.issues[0];
+      const field = issue?.path[0];
 
-      setError(issue?.path[0] === "entryId" ? "Pick what KOL reacted to" : issue?.message ?? "Check the fields");
+      setError({
+        message: field === "entryId" ? "Pick what KOL reacted to" : issue?.message ?? "Check the fields",
+        field: field === "entryId" || field === "label" || field === "description" || field === "startTime" || field === "endTime" || (field === "context" && isYouTube) ? field : undefined,
+      });
 
       return;
     }
@@ -144,7 +174,7 @@ function ReactionEditorDialog(props: IReactionEditorDialogProps): JSX.Element {
       onClose(true);
     }
     catch (failure) {
-      setError(describeError(failure));
+      setError({ message: describeError(failure) });
     }
     finally {
       setSaving(false);
@@ -153,76 +183,145 @@ function ReactionEditorDialog(props: IReactionEditorDialogProps): JSX.Element {
 
   return (
     <>
-      <Dialog open={open && entryEditor === null} onClose={() => onClose(false)} fullWidth maxWidth="sm">
-        <DialogTitle>{tag ? "Edit reaction" : "Add a reaction"}</DialogTitle>
+      <Dialog open={open && entryEditor === null} onOpenChange={next => !next && onClose(false)}>
+        <DialogContent className="flex max-h-[calc(100dvh-2rem)] flex-col gap-0 p-0 sm:max-w-lg">
+          <DialogHeader className="p-4 pr-10 pb-3">
+            <DialogTitle>{tag ? "Edit reaction" : "Add a reaction"}</DialogTitle>
+            <DialogDescription>What KOL reacted to in this post, and when.</DialogDescription>
+          </DialogHeader>
 
-        <DialogContent>
-          <Stack spacing={2} sx={{ pt: 1 }}>
-            <Stack direction="row" spacing={1} sx={{ alignItems: "flex-start" }}>
-              <Autocomplete
-                fullWidth
-                size="small"
-                options={entries}
-                value={entry}
-                inputValue={typed}
-                onInputChange={(_, value) => setTyped(value)}
-                onChange={(_, value) => setEntryId(value?.id ?? null)}
-                getOptionLabel={option => `${option.title} · ${option.getTypeName()}`}
-                isOptionEqualToValue={(option, value) => option.id === value.id}
-                filterOptions={(options, { inputValue }) => options.filter(option => option.match(inputValue.toLowerCase()))}
-                noOptionsText="No entry matches. Create one with +"
-                renderInput={params => <TextField {...params} required label="What KOL reacted to" />}
-              />
+          <div className="min-h-0 flex-1 overflow-y-auto px-4 pt-1 pb-4">
+            <FieldSet disabled={saving}>
+              <FieldGroup className="gap-4">
+                <Field data-invalid={Boolean(fieldError("entryId"))}>
+                  <FieldLabel htmlFor={`${formId}-entry`}>
+                    What KOL reacted to
+                    <span aria-hidden className="-ml-1.5 text-muted-foreground">*</span>
+                  </FieldLabel>
 
-              {entry && (
-                <Tooltip title="Edit this entry">
-                  <IconButton aria-label="edit entry" onClick={() => setEntryEditor({ entry, title: "" })}><EditIcon /></IconButton>
-                </Tooltip>
-              )}
+                  <div className="flex items-center gap-1.5">
+                    <Combobox
+                      items={entries}
+                      value={entry}
+                      itemToStringLabel={toEntryLabel}
+                      isItemEqualToValue={(option, value) => option.id === value.id}
+                      filter={(option, query) => option.match(query.toLowerCase())}
+                      onInputValueChange={value => setTyped(value)}
+                      onValueChange={value => setEntryId(value?.id ?? null)}
+                    >
+                      <ComboboxInput
+                        id={`${formId}-entry`}
+                        required
+                        placeholder="Search entries"
+                        className="flex-1"
+                        aria-invalid={Boolean(fieldError("entryId"))}
+                      />
+                      <ComboboxContent>
+                        <ComboboxEmpty>No entry matches. Create one with +</ComboboxEmpty>
+                        <ComboboxList>
+                          {(option: Entry) => (
+                            <ComboboxItem key={option.id} value={option}>
+                              <span className="truncate">{option.title}</span>
+                              <span className="ml-auto shrink-0 text-xs text-muted-foreground">{option.getTypeName()}</span>
+                            </ComboboxItem>
+                          )}
+                        </ComboboxList>
+                      </ComboboxContent>
+                    </Combobox>
 
-              <Tooltip title="New entry">
-                <IconButton aria-label="new entry" onClick={() => setEntryEditor({ entry: null, title: entry ? "" : typed })}><AddIcon /></IconButton>
-              </Tooltip>
-            </Stack>
+                    {entry && (
+                      <Tooltip>
+                        <TooltipTrigger
+                          render={<Button variant="outline" size="icon" aria-label="edit entry" onClick={() => setEntryEditor({ entry, title: "" })} />}
+                        >
+                          <Pencil />
+                        </TooltipTrigger>
+                        <TooltipContent>Edit this entry</TooltipContent>
+                      </Tooltip>
+                    )}
 
-            <TextField
-              size="small"
-              required
-              label={hasEpisodes(entry?.type) ? "Episode" : "Label"}
-              placeholder={hasEpisodes(entry?.type) ? "e.g. 12" : "e.g. the video's name"}
-              value={label}
-              onChange={e => setLabel(e.target.value)}
-            />
+                    <Tooltip>
+                      <TooltipTrigger
+                        render={<Button variant="outline" size="icon" aria-label="new entry" onClick={() => setEntryEditor({ entry: null, title: entry ? "" : typed })} />}
+                      >
+                        <Plus />
+                      </TooltipTrigger>
+                      <TooltipContent>New entry</TooltipContent>
+                    </Tooltip>
+                  </div>
 
-            <TextField
-              size="small"
-              label="Hover text"
-              helperText="Shown when hovering the reaction's chip"
-              placeholder={entry ? describeReaction(entry, label.trim()) : "e.g. Episode 7 of FROM"}
-              value={hoverText}
-              onChange={e => setDescription(e.target.value)}
-            />
+                  <FieldError>{fieldError("entryId")}</FieldError>
+                </Field>
 
-            {isYouTube && (
-              <Stack direction="row" spacing={1}>
-                <TextField fullWidth size="small" label="Video title" value={videoTitle} onChange={e => setVideoTitle(e.target.value)} />
-                <TextField fullWidth size="small" label="Video ID or link" value={videoId} onChange={e => setVideoId(e.target.value)} />
-              </Stack>
-            )}
+                <Field data-invalid={Boolean(fieldError("label"))}>
+                  <FieldLabel htmlFor={`${formId}-label`}>
+                    {hasEpisodes(entry?.type) ? "Episode" : "Label"}
+                    <span aria-hidden className="-ml-1.5 text-muted-foreground">*</span>
+                  </FieldLabel>
+                  <Input
+                    id={`${formId}-label`}
+                    required
+                    placeholder={hasEpisodes(entry?.type) ? "e.g. 12" : "e.g. the video's name"}
+                    value={label}
+                    aria-invalid={Boolean(fieldError("label"))}
+                    onChange={e => setLabel(e.target.value)}
+                  />
+                  <FieldError>{fieldError("label")}</FieldError>
+                </Field>
 
-            <Stack direction="row" spacing={1}>
-              <TimeField label="Starts at" required value={startTime} onChange={setStartTime} />
-              <TimeField label="Ends at" required value={endTime} onChange={setEndTime} error={timesInvalid ? "Must be after the start" : undefined} />
-            </Stack>
+                <Field data-invalid={Boolean(fieldError("description"))}>
+                  <FieldLabel htmlFor={`${formId}-description`}>Hover text</FieldLabel>
+                  <Input
+                    id={`${formId}-description`}
+                    placeholder={entry ? describeReaction(entry, label.trim()) : "e.g. Episode 7 of FROM"}
+                    value={hoverText}
+                    aria-invalid={Boolean(fieldError("description"))}
+                    onChange={e => setDescription(e.target.value)}
+                  />
+                  {fieldError("description")
+                    ? <FieldError>{fieldError("description")}</FieldError>
+                    : <FieldDescription className="text-xs">Shown when hovering the reaction's chip</FieldDescription>}
+                </Field>
 
-            {error && <Alert severity="error">{error}</Alert>}
-          </Stack>
+                {isYouTube && (
+                  <div className="grid grid-cols-2 gap-3">
+                    <Field>
+                      <FieldLabel htmlFor={`${formId}-video-title`}>Video title</FieldLabel>
+                      <Input id={`${formId}-video-title`} value={videoTitle} onChange={e => setVideoTitle(e.target.value)} />
+                    </Field>
+
+                    <Field>
+                      <FieldLabel htmlFor={`${formId}-video-id`}>Video ID or link</FieldLabel>
+                      <Input id={`${formId}-video-id`} value={videoId} onChange={e => setVideoId(e.target.value)} />
+                    </Field>
+
+                    {fieldError("context") && <FieldError className="col-span-2">{fieldError("context")}</FieldError>}
+                  </div>
+                )}
+
+                <div className="grid grid-cols-2 gap-3">
+                  <TimeField label="Starts at" required value={startTime} onChange={setStartTime} error={fieldError("startTime")} />
+                  <TimeField label="Ends at" required value={endTime} onChange={setEndTime} error={timesInvalid ? "Must be after the start" : fieldError("endTime")} />
+                </div>
+
+                {error && !error.field && (
+                  <Alert variant="destructive">
+                    <CircleAlert />
+                    <AlertDescription>{error.message}</AlertDescription>
+                  </Alert>
+                )}
+              </FieldGroup>
+            </FieldSet>
+          </div>
+
+          <DialogFooter className="m-0">
+            <Button variant="outline" onClick={() => onClose(false)}>Cancel</Button>
+            <Button disabled={saving || timesInvalid} onClick={save}>
+              {saving && <Spinner data-icon="inline-start" aria-hidden />}
+              Save
+            </Button>
+          </DialogFooter>
         </DialogContent>
-
-        <DialogActions>
-          <Button onClick={() => onClose(false)}>Cancel</Button>
-          <Button variant="contained" disableElevation disabled={saving || timesInvalid} onClick={save}>Save</Button>
-        </DialogActions>
       </Dialog>
 
       <EntryEditorDialog

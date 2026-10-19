@@ -1,0 +1,30 @@
+/*
+ * The Patreon panels. Loaded as text and placed in each panel's shadow root,
+ * so it never reaches Patreon's page, nor Patreon's styles the panels.
+ */
+@import "./globals.css";
+
+/*
+ * Text styles inherit through the shadow host: Patreon's letter and word
+ * spacing, line height and the like are reset, all but its font.
+ */
+:host {
+  all: initial;
+  display: block;
+  font-family: inherit;
+  color: var(--foreground);
+}
+
+.kolpt-root {
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/*
+ * Patreon's font has wide tabular figures and spaces, which spread times and
+ * dates out ("3 : 52 : 22"): the panels keep its proportional ones.
+ */
+.tabular-nums {
+  font-variant-numeric: normal;
+}

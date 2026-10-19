@@ -1,8 +1,14 @@
 import type { TReport } from "../../../core/schemas/moderation.schema";
 
-import { Alert, Button, Chip, Dialog, DialogActions, DialogContent, DialogTitle, Divider, List, ListItem, Stack, Typography } from "@mui/material";
-import { Fragment, useState } from "react";
+import { CircleAlert, Flag, ShieldCheck } from "lucide-react";
+import { useState } from "react";
 import { request } from "../../../core/messaging/client";
+import { Alert, AlertDescription } from "../../ui/alert";
+import { Badge } from "../../ui/badge";
+import { Button } from "../../ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../../ui/dialog";
+import { Empty, EmptyHeader, EmptyMedia, EmptyTitle } from "../../ui/empty";
+import { Spinner } from "../../ui/spinner";
 import { describeError } from "./errors";
 import { describeSuggestedTimes, REPORT_KIND_NAMES } from "./report-kinds";
 
@@ -61,45 +67,67 @@ function ReportsReviewDialog(props: IReportsReviewDialogProps): JSX.Element {
   };
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-      <DialogTitle>{title}</DialogTitle>
+    <Dialog open={open} onOpenChange={next => !next && onClose()}>
+      <DialogContent className="flex max-h-[calc(100dvh-2rem)] flex-col gap-0 p-0 sm:max-w-lg">
+        <DialogHeader className="p-4 pr-10 pb-3">
+          <DialogTitle>{title}</DialogTitle>
+          <DialogDescription>Fix what a report points out, or dismiss it.</DialogDescription>
+        </DialogHeader>
 
-      <DialogContent dividers>
-        {reports.length === 0 && <Typography color="text.secondary">No open reports.</Typography>}
+        <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto border-t px-4 py-1">
+          {reports.length === 0 && (
+            <Empty className="py-8">
+              <EmptyHeader>
+                <EmptyMedia variant="icon"><ShieldCheck /></EmptyMedia>
+                <EmptyTitle>No open reports.</EmptyTitle>
+              </EmptyHeader>
+            </Empty>
+          )}
 
-        <List disablePadding>
-          {reports.map((report, i) => (
-            <Fragment key={report.id}>
-              {i > 0 && <Divider component="li" />}
-              <ListItem disableGutters sx={{ display: "block", py: 1.5 }}>
-                <Stack direction="row" spacing={1} sx={{ alignItems: "center", mb: 0.5 }}>
-                  <Chip size="small" color="warning" label={REPORT_KIND_NAMES[report.kind]} />
-                  <Typography variant="caption" color="text.secondary">
-                    {report.reporterName || "A viewer"}
-                    {" · "}
-                    {new Date(report.createdAt).toLocaleString()}
-                  </Typography>
-                </Stack>
+          {reports.length > 0 && (
+            <ul className="divide-y">
+              {reports.map(report => (
+                <li key={report.id} className="flex flex-col gap-1.5 py-3">
+                  <div className="flex min-w-0 items-center gap-2">
+                    <Badge variant="outline">
+                      <Flag className="text-warning" />
+                      {REPORT_KIND_NAMES[report.kind]}
+                    </Badge>
+                    <span className="truncate text-xs text-muted-foreground tabular-nums">
+                      {report.reporterName || "A viewer"}
+                      {" · "}
+                      {new Date(report.createdAt).toLocaleString()}
+                    </span>
+                  </div>
 
-                {report.tagTitle && <Typography variant="body2">{report.tagTitle}</Typography>}
-                {describeSuggestedTimes(report) && <Typography variant="body2">{`Suggested: ${describeSuggestedTimes(report)}`}</Typography>}
-                {report.note && <Typography variant="body2" sx={{ fontStyle: "italic", whiteSpace: "pre-wrap" }}>{`“${report.note}”`}</Typography>}
+                  {report.tagTitle && <p className="font-medium">{report.tagTitle}</p>}
+                  {describeSuggestedTimes(report) && <p className="text-muted-foreground tabular-nums">{`Suggested: ${describeSuggestedTimes(report)}`}</p>}
+                  {report.note && <p className="border-l-2 pl-2 whitespace-pre-wrap text-muted-foreground italic">{`“${report.note}”`}</p>}
 
-                <Stack direction="row" spacing={1} sx={{ mt: 1 }}>
-                  {canApply(report) && <Button size="small" variant="contained" disableElevation onClick={() => onApply(report)}>Fix</Button>}
-                  <Button size="small" disabled={busy === report.id} onClick={() => dismiss(report)}>Dismiss</Button>
-                </Stack>
-              </ListItem>
-            </Fragment>
-          ))}
-        </List>
+                  <div className="mt-1 flex gap-1.5">
+                    {canApply(report) && <Button size="sm" onClick={() => onApply(report)}>Fix</Button>}
+                    <Button size="sm" variant="outline" disabled={busy === report.id} onClick={() => dismiss(report)}>
+                      {busy === report.id && <Spinner data-icon="inline-start" aria-hidden />}
+                      Dismiss
+                    </Button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
 
-        {error && <Alert severity="error">{error}</Alert>}
+          {error && (
+            <Alert variant="destructive" className="mb-3">
+              <CircleAlert />
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+        </div>
+
+        <DialogFooter className="m-0">
+          <Button variant="outline" onClick={onClose}>Close</Button>
+        </DialogFooter>
       </DialogContent>
-
-      <DialogActions>
-        <Button onClick={onClose}>Close</Button>
-      </DialogActions>
     </Dialog>
   );
 }

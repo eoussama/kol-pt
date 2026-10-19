@@ -1,6 +1,5 @@
 import type { IHistoryItem, THistoryKind } from "../../../hooks/history.hook";
 
-import { Chip, CircularProgress, Divider, List, ListItem, MenuItem, Select, Tooltip } from "@mui/material";
 import { useState } from "react";
 import { openPost } from "../../../core/utils/links";
 import { formatTimestamp } from "../../../core/utils/time";
@@ -9,9 +8,8 @@ import { useAuthStore } from "../../../state/auth.state";
 import Empty from "../../layout/generic/empty/Empty";
 import Error from "../../layout/generic/error/Error";
 import Search from "../../layout/generic/search/Search";
-import { ListItemText } from "../../styled/ListItemText";
-
-import styles from "./HistoryPage.module.scss";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select";
+import { Skeleton } from "../../ui/skeleton";
 
 
 
@@ -47,6 +45,35 @@ const KINDS: Record<THistoryKind, { label: string; count: string; empty: string 
 
 /**
  * @description
+ * The filters, as the select lists them.
+ */
+const KIND_ITEMS = (Object.keys(KINDS) as Array<THistoryKind>).map(key => ({ value: key, label: KINDS[key].label }));
+
+/**
+ * @description
+ * Placeholder rows shown while the history loads, shaped like the real rows.
+ *
+ * @returns The rendered placeholder list
+ */
+function HistorySkeleton(): JSX.Element {
+  return (
+    <div aria-busy="true" aria-label="Loading history" className="m-3 divide-y overflow-hidden rounded-xl border bg-card">
+      {Array.from({ length: 6 }, (_, i) => (
+        <div key={i} className="flex items-center gap-3 px-3 py-2.5">
+          <Skeleton className="aspect-video w-16 rounded-md" />
+          <div className="flex flex-1 flex-col gap-1.5">
+            <Skeleton className="h-3.5 w-3/5" />
+            <Skeleton className="h-3 w-4/5" />
+            <Skeleton className="h-3 w-2/5" />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/**
+ * @description
  * The history page: the reactions the signed-in user watched or favorited,
  * and the posts they can continue, most recent first. Opening one plays it
  * on Patreon.
@@ -70,64 +97,72 @@ function HistoryPage(): JSX.Element {
         )
       : KINDS[kind].empty;
 
+  const items = user ? history : [];
+
   return (
     <>
       <Search
         onSearch={onSearch}
+        count={historyCount}
+        countLabel={KINDS[kind].count}
         actions={(
-          <div className={styles.actions}>
+          <>
             <Select
-              size="small"
               value={kind}
-              variant="standard"
-              disableUnderline
-              className={styles.filter}
-              inputProps={{ "aria-label": "Show" }}
-              onChange={e => setKind(e.target.value)}
+              items={KIND_ITEMS}
+              onValueChange={value => value && setKind(value)}
             >
-              {(Object.keys(KINDS) as Array<THistoryKind>).map(key => (
-                <MenuItem key={key} value={key} dense>{KINDS[key].label}</MenuItem>
-              ))}
+              <SelectTrigger aria-label="Show" className="font-medium">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent alignItemWithTrigger={false} align="end">
+                {KIND_ITEMS.map(item => (
+                  <SelectItem key={item.value} value={item.value}>{item.label}</SelectItem>
+                ))}
+              </SelectContent>
             </Select>
-            <Tooltip title={KINDS[kind].count}>
-              <Chip size="small" label={historyCount} />
-            </Tooltip>
-          </div>
+          </>
         )}
       />
 
-      <List className={styles.history}>
-        <Error error={Boolean(user) && error} message="Could not load data">
-          {user && loading
-            ? <div className={styles.history__loader}><CircularProgress /></div>
-            : (
-                <Empty message={emptyMessage}>
-                  {(user ? history : []).map(item => (
-                    <div key={`${item.post.id}/${item.tag.id}`}>
-                      <ListItem className={styles.item} onClick={() => item.resumeAt === undefined ? openPost(item.post.id, item.tag.id) : openPost(item.post.id, undefined, item.resumeAt)}>
-                        <ListItemText
-                          primary={item.tag.getTitle()}
-                          className={styles.item__detail}
-                          secondary={(
-                            <>
-                              <span className={styles.item__line}>
-                                {item.tag.entry ? `${item.tag.entry.getTypeName()} — ` : ""}
-                                {item.tag.getDetailDescription()}
-                                {" · "}
-                                {item.post.title}
+      <Error error={Boolean(user) && error} message="Could not load data">
+        {user && loading
+          ? <HistorySkeleton />
+          : (
+              <Empty message={emptyMessage}>
+                {items.length > 0
+                  ? [
+                      <ul key="history" className="m-3 divide-y overflow-hidden rounded-xl border bg-card">
+                        {items.map(item => (
+                          <li key={`${item.post.id}/${item.tag.id}`}>
+                            <button
+                              type="button"
+                              onClick={() => item.resumeAt === undefined ? openPost(item.post.id, item.tag.id) : openPost(item.post.id, undefined, item.resumeAt)}
+                              className="flex w-full items-center gap-3 px-3 py-2.5 text-left outline-none transition-colors hover:bg-muted/50 focus-visible:bg-muted/50 focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:ring-inset"
+                            >
+                              <span className="aspect-video w-16 shrink-0 self-start overflow-hidden rounded-md bg-muted">
+                                <img src={item.post.thumbnail} alt="" loading="lazy" className="size-full object-cover" />
                               </span>
-                              <span className={styles.item__line}>{describeMarked(item, kind)}</span>
-                            </>
-                          )}
-                        />
-                      </ListItem>
-                      <Divider component="li" />
-                    </div>
-                  ))}
-                </Empty>
-              )}
-        </Error>
-      </List>
+
+                              <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+                                <span className="truncate text-sm font-medium">{item.tag.getTitle()}</span>
+                                <span className="truncate text-xs text-muted-foreground">
+                                  {item.tag.entry ? `${item.tag.entry.getTypeName()} — ` : ""}
+                                  {item.tag.getDetailDescription()}
+                                  {" · "}
+                                  {item.post.title}
+                                </span>
+                                <span className="truncate text-xs text-muted-foreground tabular-nums">{describeMarked(item, kind)}</span>
+                              </span>
+                            </button>
+                          </li>
+                        ))}
+                      </ul>,
+                    ]
+                  : []}
+              </Empty>
+            )}
+      </Error>
     </>
   );
 }

@@ -1,6 +1,4 @@
-import PlayArrowIcon from "@mui/icons-material/PlayArrow";
-import RestoreIcon from "@mui/icons-material/Restore";
-import { Button } from "@mui/material";
+import { History, Play } from "lucide-react";
 import { useContext } from "react";
 import { usePlayer } from "../../../../content/player/PlayerProvider";
 import { PostContext } from "../../../../context/PostContext";
@@ -8,8 +6,7 @@ import { findReactionAt } from "../../../../core/utils/progress";
 import { formatTimestamp } from "../../../../core/utils/time";
 import { useAuthStore } from "../../../../state/auth.state";
 import { usePostProgress } from "../../../../state/progress.state";
-
-import styles from "./PostResume.module.scss";
+import { Button } from "../../../ui/button";
 
 
 
@@ -40,27 +37,23 @@ function PostResume(): JSX.Element | null {
   const reaction = findReactionAt(post.tags, progress.time);
 
   return (
-    <div className={styles.resume}>
-      <RestoreIcon className={styles.resume__icon} />
+    <div className="flex items-center gap-3 border-b bg-brand/8 px-3 py-2.5">
+      <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-brand/15 text-brand-strong">
+        <History className="size-4" />
+      </span>
 
-      <div className={styles.resume__text}>
-        <div className={styles.resume__title}>Continue watching</div>
-        <div className={styles.resume__description}>
+      <div className="min-w-0 flex-1">
+        <div className="text-sm font-medium">Continue watching</div>
+        <div className="truncate text-xs text-muted-foreground">
           {reaction ? `${reaction.getTitle()} · ` : ""}
           left off at
           {" "}
-          <span className={styles.resume__time}>{formatTimestamp(progress.time)}</span>
+          <span className="font-medium text-foreground tabular-nums">{formatTimestamp(progress.time)}</span>
         </div>
       </div>
 
-      <Button
-        size="small"
-        variant="contained"
-        disableElevation
-        startIcon={<PlayArrowIcon />}
-        className={styles.resume__button}
-        onClick={() => playFrom(progress.time)}
-      >
+      <Button size="sm" className="shrink-0" onClick={() => playFrom(progress.time)}>
+        <Play data-icon="inline-start" />
         Resume
       </Button>
     </div>

@@ -1,4 +1,4 @@
-import { applyThemeAttribute, isDarkColor, resolveThemeMode, toPatreonColorMode } from "./color-mode";
+import { applyThemeClass, isDarkColor, resolveThemeMode, toPatreonColorMode } from "./color-mode";
 
 
 
@@ -44,25 +44,34 @@ describe("isDarkColor", () => {
   });
 });
 
-describe("applyThemeAttribute", () => {
+describe("applyThemeClass", () => {
   it("marks the document dark, and unmarks it for light", () => {
-    applyThemeAttribute("dark");
-    expect(document.documentElement.getAttribute("data-kolpt-theme")).toBe("dark");
+    applyThemeClass("dark");
+    expect(document.documentElement).toHaveClass("dark");
 
-    applyThemeAttribute("light");
-    expect(document.documentElement.hasAttribute("data-kolpt-theme")).toBe(false);
+    applyThemeClass("light");
+    expect(document.documentElement).not.toHaveClass("dark");
+  });
+
+  it("marks only the element given", () => {
+    const panel = document.createElement("div");
+
+    applyThemeClass("dark", panel);
+
+    expect(panel).toHaveClass("dark");
+    expect(document.documentElement).not.toHaveClass("dark");
   });
 
   it("does not touch the page when nothing changes", () => {
     const changes = vi.fn();
     const observer = new MutationObserver(changes);
 
-    applyThemeAttribute("dark");
+    applyThemeClass("dark");
     observer.observe(document.documentElement, { attributes: true });
-    applyThemeAttribute("dark");
+    applyThemeClass("dark");
 
     expect(observer.takeRecords()).toEqual([]);
     observer.disconnect();
-    applyThemeAttribute("light");
+    applyThemeClass("light");
   });
 });

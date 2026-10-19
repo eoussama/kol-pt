@@ -5,8 +5,6 @@ import { PostProvider } from "../../../../context/PostContext";
 import { ReactionOverlayProvider } from "../../../../context/ReactionOverlayContext";
 import PostReactions from "../post-reactions/PostReactions";
 
-import "./../../../../styles/embed.scss";
-
 
 
 /**

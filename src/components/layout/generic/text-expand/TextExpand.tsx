@@ -2,8 +2,6 @@ import type { ITextExpandProps } from "../../../../core/types/props/text-expand-
 
 import { useEffect, useState } from "react";
 
-import styles from "./TextExpand.module.scss";
-
 
 
 /**
@@ -41,12 +39,14 @@ function TextExpand(props: ITextExpandProps): JSX.Element {
       {text}
       {content.length > minLength
         && (
-          <span
+          <button
+            type="button"
+            aria-expanded={expanded}
             onClick={onMoreToggle}
-            className={styles.more}
+            className="ml-1 rounded-sm font-medium text-foreground underline-offset-4 outline-none hover:underline focus-visible:ring-3 focus-visible:ring-ring/50"
           >
             {expanded ? "read less" : "read more"}
-          </span>
+          </button>
         )}
     </>
   );

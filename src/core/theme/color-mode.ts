@@ -103,20 +103,15 @@ export function isSystemDark(): boolean {
 
 /**
  * @description
- * Switches the extension's CSS variables between light and dark, through
- * `data-kolpt-theme` on `<html>`.
+ * Switches the design tokens between light and dark, through the `dark`
+ * class on an element and everything inside it.
  *
  * @param mode - The mode to use
- * @param root - The document's root element
+ * @param root - The element, the document's root unless given
  */
-export function applyThemeAttribute(mode: TThemeMode, root: HTMLElement = document.documentElement): void {
-  const current = root.getAttribute("data-kolpt-theme");
-
-  // Only touch the page when something differs, so this is safe to call often
-  if (mode === "dark" && current !== "dark") {
-    root.setAttribute("data-kolpt-theme", "dark");
-  }
-  else if (mode === "light" && current !== null) {
-    root.removeAttribute("data-kolpt-theme");
+export function applyThemeClass(mode: TThemeMode, root: HTMLElement = document.documentElement): void {
+  // Only touch the element when something differs, so this is safe to call often
+  if (root.classList.contains("dark") !== (mode === "dark")) {
+    root.classList.toggle("dark", mode === "dark");
   }
 }

@@ -18,10 +18,11 @@ describe("embedRoot", () => {
 
     act(() => registry.set({ key: "1001-1", card, host, postId: "1001", post: null, untracked: false }));
 
-    expect(host.textContent).toContain("Loading post info...");
+    // Inside the host's shadow root, apart from the page's styles
+    expect(host.shadowRoot?.textContent).toContain("Loading post info...");
 
     act(() => registry.delete(card));
 
-    expect(host.textContent).toBe("");
+    expect(host.shadowRoot?.querySelector("[data-kol-pt-container]")?.textContent).toBe("");
   });
 });

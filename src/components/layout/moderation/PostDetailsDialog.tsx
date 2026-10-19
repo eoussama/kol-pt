@@ -1,7 +1,14 @@
-import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle, Stack, TextField } from "@mui/material";
-import { useEffect, useState } from "react";
+import { CircleAlert } from "lucide-react";
+import { useEffect, useId, useState } from "react";
 import { request } from "../../../core/messaging/client";
 import { PostInputSchema } from "../../../core/schemas/moderation.schema";
+import { Alert, AlertDescription } from "../../ui/alert";
+import { Button } from "../../ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../../ui/dialog";
+import { Field, FieldError, FieldGroup, FieldLabel, FieldSet } from "../../ui/field";
+import { Input } from "../../ui/input";
+import { Spinner } from "../../ui/spinner";
+import { Textarea } from "../../ui/textarea";
 import { describeError } from "./errors";
 
 
@@ -17,6 +24,12 @@ export interface IPostDetails {
   creationDate: number;
   thumbnail: string;
 }
+
+/**
+ * @description
+ * The post fields a problem can be shown under.
+ */
+type TPostField = "title" | "creationDate" | "thumbnail";
 
 /**
  * @description
@@ -61,12 +74,15 @@ export interface IPostDetailsDialogProps {
  */
 function PostDetailsDialog(props: IPostDetailsDialogProps): JSX.Element {
   const { open, post, tracked, onClose } = props;
+  const formId = useId();
   const [title, setTitle] = useState(post.title);
   const [description, setDescription] = useState(post.description);
   const [date, setDate] = useState(toLocalInput(post.creationDate));
   const [thumbnail, setThumbnail] = useState(post.thumbnail);
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  // A problem with a field is shown under it, any other one under the form
+  const [error, setError] = useState<{ message: string; field?: TPostField } | null>(null);
+  const fieldError = (field: TPostField) => error?.field === field ? error.message : undefined;
 
   useEffect(() => {
     if (open) {
@@ -84,7 +100,11 @@ function PostDetailsDialog(props: IPostDetailsDialogProps): JSX.Element {
     if (!parsed.success) {
       const field = parsed.error.issues[0]?.path[0];
 
-      setError(field === "thumbnail" ? "The thumbnail must be an https link" : field === "creationDate" ? "Pick the date it was posted" : "Give the post a title");
+      setError(field === "thumbnail"
+        ? { field, message: "The thumbnail must be an https link" }
+        : field === "creationDate"
+          ? { field, message: "Pick the date it was posted" }
+          : { field: "title", message: "Give the post a title" });
 
       return;
     }
@@ -97,7 +117,7 @@ function PostDetailsDialog(props: IPostDetailsDialogProps): JSX.Element {
       onClose(true);
     }
     catch (failure) {
-      setError(describeError(failure));
+      setError({ message: describeError(failure) });
     }
     finally {
       setSaving(false);
@@ -105,26 +125,87 @@ function PostDetailsDialog(props: IPostDetailsDialogProps): JSX.Element {
   };
 
   return (
-    <Dialog open={open} onClose={() => onClose(false)} fullWidth maxWidth="sm">
-      <DialogTitle>{tracked ? "Edit post details" : "Track this post"}</DialogTitle>
+    <Dialog open={open} onOpenChange={next => !next && onClose(false)}>
+      <DialogContent className="flex max-h-[calc(100dvh-2rem)] flex-col gap-0 p-0 sm:max-w-lg">
+        <DialogHeader className="p-4 pr-10 pb-3">
+          <DialogTitle>{tracked ? "Edit post details" : "Track this post"}</DialogTitle>
+          <DialogDescription>
+            {tracked ? "How the post is listed in the extension." : "Once tracked, add its reactions from the panel under the post."}
+          </DialogDescription>
+        </DialogHeader>
 
-      <DialogContent>
-        <Stack spacing={2} sx={{ pt: 1 }}>
-          <TextField size="small" label="Post ID" value={post.id} disabled />
-          <TextField size="small" label="Title" required value={title} onChange={e => setTitle(e.target.value)} />
-          <TextField size="small" label="Posted on" type="datetime-local" required value={date} onChange={e => setDate(e.target.value)} slotProps={{ inputLabel: { shrink: true } }} />
-          <TextField multiline minRows={3} maxRows={8} size="small" label="Description" value={description} onChange={e => setDescription(e.target.value)} />
-          <TextField size="small" label="Thumbnail link" placeholder="https://..." value={thumbnail} onChange={e => setThumbnail(e.target.value)} />
+        <div className="min-h-0 flex-1 overflow-y-auto px-4 pt-1 pb-4">
+          <FieldSet disabled={saving}>
+            <FieldGroup className="gap-4">
+              <div className="grid gap-4 sm:grid-cols-2 sm:gap-3">
+                <Field data-disabled>
+                  <FieldLabel htmlFor={`${formId}-id`}>Post ID</FieldLabel>
+                  <Input id={`${formId}-id`} value={post.id} disabled className="tabular-nums" />
+                </Field>
 
-          {!tracked && <Alert severity="info">Once tracked, add its reactions from the panel under the post.</Alert>}
-          {error && <Alert severity="error">{error}</Alert>}
-        </Stack>
+                <Field data-invalid={Boolean(fieldError("creationDate"))}>
+                  <FieldLabel htmlFor={`${formId}-date`}>
+                    Posted on
+                    <span aria-hidden className="-ml-1.5 text-muted-foreground">*</span>
+                  </FieldLabel>
+                  <Input
+                    id={`${formId}-date`}
+                    type="datetime-local"
+                    required
+                    value={date}
+                    className="tabular-nums"
+                    aria-invalid={Boolean(fieldError("creationDate"))}
+                    onChange={e => setDate(e.target.value)}
+                  />
+                  <FieldError>{fieldError("creationDate")}</FieldError>
+                </Field>
+              </div>
+
+              <Field data-invalid={Boolean(fieldError("title"))}>
+                <FieldLabel htmlFor={`${formId}-title`}>
+                  Title
+                  <span aria-hidden className="-ml-1.5 text-muted-foreground">*</span>
+                </FieldLabel>
+                <Input id={`${formId}-title`} required value={title} aria-invalid={Boolean(fieldError("title"))} onChange={e => setTitle(e.target.value)} />
+                <FieldError>{fieldError("title")}</FieldError>
+              </Field>
+
+              <Field>
+                <FieldLabel htmlFor={`${formId}-description`}>Description</FieldLabel>
+                <Textarea id={`${formId}-description`} value={description} className="max-h-48 min-h-20" onChange={e => setDescription(e.target.value)} />
+              </Field>
+
+              <Field data-invalid={Boolean(fieldError("thumbnail"))}>
+                <FieldLabel htmlFor={`${formId}-thumbnail`}>Thumbnail link</FieldLabel>
+                <Input
+                  id={`${formId}-thumbnail`}
+                  type="url"
+                  placeholder="https://..."
+                  value={thumbnail}
+                  aria-invalid={Boolean(fieldError("thumbnail"))}
+                  onChange={e => setThumbnail(e.target.value)}
+                />
+                <FieldError>{fieldError("thumbnail")}</FieldError>
+              </Field>
+
+              {error && !error.field && (
+                <Alert variant="destructive">
+                  <CircleAlert />
+                  <AlertDescription>{error.message}</AlertDescription>
+                </Alert>
+              )}
+            </FieldGroup>
+          </FieldSet>
+        </div>
+
+        <DialogFooter className="m-0">
+          <Button variant="outline" onClick={() => onClose(false)}>Cancel</Button>
+          <Button disabled={saving} onClick={save}>
+            {saving && <Spinner data-icon="inline-start" aria-hidden />}
+            {tracked ? "Save" : "Track post"}
+          </Button>
+        </DialogFooter>
       </DialogContent>
-
-      <DialogActions>
-        <Button onClick={() => onClose(false)}>Cancel</Button>
-        <Button variant="contained" disableElevation disabled={saving} onClick={save}>{tracked ? "Save" : "Track post"}</Button>
-      </DialogActions>
     </Dialog>
   );
 }

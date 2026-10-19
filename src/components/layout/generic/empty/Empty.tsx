@@ -1,7 +1,8 @@
 import type { IEmptyProps } from "../../../../core/types/props/empty.props.type";
-import { useMemo } from "react";
 
-import styles from "./Empty.module.scss";
+import { Inbox } from "lucide-react";
+import { useMemo } from "react";
+import { EmptyDescription, EmptyHeader, EmptyMedia, Empty as EmptyState } from "../../../ui/empty";
 
 
 
@@ -24,15 +25,17 @@ function Empty(props: IEmptyProps) {
         canShow
           ? children
           : (
-              <div className={styles.empty}>
-                <img
-                  alt="Empty graph"
-                  src="./images/graphs/empty.svg"
-                  className={styles.empty__icon}
-                />
+              <EmptyState className="py-10">
+                <EmptyHeader>
+                  <EmptyMedia variant="icon" className="size-10 rounded-xl text-muted-foreground">
+                    <Inbox className="size-5" />
+                  </EmptyMedia>
 
-                <p className={styles.empty__message}>{message}</p>
-              </div>
+                  <EmptyDescription className="text-sm [&_b]:font-medium [&_b]:text-foreground">
+                    {message}
+                  </EmptyDescription>
+                </EmptyHeader>
+              </EmptyState>
             )
       }
     </>

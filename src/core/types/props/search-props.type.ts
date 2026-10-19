@@ -19,6 +19,18 @@ export interface ISearchProps {
 
   /**
    * @description
+   * How many items are listed, shown at the end of the input
+   */
+  count?: number;
+
+  /**
+   * @description
+   * What the count is of, shown when hovering it
+   */
+  countLabel?: string;
+
+  /**
+   * @description
    * The search handler
    *
    * @param e The search event object

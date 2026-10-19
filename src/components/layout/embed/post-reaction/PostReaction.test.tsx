@@ -14,7 +14,7 @@ function tag(id: string): Tag {
 }
 
 function renderRow(postId: string, tagId: string) {
-  const overlay = { setAnchorOpened: vi.fn(), setAnchorEl: vi.fn(), setTag: vi.fn(), setDialogOpened: vi.fn() };
+  const overlay = { setTag: vi.fn(), setDialogOpened: vi.fn() };
 
   return render(
     <PostContext.Provider value={{ post: { id: postId } as never }}>
@@ -33,11 +33,12 @@ describe("watched checkbox while saving", () => {
 
   it("shows a loader for the reaction being saved and locks the rest of the post", () => {
     renderRow("p1", "t1");
-    expect(screen.getByRole("checkbox")).toBeEnabled();
+    // The checkbox is an ARIA one: it is locked through aria-disabled
+    expect(screen.getByRole("checkbox")).not.toHaveAttribute("aria-disabled", "true");
 
     act(() => useWatchlistStore.setState({ saving: new Map([["p1", "t1"]]) }));
     expect(screen.queryByRole("checkbox")).not.toBeInTheDocument();
-    expect(screen.getByRole("progressbar")).toBeInTheDocument();
+    expect(screen.getByRole("status", { name: "Saving" })).toBeInTheDocument();
   });
 
   it("locks the other reactions of that post, but not other posts", () => {
@@ -48,8 +49,8 @@ describe("watched checkbox while saving", () => {
 
     const [locked, free] = screen.getAllByRole("checkbox");
 
-    expect(locked).toBeDisabled();
-    expect(free).toBeEnabled();
+    expect(locked).toHaveAttribute("aria-disabled", "true");
+    expect(free).not.toHaveAttribute("aria-disabled", "true");
     first.unmount();
     other.unmount();
   });

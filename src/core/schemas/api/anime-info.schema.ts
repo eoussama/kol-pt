@@ -4,7 +4,7 @@ import { z } from "zod";
 
 /**
  * @description
- * Zod schema for the anime info object returned by the Jikan helper.
+ * Zod schema for an anime's details, from AniList or Jikan.
  */
 export const AnimeInfoSchema = z.object({
   description: z.string(),

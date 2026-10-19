@@ -2,7 +2,7 @@ import type { TPatreonColorMode } from "../core/theme/color-mode";
 
 import { useEffect } from "react";
 import { patreonColorModeItem } from "../core/storage/items";
-import { applyThemeAttribute, DARK_SCHEME_QUERY, isSystemDark, resolveThemeMode } from "../core/theme/color-mode";
+import { applyThemeClass, DARK_SCHEME_QUERY, isSystemDark, resolveThemeMode } from "../core/theme/color-mode";
 import { useThemeStore } from "../state/theme.state";
 
 
@@ -21,7 +21,7 @@ export function usePopupTheme(): void {
     const update = () => {
       const mode = resolveThemeMode(patreonMode, isSystemDark());
 
-      applyThemeAttribute(mode);
+      applyThemeClass(mode);
       setMode(mode);
     };
 

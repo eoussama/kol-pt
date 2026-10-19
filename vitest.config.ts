@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 
-import { defineConfig } from "vitest/config";
+import { configDefaults, defineConfig } from "vitest/config";
 import { WxtVitest } from "wxt/testing/vitest-plugin";
 
 
@@ -17,5 +17,14 @@ export default defineConfig({
     environment: "jsdom",
     setupFiles: ["./src/test/setup.ts"],
     globals: true,
+    // Stryker's sandboxes hold copies of the tests
+    exclude: [...configDefaults.exclude, ".stryker-tmp/**", "reports/**"],
+    coverage: {
+      provider: "v8",
+      include: ["src/**/*.{ts,tsx}"],
+      exclude: ["src/**/*.test.{ts,tsx}", "src/test/**", "src/**/__fixtures__/**", "src/**/*.d.ts", "src/core/types/**"],
+      reporter: ["text-summary", "html", "lcov"],
+      reportsDirectory: "coverage",
+    },
   },
 });

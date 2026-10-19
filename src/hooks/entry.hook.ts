@@ -77,15 +77,18 @@ function mergeAltTitles(info: TAnimeInfo, entry: Entry): Array<IAltTitle> {
 
 /**
  * @description
- * Loads an entry's third-party details: MyAnimeList for anime, YouTube for
- * channels.
+ * Loads an entry's third-party details: AniList or MyAnimeList for anime,
+ * YouTube for channels.
  *
  * @param entry - The entry
  * @returns The details to merge into the state
  */
 async function loadDetails(entry: Entry): Promise<Partial<IEntryState>> {
-  if (entry instanceof Anime && entry.malId > 0) {
-    const info = await request("anime.info", { malId: entry.malId });
+  if (entry instanceof Anime && (entry.malId > 0 || entry.anilistId > 0)) {
+    const info = await request("anime.info", {
+      ...(entry.malId > 0 && { malId: entry.malId }),
+      ...(entry.anilistId > 0 && { anilistId: entry.anilistId }),
+    });
 
     return { photo: info.photo, genres: info.genres, description: info.description, altTitles: mergeAltTitles(info, entry) };
   }

@@ -1,7 +1,7 @@
 import type { Entry } from "../../../core/domain/entry";
 import type { YouTube } from "../../../core/domain/youtube";
 
-import { Avatar, Chip, CircularProgress, Divider, List, ListItem, ListItemAvatar, Tooltip } from "@mui/material";
+import { ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router";
 import { EEntryType } from "../../../core/enums/entry-type.enum";
 import { EPage } from "../../../core/enums/page.enum";
@@ -9,11 +9,34 @@ import { useEntries } from "../../../hooks/entries.hook";
 import Empty from "../../layout/generic/empty/Empty";
 import Error from "../../layout/generic/error/Error";
 import Search from "../../layout/generic/search/Search";
-import { ListItemText } from "../../styled/ListItemText";
+import { Avatar, AvatarFallback, AvatarImage } from "../../ui/avatar";
+import { Badge } from "../../ui/badge";
+import { Skeleton } from "../../ui/skeleton";
 
-import styles from "./EntriesPage.module.scss";
 
 
+/**
+ * @description
+ * Placeholder rows shown while the entries load, shaped like the real rows.
+ *
+ * @returns The rendered placeholder list
+ */
+function EntriesSkeleton(): JSX.Element {
+  return (
+    <div aria-busy="true" aria-label="Loading entries" className="m-3 divide-y overflow-hidden rounded-xl border bg-card">
+      {Array.from({ length: 7 }, (_, i) => (
+        <div key={i} className="flex items-center gap-3 px-3 py-2.5">
+          <Skeleton className="size-9 rounded-lg" />
+          <div className="flex flex-1 flex-col gap-1.5">
+            <Skeleton className="h-3.5 w-3/5" />
+            <Skeleton className="h-3 w-2/5" />
+          </div>
+          <Skeleton className="h-5 w-14 rounded-full" />
+        </div>
+      ))}
+    </div>
+  );
+}
 
 /**
  * @description
@@ -64,46 +87,50 @@ function EntriesPage(): JSX.Element {
     <>
       <Search
         onSearch={onSearch}
-        actions={(
-          <>
-            <Tooltip title="Available Entries">
-              <Chip className={styles.actions__count} size="small" label={entriesCount} />
-            </Tooltip>
-          </>
-        )}
+        count={entriesCount}
+        countLabel="Available Entries"
       />
 
-      <List className={styles.entries}>
-        <Error error={error} message="Could not load data">
-          {loading
-            ? <div className={styles.entries__loader}><CircularProgress /></div>
-            : (
-                <>
-                  <Empty message={emptyMessage}>
-                    {entries.map(entry => (
-                      <div key={entry.id}>
-                        <ListItem className={styles.entry} onClick={() => onEntryClick(entry.id)}>
-                          <ListItemAvatar className={`${styles.entry__type} ${styles[`entry__type--${entry.type}`]}`}>
-                            <Tooltip title={entry.getTypeName()}>
-                              <Avatar className={styles.entry__avatar}>{entry.getTypeName()[0]}</Avatar>
-                            </Tooltip>
-                          </ListItemAvatar>
+      <Error error={error} message="Could not load data">
+        {loading
+          ? <EntriesSkeleton />
+          : (
+              <Empty message={emptyMessage}>
+                {entries.length > 0
+                  ? [
+                      <ul key="entries" className="m-3 divide-y overflow-hidden rounded-xl border bg-card">
+                        {entries.map(entry => (
+                          <li key={entry.id}>
+                            <button
+                              type="button"
+                              onClick={() => onEntryClick(entry.id)}
+                              className="group/entry flex w-full items-center gap-3 px-3 py-2.5 text-left outline-none transition-colors hover:bg-muted/50 focus-visible:bg-muted/50 focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:ring-inset"
+                            >
+                              <Avatar className="size-9 rounded-lg after:rounded-lg">
+                                <AvatarImage src={entry.cover} alt="" className="rounded-lg" />
+                                <AvatarFallback className="rounded-lg text-xs font-semibold">
+                                  {entry.getTypeName()[0]}
+                                </AvatarFallback>
+                              </Avatar>
 
-                          <ListItemText
-                            primary={entry.title}
-                            className={styles.entry__detail}
-                            secondary={<span className={styles.entry__alt}>{getSubtitle(entry)}</span>}
-                          />
-                        </ListItem>
-                        <Divider variant="inset" component="li" />
-                      </div>
-                    ),
-                    )}
-                  </Empty>
-                </>
-              )}
-        </Error>
-      </List>
+                              <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+                                <span className="truncate text-sm font-medium">{entry.title}</span>
+                                {getSubtitle(entry) && (
+                                  <span className="truncate text-xs text-muted-foreground">{getSubtitle(entry)}</span>
+                                )}
+                              </span>
+
+                              <Badge variant="outline" className="text-muted-foreground">{entry.getTypeName()}</Badge>
+                              <ChevronRight className="size-4 shrink-0 text-muted-foreground/60 transition-transform group-hover/entry:translate-x-0.5 motion-reduce:transition-none" />
+                            </button>
+                          </li>
+                        ))}
+                      </ul>,
+                    ]
+                  : []}
+              </Empty>
+            )}
+      </Error>
     </>
   );
 }

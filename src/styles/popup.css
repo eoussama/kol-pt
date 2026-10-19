@@ -1,0 +1,26 @@
+/* The popup: a fixed-size page with its own font */
+@import "@fontsource-variable/inter";
+@import "./globals.css";
+
+:root {
+  --kolpt-font: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer base {
+  html,
+  body {
+    width: 400px;
+    height: 500px;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    margin: 0;
+  }
+
+  #root {
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+  }
+}

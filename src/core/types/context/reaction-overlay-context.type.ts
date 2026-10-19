@@ -5,16 +5,11 @@ import type { Tag } from "../../domain/tag";
 
 /**
  * @description
- * Represents the state of the reaction overlays (menu, dialog) components in the application.
+ * Represents the state of the reaction details dialog. Each reaction has its
+ * own menu, so only the dialog is shared by a post's reactions.
  */
 
 export interface IReactionOverlayContext {
-
-  /**
-   * @description
-   * Whether the anchor for the menu is opened or not.
-   */
-  anchorOpened: boolean;
 
   /**
    * @description
@@ -24,33 +19,15 @@ export interface IReactionOverlayContext {
 
   /**
    * @description
-   * The element that serves as the anchor for the menu.
-   */
-  anchorEl: TUnsafe<HTMLElement>;
-
-  /**
-   * @description
    * The selected tag to show
    */
   tag: TUnsafe<Tag>;
 
   /**
    * @description
-   * A function that updates the `anchorOpened` state property.
-   */
-  setAnchorOpened: React.Dispatch<React.SetStateAction<boolean>>;
-
-  /**
-   * @description
    * A function that updates the `dialogOpened` state property.
    */
   setDialogOpened: React.Dispatch<React.SetStateAction<boolean>>;
-
-  /**
-   * @description
-   * A function that updates the `anchorEl` state property.
-   */
-  setAnchorEl: React.Dispatch<React.SetStateAction<TUnsafe<HTMLElement>>>;
 
   /**
    * @description

@@ -150,7 +150,7 @@ export function watchPatreonTheme(options: IThemeWatcherOptions): () => void {
   observer.observe(doc.documentElement, {
     attributes: true,
     subtree: true,
-    attributeFilter: [PATREON_COLOR_MODE_ATTRIBUTE, "class", "style", "data-theme", "data-kolpt-theme"],
+    attributeFilter: [PATREON_COLOR_MODE_ATTRIBUTE, "class", "style", "data-theme"],
   });
 
   const media = typeof matchMedia === "function" ? matchMedia(DARK_SCHEME_QUERY) : null;
